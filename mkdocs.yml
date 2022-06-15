@@ -11,6 +11,7 @@ site_license_url: https://creativecommons.org/licenses/by-nc-sa/4.0/
 copyright: Copyright © 2002-2022 RootService Team
 repo_name: Documentation
 repo_url: https://github.com/RootService/mkdocs
+view_url: https://raw.githubusercontent.com/RootService/mkdocs
 edit_uri: edit/main/docs/
 
 theme:

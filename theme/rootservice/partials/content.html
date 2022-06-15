@@ -2,8 +2,8 @@
   This file was automatically generated - do not edit
 -#}
 {% if page.edit_url %}
-  {% set edit = "https://github.com/RootService/mkdocs/edit" %}
-  {% set view = "https://raw.githubusercontent.com/RootService/mkdocs" %}
+  {% set edit = config.repo_url + "/edit" %}
+  {% set view = config.view_url %}
   <a href="{{ page.edit_url }}" title="{{ lang.t('edit.link.title') }}" class="md-content__button md-icon">
     {% include ".icons/material/file-edit-outline.svg" %}
   </a>
