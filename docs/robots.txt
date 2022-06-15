@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /about/
+Disallow: /search/
+
+Sitemap: https://www.rootservice.org/sitemap.xml

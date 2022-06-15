@@ -1,0 +1,192 @@
+site_name: RootService
+site_url: https://www.rootservice.org/
+site_description: Wir bieten Service, Support, HowTos und andere nützliche Informationen rund um die Administration von FreeBSD und Linux basierten Servern
+site_publisher: https://github.com/RootService
+site_author: Markus Kohlmeyer
+site_author_url: https://github.com/JoeUser78
+site_license_name: Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) Creative-Commons Lizenz
+site_license_shortname: CC BY-NC-SA 4.0
+site_license_url: https://creativecommons.org/licenses/by-nc-sa/4.0/
+copyright: Copyright © 2002-2022 RootService Team
+repo_name: RootService
+repo_url: https://github.com/RootService
+edit_uri: ""
+
+theme:
+#    name: material
+    name: null
+    locale: de
+    language: de
+    custom_dir: theme/rootservice
+    static_templates:
+        - 404.html
+    include_search_page: false
+    search_index_only: true
+    icon:
+#        logo: logo
+        logo: material/book-open-page-variant
+        repo: material/github
+    favicon: assets/favicons
+    palette:
+        - media: "(prefers-color-scheme: dark)" 
+          scheme: slate
+          primary: amber
+          accent: indigo
+          toggle:
+            icon: material/weather-sunny
+            name: Switch to light mode
+        - media: "(prefers-color-scheme: light)" 
+          scheme: default
+          primary: amber
+          accent: indigo
+          toggle:
+            icon: material/weather-night
+            name: Switch to dark mode
+    font:
+        text: Roboto
+        code: Roboto Mono
+    features:
+#        - navigation.instant
+#        - navigation.tracking
+        - navigation.tabs
+        - navigation.tabs.sticky
+        - navigation.indexes
+        - navigation.sections
+        - navigation.top
+
+extra:
+    generator: false
+#    alternate:
+#        - name: Deutsch
+#          link: /de/
+#          lang: de
+#        - name: English
+#          link: /en/ 
+#          lang: en
+
+plugins:
+    - search:
+        lang:
+            - de
+#            - en
+#    - tags:
+#        tags_file: index.md
+#    - social:
+#    - privacy:
+#    - minify:
+#        minify_html: true
+
+markdown_extensions:
+# Python Markdown
+    - markdown.extensions.abbr:
+    - markdown.extensions.admonition:
+    - markdown.extensions.attr_list:
+    - markdown.extensions.def_list:
+    - markdown.extensions.footnotes:
+    - markdown.extensions.meta:
+    - markdown.extensions.md_in_html:
+    - markdown.extensions.smarty:
+        smart_quotes: false
+    - markdown.extensions.tables:
+    - markdown.extensions.toc:
+        permalink: true
+        permalink_title: Anchor link to this section for reference
+        slugify: !!python/name:pymdownx.slugs.uslugify
+        toc_depth: 3
+# Python Markdown Extensions
+#    - pymdownx.arithmatex:
+#        generic: true
+#        block_tag: 'pre'
+    - pymdownx.betterem:
+        smart_enable: all
+    - pymdownx.caret:
+    - pymdownx.mark:
+    - pymdownx.tilde:
+#    - pymdownx.critic:
+#        mode: view
+    - pymdownx.details:
+    - pymdownx.emoji:
+        emoji_index: !!python/name:materialx.emoji.twemoji
+        emoji_generator: !!python/name:materialx.emoji.to_svg
+    - pymdownx.highlight:
+        use_pygments: true
+        auto_title: true
+        linenums: true
+        linenums_style: pymdownx-inline
+#        anchor_linenums: true
+    - pymdownx.inlinehilite:
+    - pymdownx.superfences:
+        preserve_tabs: true
+    - pymdownx.keys:
+        separator: "\uff0b"
+        strict: true
+#    - pymdownx.smartsymbols:
+    - pymdownx.snippets:
+        base_path:
+            - docs/.snippets
+#            - LICENSE.md
+#        auto_append:
+#            - refs.md
+        check_paths: true
+    - pymdownx.tabbed:
+        alternate_style: true
+    - pymdownx.tasklist:
+        custom_checkbox: true
+    - pymdownx.magiclink:
+#        repo_url_shortener: true
+#        repo_url_shorthand: true
+#        social_url_shorthand: true
+#        social_url_shortener: true
+#        user: JoeUser78
+#        repo: RootService
+#        normalize_issue_symbols: true
+#    - pymdownx.escapeall:
+#        hardbreak: true
+#        nbsp: true
+#    - pymdownx.progressbar:
+    - pymdownx.saneheaders:
+    - pymdownx.striphtml:
+
+nav:
+    - Home: 'index.md'
+    - HowTos:
+        - Allgemein:
+            - 'howtos/general/getting_started.md'
+        - Sicherheit:
+            - 'howtos/security/server_hacked.md'
+        - FreeBSD:
+            - 'howtos/freebsd/mfsbsd_image.md'
+            - Remote Installation:
+                - 'howtos/freebsd/remote_install/index.md'
+                - 'howtos/freebsd/remote_install/basesystem.md'
+                - 'howtos/freebsd/remote_install/baseports.md'
+                - 'howtos/freebsd/remote_install/basetools.md'
+            - Hosting System:
+                - 'howtos/freebsd/hosting_system/index.md'
+                - Datenbanken:
+                    - 'howtos/freebsd/hosting_system/databases/mysql.md'
+                - Mailserver:
+                    - 'howtos/freebsd/hosting_system/mailserver/dovecot.md'
+                    - 'howtos/freebsd/hosting_system/mailserver/opendkim.md'
+                    - 'howtos/freebsd/hosting_system/mailserver/opendmarc.md'
+                    - 'howtos/freebsd/hosting_system/mailserver/postfix.md'
+                - Webserver:
+                    - 'howtos/freebsd/hosting_system/webserver/apache.md'
+                    - 'howtos/freebsd/hosting_system/webserver/nginx.md'
+                    - 'howtos/freebsd/hosting_system/webserver/php.md'
+                - Sicherheit:
+                    - 'howtos/freebsd/hosting_system/security/certbot.md'
+            - 'howtos/freebsd/certificate_authority.md'
+        - Gentoo:
+            - 'howtos/gentoo/remote_install.md'
+            - 'howtos/gentoo/certificate_authority.md'
+            - 'howtos/gentoo/hosting_system.md'
+    - Projekte:
+        - 'projects/rootforum_community.md'
+        - 'projects/mysql_tuning_primer.md'
+        - 'projects/certbot_wrapper.md'
+    - About:
+        - 'about/terms.md'
+        - 'about/privacy.md'
+    - 'about/imprint.md'
+

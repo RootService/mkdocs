@@ -1,0 +1,265 @@
+---
+title: 'MySQL'
+description: 'In diesem HowTo wird step-by-step die Installation des MySQL Datenbanksystem für ein WebHosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
+date: '2010-08-25'
+updated: '2022-04-28'
+author: 'Markus Kohlmeyer'
+author_url: https://github.com/JoeUser78
+contributors:
+    - 'Jesco Freund'
+    - 'Matthias Weiss'
+tags:
+    - FreeBSD
+    - MySQL
+---
+
+# MySQL
+
+## Einleitung
+
+Zu den Voraussetzungen für dieses HowTo siehe bitte: [Voraussetzungen](/howtos/freebsd/hosting_system/)
+
+Unser WebHosting System wird um folgende Dienste erweitert.
+
+-   MySQL 8.0.23 (InnoDB, GTID)
+
+
+## Installation
+
+MySQL unterstützt mehrere Engines, dieses HowTo beschränkt sich allerdings auf die am Häufigsten verwendete: InnoDB
+
+Wir installieren `databases/mysql80-server` und dessen Abhängigkeiten.
+
+``` bash
+cat >> /etc/make.conf << "EOF"
+DEFAULT_VERSIONS+=mysql=8.0
+"EOF"
+```
+
+``` bash
+mkdir -p /var/db/ports/devel_cmake
+cat > /var/db/ports/devel_cmake/options << "EOF"
+_OPTIONS_READ=cmake-3.19.5
+_FILE_COMPLETE_OPTIONS_LIST=CPACK DOCS MANPAGES
+OPTIONS_FILE_UNSET+=CPACK
+OPTIONS_FILE_SET+=DOCS
+OPTIONS_FILE_SET+=MANPAGES
+"EOF"
+
+mkdir -p /var/db/ports/devel_py-Jinja2
+cat > /var/db/ports/devel_py-Jinja2/options << "EOF"
+_OPTIONS_READ=py37-Jinja2-2.11.2
+_FILE_COMPLETE_OPTIONS_LIST=BABEL EXAMPLES
+OPTIONS_FILE_SET+=BABEL
+OPTIONS_FILE_SET+=EXAMPLES
+"EOF"
+
+mkdir -p /var/db/ports/textproc_py-docutils
+cat > /var/db/ports/textproc_py-docutils/options << "EOF"
+_OPTIONS_READ=py37-docutils-0.16
+_FILE_COMPLETE_OPTIONS_LIST=PYGMENTS
+OPTIONS_FILE_SET+=PYGMENTS
+"EOF"
+
+mkdir -p /var/db/ports/net_py-urllib3
+cat > /var/db/ports/net_py-urllib3/options << "EOF"
+_OPTIONS_READ=py37-urllib3-1.25.11
+_FILE_COMPLETE_OPTIONS_LIST=BROTLI SOCKS SSL
+OPTIONS_FILE_SET+=BROTLI
+OPTIONS_FILE_SET+=SOCKS
+OPTIONS_FILE_SET+=SSL
+"EOF"
+
+mkdir -p /var/db/ports/textproc_py-snowballstemmer
+cat > /var/db/ports/textproc_py-snowballstemmer/options << "EOF"
+_OPTIONS_READ=py37-snowballstemmer-1.2.1
+_FILE_COMPLETE_OPTIONS_LIST=PYSTEMMER
+OPTIONS_FILE_SET+=PYSTEMMER
+"EOF"
+
+mkdir -p /var/db/ports/archivers_libarchive
+cat > /var/db/ports/archivers_libarchive/options << "EOF"
+_OPTIONS_READ=libarchive-3.5.1
+_FILE_COMPLETE_OPTIONS_LIST=LZ4 LZO ZSTD OPENSSL MBEDTLS NETTLE
+OPTIONS_FILE_SET+=LZ4
+OPTIONS_FILE_SET+=LZO
+OPTIONS_FILE_SET+=ZSTD
+OPTIONS_FILE_SET+=OPENSSL
+OPTIONS_FILE_UNSET+=MBEDTLS
+OPTIONS_FILE_UNSET+=NETTLE
+"EOF"
+
+mkdir -p /var/db/ports/databases_mysql80-client
+cat > /var/db/ports/databases_mysql80-client/options << "EOF"
+_OPTIONS_READ=mysql80-client-8.0.23
+_FILE_COMPLETE_OPTIONS_LIST=SASLCLIENT
+OPTIONS_FILE_UNSET+=SASLCLIENT
+"EOF"
+
+mkdir -p /var/db/ports/databases_mysql80-server
+cat > /var/db/ports/databases_mysql80-server/options << "EOF"
+_OPTIONS_READ=mysql80-server-8.0.23
+_FILE_COMPLETE_OPTIONS_LIST= ARCHIVE BLACKHOLE EXAMPLE FEDERATED INNOBASE PARTITION PERFSCHEMA PERFSCHM
+OPTIONS_FILE_UNSET+=ARCHIVE
+OPTIONS_FILE_UNSET+=BLACKHOLE
+OPTIONS_FILE_UNSET+=EXAMPLE
+OPTIONS_FILE_UNSET+=FEDERATED
+OPTIONS_FILE_UNSET+=INNOBASE
+OPTIONS_FILE_UNSET+=PARTITION
+OPTIONS_FILE_UNSET+=PERFSCHEMA
+OPTIONS_FILE_SET+=PERFSCHM
+"EOF"
+
+
+cd /usr/ports/databases/mysql80-client
+make all install clean-depends clean
+
+cd /usr/ports/databases/mysql80-server
+make all install clean-depends clean
+
+
+mkdir -p /data/db/mysql{,_secure,_tmpdir}
+chmod 0750 /data/db/mysql{_secure,_tmpdir}
+chown mysql:mysql /data/db/mysql{,_secure,_tmpdir}
+
+
+echo 'mysql_enable="YES"' >> /etc/rc.conf
+echo 'mysql_dbdir="/data/db/mysql"' >> /etc/rc.conf
+echo 'mysql_optfile="/usr/local/etc/mysql/my.cnf"' >> /etc/rc.conf
+```
+
+
+## Konfiguration
+
+???+ note
+
+    Die Konfiguration orientiert sich an diesem [RootForum Community Forenbeitrag](https://www.rootforum.org/forum/viewtopic.php?t=36343){: target="_blank" rel="noopener"}.
+
+``` bash
+cat > /usr/local/etc/mysql/my.cnf << "EOF"
+[client]
+port                            = 3306
+socket                          = /tmp/mysql.sock
+
+[mysql]
+prompt                          = \u@\h [\d]>\_
+no_auto_rehash
+
+[mysqld]
+user                            = mysql
+port                            = 3306
+socket                          = /tmp/mysql.sock
+#bind-address                    = ::
+basedir                         = /usr/local
+datadir                         = /data/db/mysql
+tmpdir                          = /data/db/mysql_tmpdir
+slave-load-tmpdir               = /data/db/mysql_tmpdir
+secure-file-priv                = /data/db/mysql_secure
+log-bin                         = /data/db/mysql/mysql-bin
+log-output                      = TABLE,FILE
+relay-log-recovery              = 1
+general-log                     = 0
+general-log-file                = /data/db/mysql/general.log
+slow-query-log                  = 0
+slow-query-log-file             = /data/db/mysql/slow-query.log
+default_authentication_plugin   = caching_sha2_password
+default_password_lifetime       = 0
+server-id                       = 1
+sync_binlog                     = 1
+sync_relay_log                  = 1
+binlog_cache_size               = 256K
+binlog_stmt_cache_size          = 256K
+enforce-gtid-consistency        = 1
+gtid-mode                       = ON
+max_connections                 = 501
+safe-user-create                = 1
+lower_case_table_names          = 1
+explicit_defaults_for_timestamp = 1
+myisam-recover-options          = FORCE,BACKUP
+net_retry_count                 = 16384
+open_files_limit                = 32768
+table_open_cache                = 8192
+table_definition_cache          = 4096
+max_allowed_packet              = 64M
+key_buffer_size                 = 256M
+myisam_sort_buffer_size         = 16M
+bulk_insert_buffer_size         = 64M
+join_buffer_size                = 512K
+sort_buffer_size                = 2048K
+read_buffer_size                = 256K
+read_rnd_buffer_size            = 512K
+max_heap_table_size             = 256M
+tmp_table_size                  = 256M
+long_query_time                 = 0.05
+innodb_thread_concurrency       = 8
+innodb_buffer_pool_size         = 2G
+innodb_buffer_pool_dump_pct     = 100
+innodb_data_home_dir            = /data/db/mysql
+innodb_log_group_home_dir       = /data/db/mysql
+innodb_data_file_path           = ibdata1:1G;ibdata2:1G;ibdata3:128M:autoextend
+innodb_temp_data_file_path      = ibtmp1:128M:autoextend
+innodb_flush_method             = O_DIRECT
+innodb_log_file_size            = 256M
+innodb_log_buffer_size          = 16M
+innodb_flush_log_at_timeout     = 2
+innodb_flush_log_at_trx_commit  = 2
+innodb_disable_sort_file_cache  = 1
+innodb_write_io_threads         = 4
+innodb_read_io_threads          = 8
+innodb_autoinc_lock_mode        = 2
+innodb_max_dirty_pages_pct      = 0
+innodb_sort_buffer_size         = 2048K
+#innodb_stats_on_metadata        = 1
+#innodb_force_recovery           = 1
+#log-queries-not-using-indexes
+skip-name-resolve
+
+[mysqldump]
+max_allowed_packet              = 256M
+quote_names
+quick
+"EOF"
+```
+
+
+## Sicherheit
+
+MySQL wird nun zum ersten Mal gestartet, was durch das Erzeugen der InnoDB-Files einige Minuten dauern kann.
+
+``` bash
+service mysql-server start
+```
+
+Abschliessend wird das MySQL root-Passwort neu gesetzt und mittels `mysql_config_editor` verschlüsselt in `/root/.mylogin.cnf` gespeichert.
+
+``` bash
+# First set new MySQL-root password
+mysqladmin -h localhost -uroot password --default-auth=caching_sha2_password
+
+# Setup /root/.mylogin.cnf
+mysql_config_editor set --login-path=client --host=::1 --host=127.0.0.1 --host=localhost --socket=/tmp/mysql.sock --user=root --password
+```
+
+Wir erlauben dem MySQL-root User das Einloggen von `::1`, `127.0.0.1` und `localhost` mit dem zuvor festgelegtem Passwort.
+
+``` bash
+mysql -h localhost -uroot --default-auth=caching_sha2_password
+
+ALTER USER 'root'@'localhost' IDENTIFIED WITH caching_sha2_password BY '__MYSQL_ROOT_PASSWORD__' PASSWORD EXPIRE NEVER;
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' WITH GRANT OPTION;
+CREATE USER 'root'@'127.0.0.1' IDENTIFIED WITH caching_sha2_password BY '__MYSQL_ROOT_PASSWORD__' PASSWORD EXPIRE NEVER;
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'127.0.0.1' WITH GRANT OPTION;
+CREATE USER 'root'@'::1' IDENTIFIED WITH caching_sha2_password BY '__MYSQL_ROOT_PASSWORD__' PASSWORD EXPIRE NEVER;
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'::1' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+QUIT;
+```
+
+
+## Abschluss
+
+MySQL sollte abschliessend einmal neu gestartet werden.
+
+``` bash
+service mysql-server restart
+```
