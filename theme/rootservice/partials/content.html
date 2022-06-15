@@ -2,14 +2,26 @@
   This file was automatically generated - do not edit
 -#}
 {% if page.edit_url %}
+  {% set edit = "https://github.com/RootService/mkdocs/edit" %}
+  {% set view = "https://raw.githubusercontent.com/RootService/mkdocs" %}
   <a href="{{ page.edit_url }}" title="{{ lang.t('edit.link.title') }}" class="md-content__button md-icon">
-    {% include ".icons/material/pencil.svg" %}
+    {% include ".icons/material/file-edit-outline.svg" %}
+  </a>
+  <a href="{{ page.edit_url | replace(edit, view) }}" title="View source of this page" class="md-content__button md-icon">
+    {% include ".icons/material/file-eye-outline.svg" %}
   </a>
 {% endif %}
 {% if "tags" in config.plugins %}
   {% include "partials/tags.html" %}
 {% endif %}
+{% if not "\x3ch1" in page.content %}
+  <h1>{{ page.title | d(config.site_name, true)}}</h1>
+{% endif %}
+{{ page.content }}
     {% if page.meta and ( page.meta.hide is not defined or "docinfo" not in page.meta.hide ) %}
+        <hr />
+<div class="md-source-file">
+  <small>
       {% if page.meta.author %}
         <p><strong>Author:</strong> {{ page.meta.author }}</p>
       {% elif config.site_author %}
@@ -30,11 +42,9 @@
       {% elif config.site_license_url and config.site_license_shortname %}
         <p><strong>License:</strong> <a href="{{ config.site_license_url }}" target="_blank" rel="license noopener">{{ config.site_license_shortname }}</a></p>
       {% endif %}
+  </small>
+</div>
     {% endif %}
-{% if not "\x3ch1" in page.content %}
-  <h1>{{ page.title | d(config.site_name, true)}}</h1>
-{% endif %}
-{{ page.content }}
 {% if page.meta and (
   page.meta.git_revision_date_localized or
   page.meta.revision_date
