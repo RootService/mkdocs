@@ -124,9 +124,9 @@
       },
       "publisher": {
         "@type": "Organization",
-        "name": "{{ config.site_name }}",
+        "name": "{{ config.site_publisher }}",
       {% if config.repo_url %}
-        "url": "{{ config.repo_url }}",
+        "url": "{{ config.site_publisher_url }}",
       {% endif %}
         "logo": {
           "@type": "ImageObject",

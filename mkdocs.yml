@@ -1,15 +1,16 @@
 site_name: RootService
 site_url: https://www.rootservice.org/
 site_description: Wir bieten Service, Support, HowTos und andere nützliche Informationen rund um die Administration von FreeBSD und Linux basierten Servern
-site_publisher: https://github.com/RootService
+site_publisher: RootService Team
+site_publisher_url: https://github.com/RootService
 site_author: Markus Kohlmeyer
 site_author_url: https://github.com/JoeUser78
 site_license_name: Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) Creative-Commons Lizenz
 site_license_shortname: CC BY-NC-SA 4.0
 site_license_url: https://creativecommons.org/licenses/by-nc-sa/4.0/
 copyright: Copyright © 2002-2022 RootService Team
-repo_name: RootService
-repo_url: https://github.com/RootService
+repo_name: RootService Documentation
+repo_url: https://github.com/RootService/mkdocs
 edit_uri: ""
 
 theme:
