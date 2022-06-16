@@ -59,11 +59,11 @@
     {% endblock %}
     {% block fonts %}
       {% if config.theme.font != false %}
-        {% set text = config.theme.font.text | d("Roboto", true) %}
+        {% set text = config.theme.font.text | d("Roboto Flex", true) %}
         {% set code = config.theme.font.code | d("Roboto Mono", true) %}
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?{{
-            'family=' + text | replace(' ', '+') + ':ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&' +
-            'family=' + code | replace(' ', '+') + ':ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&'
+            'family=' + text | replace(' ', '+') + ':opsz@8..144&' +
+            'family=' + code | replace(' ', '+') + ':wght@400&'
           }}display=swap" crossorigin="anonymous">
         <style>:root{--md-text-font:"{{ text }}";--md-code-font:"{{ code }}"}</style>
       {% endif %}

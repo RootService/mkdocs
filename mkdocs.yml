@@ -45,7 +45,7 @@ theme:
             icon: material/weather-night
             name: Switch to dark mode
     font:
-        text: Roboto
+        text: Roboto Flex
         code: Roboto Mono
     features:
 #        - navigation.instant
@@ -55,6 +55,9 @@ theme:
         - navigation.indexes
         - navigation.sections
         - navigation.top
+
+extra_css:
+    - assets/stylesheets/extra.css
 
 extra:
     generator: false
