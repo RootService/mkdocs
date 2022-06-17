@@ -146,15 +146,15 @@
     {% if not config.theme.palette is mapping %}
       {% include "partials/javascripts/palette.html" %}
     {% endif %}
-      {% if page.toc | first is defined %}
+    {% if page.toc | first is defined %}
     <div data-md-component="skip">
         {% set skip = page.toc | first %}
         <a href="{{ skip.url | url }}" class="md-skip">
           {{ lang.t('skip.link.title') }}
         </a>
     </div>
-      {% endif %}
-      {% if self.announce() %}
+    {% endif %}
+    {% if self.announce() %}
     <div data-md-component="announce">
         <aside class="md-banner">
           <div class="md-banner__inner md-grid md-typeset">
@@ -162,7 +162,7 @@
           </div>
         </aside>
     </div>
-      {% endif %}
+    {% endif %}
     {% if config.extra.version %}
       <div data-md-component="outdated" hidden>
         <aside class="md-banner md-banner--warning">
@@ -276,9 +276,9 @@
       </script>
     {% endblock %}
     {% block scripts %}
-      <script src="{{ 'assets/javascripts/bundle.431f3d41.min.js' | url }}" async></script>
+      <script async src="{{ 'assets/javascripts/bundle.431f3d41.min.js' | url }}"></script>
       {% for path in config["extra_javascript"] %}
-        <script src="{{ path | url }}" async></script>
+        <script async src="{{ path | url }}"></script>
       {% endfor %}
     {% endblock %}
   </body>

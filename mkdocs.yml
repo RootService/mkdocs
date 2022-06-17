@@ -48,6 +48,9 @@ theme:
         text: Roboto Flex
         code: Roboto Mono
     features:
+        - content.code.annotate
+        - content.tabs.link
+        - content.tooltips
 #        - navigation.instant
 #        - navigation.tracking
         - navigation.tabs
@@ -55,9 +58,12 @@ theme:
         - navigation.indexes
         - navigation.sections
         - navigation.top
+        - search.highlight
+        - search.suggest
+        - toc.follow
 
 extra_css:
-    - assets/stylesheets/extra.css
+#    - assets/stylesheets/extra.css
 
 extra:
     generator: false
