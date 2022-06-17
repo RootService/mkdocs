@@ -3,7 +3,7 @@
 -#}
 {% if page.edit_url %}
   {% set edit = config.repo_url + "/edit" %}
-  {% set view = config.view_url %}
+  {% set view = config.extra.view_url %}
   <a href="{{ page.edit_url }}" title="{{ lang.t('edit.link.title') }}" class="md-content__button md-icon">
     {% include ".icons/material/file-edit-outline.svg" %}
   </a>
@@ -39,8 +39,8 @@
       {% endif %}
       {% if page.meta.license_url and page.meta.license_shortname %}
         <p><strong>License:</strong> <a href="{{ page.meta.license_url }}" target="_blank" rel="license noopener">{{ page.meta.license_shortname }}</a></p>
-      {% elif config.site_license_url and config.site_license_shortname %}
-        <p><strong>License:</strong> <a href="{{ config.site_license_url }}" target="_blank" rel="license noopener">{{ config.site_license_shortname }}</a></p>
+      {% elif config.extra.site_license_url and config.extra.site_license_shortname %}
+        <p><strong>License:</strong> <a href="{{ config.extra.site_license_url }}" target="_blank" rel="license noopener">{{ config.extra.site_license_shortname }}</a></p>
       {% endif %}
   </small>
 </div>

@@ -1,17 +1,10 @@
 site_name: RootService
 site_url: https://www.rootservice.org/
 site_description: Wir bieten Service, Support, HowTos und andere nützliche Informationen rund um die Administration von FreeBSD und Linux basierten Servern
-site_publisher: RootService Team
-site_publisher_url: https://github.com/RootService
 site_author: Markus Kohlmeyer
-site_author_url: https://github.com/JoeUser78
-site_license_name: Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) Creative-Commons Lizenz
-site_license_shortname: CC BY-NC-SA 4.0
-site_license_url: https://creativecommons.org/licenses/by-nc-sa/4.0/
 copyright: Copyright © 2002-2022 RootService Team
 repo_name: Documentation
 repo_url: https://github.com/RootService/mkdocs
-view_url: https://raw.githubusercontent.com/RootService/mkdocs
 edit_uri: edit/main/docs/
 
 theme:
@@ -28,6 +21,7 @@ theme:
 #        logo: logo
         logo: material/book-open-page-variant
         repo: material/github
+        paypal: rootservice/paypal
     favicon: assets/favicons
     palette:
         - media: "(prefers-color-scheme: dark)" 
@@ -65,6 +59,14 @@ extra_css:
 #    - assets/stylesheets/extra.css
 
 extra:
+    site_publisher: RootService Team
+    site_publisher_url: https://github.com/RootService
+    site_author_url: https://github.com/JoeUser78
+    site_license_name: Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) Creative-Commons Lizenz
+    site_license_shortname: CC BY-NC-SA 4.0
+    site_license_url: https://creativecommons.org/licenses/by-nc-sa/4.0/
+    view_url: https://raw.githubusercontent.com/RootService/mkdocs
+    paypal_url: https://www.paypal.me/JoeUser
     generator: false
 #    alternate:
 #        - name: Deutsch

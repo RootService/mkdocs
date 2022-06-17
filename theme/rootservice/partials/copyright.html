@@ -3,9 +3,9 @@
 -#}
 <div class="md-copyright">
     <div class="md-copyright__highlight">
-      {% if config.site_license_url and config.site_license_name %}
-        <a href="{{ config.site_license_url | url }}" target="_blank" rel="noopener">
-          {{ config.site_license_name }}
+      {% if config.extra.site_license_url and config.extra.site_license_name %}
+        <a href="{{ config.extra.site_license_url | url }}" target="_blank" rel="noopener">
+          {{ config.extra.site_license_name }}
         </a>
       {% endif %}
       <br />

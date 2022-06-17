@@ -115,28 +115,28 @@
         "url": "{{ page.meta.author_url }}"
       {% elif page.meta.author %}
         "name": "{{ page.meta.author }}"
-      {% elif config.site_author and config.site_author_url %}
+      {% elif config.site_author and config.extra.site_author_url %}
         "name": "{{ config.site_author }}",
-        "url": "{{ config.site_author_url }}"
+        "url": "{{ config.extra.site_author_url }}"
       {% elif config.site_author %}
         "name": "{{ config.site_author }}"
       {% endif %}
       },
+      {% if config.extra.site_publisher and config.extra.site_publisher_url %}
       "publisher": {
         "@type": "Organization",
-        "name": "{{ config.site_publisher }}",
-      {% if config.repo_url %}
-        "url": "{{ config.site_publisher_url }}",
-      {% endif %}
+        "name": "{{ config.extra.site_publisher }}",
+        "url": "{{ config.extra.site_publisher_url }}",
         "logo": {
           "@type": "ImageObject",
           "url": "{{ config.site_url + 'assets/images/rootservice.svg' }}"
         }
       },
+      {% endif %}
       {% if page.meta.license_url %}
       "license": "{{ page.meta.license_url }}",
-      {% elif config.site_license_url %}
-      "license": "{{ config.site_license_url }}",
+      {% elif config.extra.site_license_url %}
+      "license": "{{ config.extra.site_license_url }}",
       {% endif %}
       "image": "{{ config.site_url + 'assets/images/rootservice.svg' }}"
     }
