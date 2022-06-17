@@ -50,7 +50,6 @@ theme:
     features:
         - content.code.annotate
         - content.tabs.link
-        - content.tooltips
 #        - navigation.instant
 #        - navigation.tracking
         - navigation.tabs
