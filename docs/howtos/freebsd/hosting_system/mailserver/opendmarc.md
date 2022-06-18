@@ -18,8 +18,7 @@ Zu den Voraussetzungen für dieses HowTo siehe bitte: [Voraussetzungen](/howtos/
 
 Unser WebHosting System wird um folgende Dienste erweitert.
 
--   OpenDMARC 1.3.2 (SPF2, FailureReports)
-
+- OpenDMARC 1.3.2 (SPF2, FailureReports)
 
 ## Installation
 
@@ -62,7 +61,6 @@ mkdir -p /data/db/opendmarc
 
 chown -R mailnull:mailnull /data/db/opendmarc
 ```
-
 
 ## Konfigurieren
 
@@ -126,7 +124,6 @@ Es muss noch ein DNS-Record angelegt werden, sofern er noch nicht existiert, ode
 ``` dns-zone
 _dmarc.example.com.     IN  TXT     ( "v=DMARC1; p=none; sp=none; adkim=r; aspf=r; fo=1; rua=mailto:postmaster@example.com; ruf=mailto:postmaster@example.com" )
 ```
-
 
 ## Abschluss
 

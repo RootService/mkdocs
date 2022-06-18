@@ -18,8 +18,7 @@ Zu den Voraussetzungen für dieses HowTo siehe bitte: [Voraussetzungen](/howtos/
 
 Unser WebHosting System wird um folgende Dienste erweitert.
 
--   OpenDKIM 2.10.3 (VBR, 2048 Bit RSA)
-
+- OpenDKIM 2.10.3 (VBR, 2048 Bit RSA)
 
 ## Installation
 
@@ -111,7 +110,6 @@ mkdir -p /data/db/opendkim/keys/example.com
 
 chown -R mailnull:mailnull /data/db/opendkim
 ```
-
 
 ## Konfiguration
 
@@ -228,7 +226,6 @@ Es muss noch ein DNS-Record angelegt werden, sofern er noch nicht existiert, ode
         "bILcz+V1QbJ7YssRQRaZ/LTGZ0Q6QLGr6BG9h3Ro4g1bTirFIuvbaVUuzDK/KxHKRAuAhIB7mmrpPRDQlFjgva9vQYsQUcQtVh"
         "Y/z6YvcGNvEWhme3gaTWzdG20aLTxut4Il17OSWiCbF0wdnUn0bnKins14YeHjkDhOhMoEagd3lWWs0k2KNxnbYljPQwIDAQAB" )
 ```
-
 
 ## Abschluss
 

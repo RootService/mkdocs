@@ -20,10 +20,9 @@ Dieses HowTo setzt ein wie in [Remote Installation](/howtos/freebsd/remote_insta
 
 Folgende Punkte sind in diesem HowTo zu beachten.
 
--   Alle Konfigurationen sind selbstständig auf notwendige individuelle Anpassungen zu kontrollieren.
--   Die Domain des Servers lautet `example.com` und ist selbstständig durch die eigene Domain zu ersetzen.
--   Der Hostname des Servers lautet `devnull` und ist selbstständig durch den eigenen Hostnamen zu ersetzen (FQDN=devnull.example.com).
-
+- Alle Konfigurationen sind selbstständig auf notwendige individuelle Anpassungen zu kontrollieren.
+- Die Domain des Servers lautet `example.com` und ist selbstständig durch die eigene Domain zu ersetzen.
+- Der Hostname des Servers lautet `devnull` und ist selbstständig durch den eigenen Hostnamen zu ersetzen (FQDN=devnull.example.com).
 
 ## Vorbereitungen
 
@@ -38,9 +37,7 @@ Verzeichnisstruktur anlegen und RANDFILE sowie EC-Params und DH-Params erzeugen.
 /usr/bin/openssl genpkey -genparam -algorithm EC -pkeyopt 'ec_paramgen_curve:secp384r1' -out /data/pki/certs/ec_params.pem
 ```
 
-
 ## OpenSSL
-
 
 ### OpenSSL konfigurieren
 
@@ -69,20 +66,18 @@ default_bits            = 2048
 string_mask             = utf8only
 ```
 
-
 ### OpenSSL CA
-
 
 #### Root CA erstellen
 
 In der `etc/root-ca.conf` müssen noch ein paar Anpassungen vorgenommen werden:
 
-1.  Im Abschnitt `[ default ]` muss die Option `base_url` auf den URL gesetzt werden, unter dem später die Certs, CRLs und Chains veröffentlicht werden sollen.
-1.  Im Abschnitt `[ ca_dn ]` muss die Option `countryName` auf das internationale zweibuchstabige Länderkürzel des Betreibers der Root CA gesetzt werden.
-1.  Im Abschnitt `[ ca_dn ]` muss die Option `organizationName` auf den Firmennamen des Betreibers der Root CA gesetzt werden.
-1.  Im Abschnitt `[ ca_dn ]` muss die Option `organizationalUnitName` auf den zuständigen Abteilungsnamen des Betreibers der Root CA gesetzt werden.
-1.  Im Abschnitt `[ ca_dn ]` muss die Option `commonName` auf den Namen der Root CA (im Regelfall "Firmenname Root CA") gesetzt werden.
-1.  Im Abschnitt `[ additional_oids ]` müssen die OIDs entsprechend der eigenen registrierten OIDs ersetzt werden.
+1. Im Abschnitt `[ default ]` muss die Option `base_url` auf den URL gesetzt werden, unter dem später die Certs, CRLs und Chains veröffentlicht werden sollen.
+1. Im Abschnitt `[ ca_dn ]` muss die Option `countryName` auf das internationale zweibuchstabige Länderkürzel des Betreibers der Root CA gesetzt werden.
+1. Im Abschnitt `[ ca_dn ]` muss die Option `organizationName` auf den Firmennamen des Betreibers der Root CA gesetzt werden.
+1. Im Abschnitt `[ ca_dn ]` muss die Option `organizationalUnitName` auf den zuständigen Abteilungsnamen des Betreibers der Root CA gesetzt werden.
+1. Im Abschnitt `[ ca_dn ]` muss die Option `commonName` auf den Namen der Root CA (im Regelfall "Firmenname Root CA") gesetzt werden.
+1. Im Abschnitt `[ additional_oids ]` müssen die OIDs entsprechend der eigenen registrierten OIDs ersetzt werden.
 
 ``` bash
 cd /data/pki
@@ -289,17 +284,16 @@ CRL in ein veröffentlichbares Format exportieren.
     -outform DER
 ```
 
-
 #### Network / Intermediate CA erstellen
 
 In der `etc/network-ca.conf` müssen noch ein paar Anpassungen vorgenommen werden:
 
-1.  Im Abschnitt `[ default ]` muss die Option `base_url` auf den URL gesetzt werden, unter dem später die Certs, CRLs und Chains veröffentlicht werden sollen.
-1.  Im Abschnitt `[ ca_dn ]` muss die Option `countryName` auf das internationale zweibuchstabige Länderkürzel des Betreibers der Network CA gesetzt werden.
-1.  Im Abschnitt `[ ca_dn ]` muss die Option `organizationName` auf den Firmennamen des Betreibers der Network CA gesetzt werden.
-1.  Im Abschnitt `[ ca_dn ]` muss die Option `organizationalUnitName` auf den zuständigen Abteilungsnamen des Betreibers der Network CA gesetzt werden.
-1.  Im Abschnitt `[ ca_dn ]` muss die Option `commonName` auf den Namen der Network CA (im Regelfall "Firmenname Network CA") gesetzt werden.
-1.  Im Abschnitt `[ additional_oids ]` müssen die OIDs entsprechend der eigenen registrierten OIDs ersetzt werden.
+1. Im Abschnitt `[ default ]` muss die Option `base_url` auf den URL gesetzt werden, unter dem später die Certs, CRLs und Chains veröffentlicht werden sollen.
+1. Im Abschnitt `[ ca_dn ]` muss die Option `countryName` auf das internationale zweibuchstabige Länderkürzel des Betreibers der Network CA gesetzt werden.
+1. Im Abschnitt `[ ca_dn ]` muss die Option `organizationName` auf den Firmennamen des Betreibers der Network CA gesetzt werden.
+1. Im Abschnitt `[ ca_dn ]` muss die Option `organizationalUnitName` auf den zuständigen Abteilungsnamen des Betreibers der Network CA gesetzt werden.
+1. Im Abschnitt `[ ca_dn ]` muss die Option `commonName` auf den Namen der Network CA (im Regelfall "Firmenname Network CA") gesetzt werden.
+1. Im Abschnitt `[ additional_oids ]` müssen die OIDs entsprechend der eigenen registrierten OIDs ersetzt werden.
 
 ``` bash
 cd /data/pki
@@ -525,17 +519,16 @@ Chain der Network CA in ein veröffentlichbares Format exportieren.
     -outform DER
 ```
 
-
 #### Identity Signing CA erstellen
 
 In der `etc/identity-ca.conf` müssen noch ein paar Anpassungen vorgenommen werden:
 
-1.  Im Abschnitt `[ default ]` muss die Option `base_url` auf den URL gesetzt werden, unter dem später die Certs, CRLs und Chains veröffentlicht werden sollen.
-1.  Im Abschnitt `[ ca_dn ]` muss die Option `countryName` auf das internationale zweibuchstabige Länderkürzel des Betreibers der Identity CA gesetzt werden.
-1.  Im Abschnitt `[ ca_dn ]` muss die Option `organizationName` auf den Firmennamen des Betreibers der Identity CA gesetzt werden.
-1.  Im Abschnitt `[ ca_dn ]` muss die Option `organizationalUnitName` auf den zuständigen Abteilungsnamen des Betreibers der Identity CA gesetzt werden.
-1.  Im Abschnitt `[ ca_dn ]` muss die Option `commonName` auf den Namen der Identity CA (im Regelfall "Firmenname Identity CA") gesetzt werden.
-1.  Im Abschnitt `[ additional_oids ]` müssen die OIDs entsprechend der eigenen registrierten OIDs ersetzt werden.
+1. Im Abschnitt `[ default ]` muss die Option `base_url` auf den URL gesetzt werden, unter dem später die Certs, CRLs und Chains veröffentlicht werden sollen.
+1. Im Abschnitt `[ ca_dn ]` muss die Option `countryName` auf das internationale zweibuchstabige Länderkürzel des Betreibers der Identity CA gesetzt werden.
+1. Im Abschnitt `[ ca_dn ]` muss die Option `organizationName` auf den Firmennamen des Betreibers der Identity CA gesetzt werden.
+1. Im Abschnitt `[ ca_dn ]` muss die Option `organizationalUnitName` auf den zuständigen Abteilungsnamen des Betreibers der Identity CA gesetzt werden.
+1. Im Abschnitt `[ ca_dn ]` muss die Option `commonName` auf den Namen der Identity CA (im Regelfall "Firmenname Identity CA") gesetzt werden.
+1. Im Abschnitt `[ additional_oids ]` müssen die OIDs entsprechend der eigenen registrierten OIDs ersetzt werden.
 
 ``` bash
 cd /data/pki
@@ -763,17 +756,16 @@ Chain der Identity CA in ein veröffentlichbares Format exportieren.
     -outform DER
 ```
 
-
 #### Component Signing CA erstellen
 
 In der `etc/component-ca.conf` müssen noch ein paar Anpassungen vorgenommen werden:
 
-1.  Im Abschnitt `[ default ]` muss die Option `base_url` auf den URL gesetzt werden, unter dem später die Certs, CRLs und Chains veröffentlicht werden sollen.
-1.  Im Abschnitt `[ ca_dn ]` muss die Option `countryName` auf das internationale zweibuchstabige Länderkürzel des Betreibers der Component CA gesetzt werden.
-1.  Im Abschnitt `[ ca_dn ]` muss die Option `organizationName` auf den Firmennamen des Betreibers der Component CA gesetzt werden.
-1.  Im Abschnitt `[ ca_dn ]` muss die Option `organizationalUnitName` auf den zuständigen Abteilungsnamen des Betreibers der Component CA gesetzt werden.
-1.  Im Abschnitt `[ ca_dn ]` muss die Option `commonName` auf den Namen der Component CA (im Regelfall "Firmenname Component CA") gesetzt werden.
-1.  Im Abschnitt `[ additional_oids ]` müssen die OIDs entsprechend der eigenen registrierten OIDs ersetzt werden.
+1. Im Abschnitt `[ default ]` muss die Option `base_url` auf den URL gesetzt werden, unter dem später die Certs, CRLs und Chains veröffentlicht werden sollen.
+1. Im Abschnitt `[ ca_dn ]` muss die Option `countryName` auf das internationale zweibuchstabige Länderkürzel des Betreibers der Component CA gesetzt werden.
+1. Im Abschnitt `[ ca_dn ]` muss die Option `organizationName` auf den Firmennamen des Betreibers der Component CA gesetzt werden.
+1. Im Abschnitt `[ ca_dn ]` muss die Option `organizationalUnitName` auf den zuständigen Abteilungsnamen des Betreibers der Component CA gesetzt werden.
+1. Im Abschnitt `[ ca_dn ]` muss die Option `commonName` auf den Namen der Component CA (im Regelfall "Firmenname Component CA") gesetzt werden.
+1. Im Abschnitt `[ additional_oids ]` müssen die OIDs entsprechend der eigenen registrierten OIDs ersetzt werden.
 
 ``` bash
 cd /data/pki
@@ -1000,7 +992,6 @@ Chain der Component CA in ein veröffentlichbares Format exportieren.
     -outform DER
 ```
 
-
 #### CRLs und Chains erneuern
 
 Die CRLs und Chains sollten regelmässig (spätestens alle 30 Tage) aktualisiert und veröffentlicht werden, da sie ansonsten ungültig werden und manche Clients deshalb auch die Zertifikate als ungültig einstufen.
@@ -1115,9 +1106,7 @@ Cronjob für `update-crls-chains.sh` anlegen.
 "EOF"
 ```
 
-
 ### OpenSSL Zertifikate
-
 
 #### Identity Certificate erstellen
 
@@ -1323,7 +1312,6 @@ Zertifikat in ein veröffentlichbares Format exportieren.
     -passin file:private/admin-enc.pwd
 ```
 
-
 #### TLS Client Certificate erstellen
 
 ``` bash
@@ -1409,12 +1397,11 @@ Durch die Component CA signiertes Zertifikat erzeugen. Die Gültigkeitsdauer wir
     -passin file:ca/component-ca/private/component-ca.pwd
 ```
 
-
 #### TLS Server Certificate erstellen
 
 In der `etc/tls-server.conf` müssen noch ein paar Anpassungen vorgenommen werden:
 
-1.  Im Abschnitt `[ default ]` muss die Option `SAN` auf den Domainnamen (ohne Subdomain) des Serverbetreibers gesetzt werden.
+1. Im Abschnitt `[ default ]` muss die Option `SAN` auf den Domainnamen (ohne Subdomain) des Serverbetreibers gesetzt werden.
 
 ``` bash
 cd /data/pki
@@ -1634,4 +1621,3 @@ Eine passwortlose Kopie des privaten Schlüssels anlegen, wie sie zum problemlos
 ???+ important
 
     Work in progress basierend auf dem [OpenSSL PKI Tutorial v1.1 (Stand: 05.04.2017)](https://pki-tutorial.readthedocs.io/){: target="_blank" rel="noopener"} (für Erläuterungen bitte auch dort nachsehen).
-

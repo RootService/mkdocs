@@ -26,14 +26,13 @@ In diesem HowTo beschreibe ich step-by-step die Remote Installation von [Gentoo 
 
 Folgende Punkte sind in diesem HowTo zu beachten.
 
--   Alle Dienste werden mit einem möglichst minimalen und bewährten Funktionsumfang installiert.
--   Alle Dienste werden mit einer möglichst sicheren und dennoch flexiblen Konfiguration versehen.
--   Alle Konfigurationen sind selbstständig auf notwendige individuelle Anpassungen zu kontrollieren.
--   Alle Passworte werden als `__PASSWORD__` dargestellt und sind selbstständig durch sichere Passworte zu ersetzen.
--   Die Domain des Servers lautet `example.com` und ist selbstständig durch die eigene Domain zu ersetzen.
--   Der Hostname des Servers lautet `devnull` und ist selbstständig durch den eigenen Hostnamen zu ersetzen (FQDN=devnull.example.com).
--   Es wird der FQDN `devnull.example.com` verwendet und ist selbstständig im DNS zu registrieren.
-
+- Alle Dienste werden mit einem möglichst minimalen und bewährten Funktionsumfang installiert.
+- Alle Dienste werden mit einer möglichst sicheren und dennoch flexiblen Konfiguration versehen.
+- Alle Konfigurationen sind selbstständig auf notwendige individuelle Anpassungen zu kontrollieren.
+- Alle Passworte werden als `__PASSWORD__` dargestellt und sind selbstständig durch sichere Passworte zu ersetzen.
+- Die Domain des Servers lautet `example.com` und ist selbstständig durch die eigene Domain zu ersetzen.
+- Der Hostname des Servers lautet `devnull` und ist selbstständig durch den eigenen Hostnamen zu ersetzen (FQDN=devnull.example.com).
+- Es wird der FQDN `devnull.example.com` verwendet und ist selbstständig im DNS zu registrieren.
 
 ## Das Referenzsystem
 
@@ -44,7 +43,6 @@ Trotzdem habe ich dieses HowTo so ausgelegt, dass es sich nahezu unverändert au
 Leider bringt Microsoft Windows keinen eigenen SSH-Client mit, so dass ich auf das sehr empfehlenswerte [PuTTY (64 Bit)](https://www.chiark.greenend.org.uk/~sgtatham/putty/){: target="_blank" rel="noopener"} zurückgreife. Zur Simulation des bei nahezu allen Anbietern dedizierter Server vorhandene Rettungssystem, nachfolgend RescueSystem genannt, wird in diesem HowTo die auf [Gentoo Linux](https://www.gentoo.org/){: target="_blank" rel="noopener"} basierende [SystemRescueCD](https://www.system-rescue.org/){: target="_blank" rel="noopener"} eingesetzt.
 
 VirtualBox und PuTTY werden mit den jeweiligen Standardoptionen installiert.
-
 
 ## Die Virtuelle Maschine
 
@@ -77,7 +75,6 @@ Die virtuelle Maschine, genauer die virtuelle Netzwerkkarte, kann dank NAT zwar 
 ```
 
 Nachdem die virtuelle Maschine nun konfiguriert ist, wird es Zeit diese zu booten.
-
 
 ## RescueSystem booten
 
@@ -116,7 +113,6 @@ Jetzt sollten wir uns mittels PuTTY als `root` in das RescueSystem einloggen und
 ``` powershell
 putty -ssh -P 2222 root@127.0.0.1
 ```
-
 
 ## Partitionieren der Festplatte
 
@@ -202,7 +198,6 @@ mdadm --create /dev/md4 --name=data --bitmap=internal --level=raid1 --raid-devic
 mdadm --create /dev/md5 --name=swap --bitmap=internal --level=raid1 --raid-devices=2 --metadata=1.2 /dev/sd[ab]5
 ```
 
-
 ## Formatieren der Partitionen
 
 Die frisch angelegten Partitionen müssen selbstverständlich noch formatiert werden. Normalerweise formatiere ich die Rootpartition mit XFS, da allerdings nicht jeder Administrator XFS für seine Rootpartition verwenden möchte, werden wir ein manuell optimiertes EXT3 anlegen. Dieses ist nötig, da die e2fsprogs bei einigen Distributionen und somit auch RescueSystemen oft veraltet oder suboptimal konfiguriert sind und daher nicht immer ein für Server optimiertes EXT3 erzeugen.
@@ -234,7 +229,6 @@ e2fsck -D /dev/md4
 mkswap -c /dev/md5
 ```
 
-
 ## Mounten der Partitionen
 
 Nun werden die Partitionen für unsere zur Installation benötigten Chroot-Umgebung gemountet und der Swapspace aktiviert.
@@ -246,7 +240,6 @@ mkdir -p /mnt/gentoo
 mount -t ext3 -o defaults,relatime,barrier=1 /dev/md3 /mnt/gentoo
 ```
 
-
 ## Entpacken des Stage-Tarballs
 
 Der Stage3-Tarball enthält ein minimalistisches Gentoo Linux Hardened, welches alle zur Installation notwendigen Tools enthält und uns als Chroot-Umgebung dient. Wir müssen nun den aktuellen Stage3-Tarball ermitteln, wozu wir die entsprechende Angabe vom [Gentoo Linux Master Mirror](https://gentoo.osuosl.org/){: target="_blank" rel="noopener"} verwenden und diese in dem folgenden zweiten wget-Aufruf entsprechend ersetzen. Den Stage3-Tarball werden wir bereits während des Download direkt nach `/mnt/gentoo` entpacken.
@@ -255,7 +248,6 @@ Der Stage3-Tarball enthält ein minimalistisches Gentoo Linux Hardened, welches 
 wget -q -O - "https://gentoo.osuosl.org/releases/amd64/autobuilds/latest-stage3-amd64-hardened+nomultilib.txt" | tail -n 1 | \
      xargs -I % wget -q -O - "https://gentoo.osuosl.org/releases/amd64/autobuilds/%" | tar xpjvf - -C /mnt/gentoo/
 ```
-
 
 ## Vorbereiten der Chroot-Umgebung
 
@@ -271,7 +263,6 @@ mount -o bind /dev/pts /mnt/gentoo/dev/pts
 mount -o bind /dev/shm /mnt/gentoo/dev/shm
 ```
 
-
 ## Betreten der Chroot-Umgebung
 
 Beim Betreten der Chroot-Umgebung setzen wir mittels `/bin/env -i` erstmal alle Environment-Variablen zurück. Andererseits benötigen wir aber die Environment-Variablen `HOME`, `TERM`, `PS1` und `PATH`, welche wir manuell auf sinnvolle Defaults setzen.
@@ -283,7 +274,6 @@ mkdir /data
 
 mount -t ext2 -o defaults,relatime /dev/md2 /boot
 ```
-
 
 ## Setup der Chroot-Umgebung
 
@@ -298,7 +288,6 @@ grep -v rootfs /proc/mounts > /etc/mtab
 env-update
 source /etc/profile
 ```
-
 
 ## Portage konfigurieren
 
@@ -345,7 +334,6 @@ Als Nächstes legen wir mittels `emerge-webrsync` den Portage-Tree an.
 emerge-webrsync
 ```
 
-
 ## Locales setzen
 
 Da das System später weltweit erreichbar sein wird und die Standardsystemsprache amerikanisch ist, werden die Locales auf `en_US.utf8` gesetzt und neu erzeugt.
@@ -369,7 +357,6 @@ locale-gen -c /etc/locale.gen
 env-update
 source /etc/profile
 ```
-
 
 ## Basissystem kompilieren
 
@@ -399,7 +386,6 @@ emerge -e -D @world
 dispatch-conf
 ```
 
-
 ## Basissystem rekompilieren
 
 Um sicherzustellen, dass das Basissystem ab diesem Punkt keine veraltete Konfiguration oder (speicheresistente) Software nutzt, wird sicherheitshalber kurz die Chroot-Umgebung verlassen und gleich wieder betreten. Im Anschluss wird das Basissystem ein zweites Mal vollständig rekompiliert, damit sichergestellt ist, dass auch wirklich jedes Paket nur noch gegen die aktuell vorhanden Libraries gelinkt ist und somit keine veralteten und/oder nicht mehr vorhandenen Funktionen nutzt.
@@ -422,7 +408,6 @@ env-update
 source /etc/profile
 ```
 
-
 ## fstab erstellen
 
 Ohne fstab wird das System später nicht booten ;-)
@@ -435,7 +420,6 @@ cat > /etc/fstab << "EOF"
 /dev/disk/by-id/md-name-swap   none       swap    sw                             0 0
 EOF
 ```
-
 
 ## OpenSSL konfigurieren
 
@@ -470,7 +454,6 @@ DH Param Files erzeugen
 openssl genpkey -genparam -algorithm DH -pkeyopt dh_paramgen_prime_len:4096 -out /etc/ssl/dh_params.pem
 openssl genpkey -genparam -algorithm EC -pkeyopt ec_paramgen_curve:secp384r1 -out /etc/ssl/ec_params.pem
 ```
-
 
 ## OpenSSH konfigurieren
 
@@ -538,7 +521,6 @@ EOF
 rc-update add sshd default
 ```
 
-
 ## Systemprogramme installieren
 
 Jetzt werden wichtige Systemprogramme installiert.
@@ -562,7 +544,6 @@ HOMEHOST <none>
 DEVICE /dev/sd*[0-9]
 EOF
 ```
-
 
 ## Netzwerk konfigurieren
 
@@ -608,7 +589,6 @@ ifconfig `ip -f inet route show scope global | awk '/default/ {print $5}'` | \
     awk '/inet/ {print $2}' | xargs -I % sed -e 's/IPADDR4/%/g' -i /etc/hosts
 ```
 
-
 ## Kernelsourcen installieren
 
 Wir installieren nun die Gentoo Linux Hardened Kernelsourcen und das Gentoo Linux Tool `genkernel` zum automatisierten Erstellen des Kernel und des zugehörigen Initramfs.
@@ -643,7 +623,6 @@ sed -e 's/^#\(SYMLINK=\).*$/\1"no"/' \
     -i /etc/genkernel.conf
 ```
 
-
 ## Kernelsourcen konfigurieren
 
 ``` bash
@@ -656,7 +635,6 @@ make mrproper
 cp /root/kernels/MYKERNEL /usr/src/linux/.config
 make oldconfig
 ```
-
 
 ## Kernelsourcen kompilieren
 
@@ -672,7 +650,6 @@ cd /root
 
 genkernel --kernel-config=/root/kernels/MYKERNEL --no-ramdisk-modules --mdadm --install initramfs
 ```
-
 
 ## Bootloader installieren
 
@@ -702,7 +679,6 @@ grub-install --grub-setup=/bin/true /dev/sdb
 grub-install --grub-setup=/bin/true /dev/sda
 ```
 
-
 ## Bootloader konfigurieren
 
 Grub muss noch konfiguriert werden.
@@ -710,7 +686,6 @@ Grub muss noch konfiguriert werden.
 ``` bash
 grub-mkconfig -o /boot/grub/grub.cfg
 ```
-
 
 ## Systemtools installieren
 
@@ -725,7 +700,6 @@ EOF
 
 emerge gradm app-crypt/gnupg bind-tools ntp smartmontools
 ```
-
 
 ## Systemtools konfigurieren
 
@@ -743,7 +717,6 @@ echo '/dev/sda -a -o on -S on -s (S/../.././02|L/../../6/03)' >> /etc/smartd.con
 echo '/dev/sdb -a -o on -S on -s (S/../.././02|L/../../6/03)' >> /etc/smartd.conf
 ```
 
-
 ## sysctl.conf einrichten
 
 Mit diesem `sed` werden ein paar Kernelparameter für die Netzwersicherheit gesetzt.
@@ -752,7 +725,6 @@ Mit diesem `sed` werden ein paar Kernelparameter für die Netzwersicherheit gese
 sed -e 's/^#net.ipv4/net.ipv4/g' -i /etc/sysctl.conf
 ```
 
-
 ## Root-Passwort setzen
 
 Das Passwort für root sollte mindestens 8 Zeichen lang sein und neben Gross/Klein-Schreibung auch Ziffern und/oder Sonderzeichen enthalten.
@@ -760,7 +732,6 @@ Das Passwort für root sollte mindestens 8 Zeichen lang sein und neben Gross/Kle
 ``` bash
 passwd root
 ```
-
 
 ## Arbeitsuser anlegen
 
@@ -772,7 +743,6 @@ useradd -u 1000 -g admin -G users,wheel -c 'Administrator' -m -s /bin/bash admin
 
 passwd admin
 ```
-
 
 ## SSH-Keys installieren
 
@@ -798,7 +768,6 @@ pscp -P 2222 -r root@127.0.0.1:/mnt/gentoo/home/admin/.ssh "%USERPROFILE%\Virtua
 
 puttygen "%USERPROFILE%\VirtualBox VMs\Gentoo\ssh\id_rsa"
 ```
-
 
 ## Reboot ins neue System
 
@@ -836,7 +805,6 @@ emerge -e -D @world
 
 dispatch-conf
 ```
-
 
 ## Wie geht es weiter?
 

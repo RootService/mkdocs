@@ -20,8 +20,7 @@ Zu den Voraussetzungen für dieses HowTo siehe bitte: [Voraussetzungen](/howtos/
 
 Unser WebHosting System wird um folgende Dienste erweitert.
 
--   NGinx 1.14.0 (HTTP/2, mod_brotli)
-
+- NGinx 1.14.0 (HTTP/2, mod_brotli)
 
 ## Installation
 
@@ -155,7 +154,6 @@ cat >> /usr/local/etc/newsyslog.conf.d/nginx << "EOF"
 /data/www/vhosts/*/logs/nginx_*_log     644  24    *    $M1D0 JCG   /var/run/nginx.pid
 "EOF"
 ```
-
 
 ## Konfiguration
 
@@ -498,7 +496,6 @@ cat > /usr/local/etc/nginx/headers.conf << "EOF"
 #        add_header  P3P  "policyref=\"/w3c/p3p.xml\", CP=\"IDC DSP COR ADM DEVi TAIi PSA PSD IVAi IVDi CONi HIS OUR IND CNT\"";
 "EOF"
 ```
-
 
 ## Abschluss
 

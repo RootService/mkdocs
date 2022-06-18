@@ -28,18 +28,15 @@ In Verbindung mit Ihrem Zugriff werden auf unseren Servern Daten für Sicherungs
 
 IP-Adressen, Datum, Urzeit und betrachtete Seiten speichern wir über einen längeren Zeitraum. Die Speicherung erfolgt aus Gründen der Datensicherheit, sowie um die Stabilität und die Betriebssicherheit unserer Systeme zu gewährleisten.
 
-
 ## Weitergabe personenbezogener Informationen an Dritte
 
 Wir verwenden Ihre personenbezogenen Informationen nur innerhalb unserer Systeme und Prozesse sowie der gegebenfalls damit verbundenen Unternehmen. Wir geben sie nicht ohne Ihr ausdrückliches Einverständnis an Dritte weiter. Sollten im Rahmen der Auftragsdatenverarbeitung Daten an Dienstleister weitergegeben werden, so sind diese an das BDSG, andere gesetzliche Vorschriften und vertraglich an unsere Privacy Policy gebunden. Soweit wir gesetzlich oder per Gerichtsbeschluss dazu verpflichtet sind, werden wir Ihre Daten an auskunftsberechtigte Stellen übermitteln.
 
 Die Beiträge in unseren Diskussionsforen, Wikis, Blogs und anderen Bereichen unserer Webseite sind für jede Person weltweit zugänglich. Sie sollten Ihre Beiträge vor der Veröffentlichung sorgfältig darauf überprüfen, ob sie Angaben enthalten, die nicht für die Öffentlichkeit bestimmt sind. Sie müssen damit rechnen, dass Ihre Beiträge in Suchmaschinen erfasst und auch ohne gezielten Aufruf unseres Angebotes weltweit abrufbar werden. Die Löschung oder Korrektur solcher Einträge lässt sich insbesondere bei ausländischen Betreibern häufig nicht durchsetzen. Weiterhin besteht kein Anspruch auf Löschung dieser Daten gegenüber uns.
 
-
 ## Recht auf Widerruf
 
 Wenn Sie uns personenbezogene Daten überlassen haben, können Sie diese jederzeit wieder bei uns löschen lassen. Daten für Abrechnungs- und buchhalterische Zwecke sind von einer Kündigung beziehungsweise von einer Löschung nicht berührt.
-
 
 ## Cookies und Javascript
 
@@ -51,21 +48,17 @@ In einigen Bereichen unseres Angebots verwenden wir Javascript oder Cookies, um 
 
 Eine Nutzung unseres Angebotes ist auch ohne Cookies und Javascript möglich, jedoch mit kleinen bis erheblichen Einschränkungen. Die meisten Browser sind so eingestellt, dass sie Cookies und Javascript automatisch akzeptieren. Sie können das Speichern von Cookies oder Ausführen von Javascript jedoch deaktivieren oder Ihren Browser so einstellen, dass er Sie benachrichtigt, sobald Cookies gesendet oder Javascript verwendet werden sollen.
 
-
 ## Kinder
 
 Personen unter 18 Jahren sollten ohne Zustimmung der Eltern oder Erziehungsberechtigten keine personenbezogenen Daten an uns übermitteln.
-
 
 ## Links zu anderen Webseites
 
 Unser Online-Angebot enthält Links zu anderen Webseites. Wir haben keinen Einfluss darauf, dass deren Betreiber die jeweils gültigen Datenschutzbestimmungen, andere Bestimmungen und Gesetze einhalten.
 
-
 ## Fragen und Kommentare
 
 Für Fragen, Anregungen oder Kommentare zum Thema Datenschutz wenden Sie sich bitte per E-Mail an «joeuser[at]rootservice.org».
-
 
 ## Aktueller Stand
 

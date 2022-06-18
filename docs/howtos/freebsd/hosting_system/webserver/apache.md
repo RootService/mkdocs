@@ -20,8 +20,7 @@ Zu den Voraussetzungen für dieses HowTo siehe bitte: [Voraussetzungen](/howtos/
 
 Unser WebHosting System wird um folgende Dienste erweitert.
 
--   Apache 2.4.46 (MPM-Event, HTTP/2, mod_brotli)
-
+- Apache 2.4.46 (MPM-Event, HTTP/2, mod_brotli)
 
 ## Installation
 
@@ -183,7 +182,6 @@ cat >> /usr/local/etc/newsyslog.conf.d/apache24 << "EOF"
 /data/www/vhosts/*/logs/apache_*_log    644  24    *    $M1D0 JCG   /var/run/httpd.pid
 "EOF"
 ```
-
 
 ## Konfiguration
 
@@ -903,7 +901,6 @@ cat > /usr/local/etc/apache24/vhosts-ssl.conf << "EOF"
 </VirtualHost>
 "EOF"
 ```
-
 
 ## Abschluss
 

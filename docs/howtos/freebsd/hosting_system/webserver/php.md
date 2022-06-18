@@ -18,8 +18,7 @@ Zu den Voraussetzungen für dieses HowTo siehe bitte: [Voraussetzungen](/howtos/
 
 Unser WebHosting System wird folgende Dienste umfassen.
 
--   PHP 8.0.2 (PHP-FPM, Composer, PEAR)
-
+- PHP 8.0.2 (PHP-FPM, Composer, PEAR)
 
 ## Installation
 
@@ -56,7 +55,6 @@ make all install clean-depends clean
 
 echo 'php_fpm_enable="YES"' >> /etc/rc.conf
 ```
-
 
 ## PHP-Extensions installieren
 
@@ -265,7 +263,6 @@ cd /usr/ports/lang/php80-extensions
 make all install clean-depends clean
 ```
 
-
 ## Konfiguration
 
 Die Konfiguration entspricht weitestgehend den Empfehlungen der PHP-Entwickler und ist sowohl auf Security als auch auf Performance getrimmt.
@@ -377,7 +374,6 @@ chmod 0664 /var/log/php_{error,opcache,sendmail}.log
 chown root:www /var/log/php_{error,opcache,sendmail}.log
 ```
 
-
 ## PHP Composer installieren
 
 Wir installieren `devel/php-composer2` und dessen Abhängigkeiten.
@@ -387,7 +383,6 @@ cd /usr/ports/devel/php-composer2
 make all install clean-depends clean
 ```
 
-
 ## PHP-PEAR installieren
 
 Wir installieren `devel/pear` und dessen Abhängigkeiten.
@@ -396,7 +391,6 @@ Wir installieren `devel/pear` und dessen Abhängigkeiten.
 cd /usr/ports/devel/pear
 make all install clean-depends clean
 ```
-
 
 ## Abschluss
 

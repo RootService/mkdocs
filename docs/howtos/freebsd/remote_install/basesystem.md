@@ -24,11 +24,10 @@ Zu den Voraussetzungen für dieses HowTo siehe bitte: [Voraussetzungen](/howtos/
 
 Unser BaseSystem wird folgende Dienste umfassen.
 
--   FreeBSD 12.2-RELEASE 64Bit
--   OpenSSL 1.1.1
--   OpenSSH 7.8
--   Unbound 1.8.1
-
+- FreeBSD 12.2-RELEASE 64Bit
+- OpenSSL 1.1.1
+- OpenSSH 7.8
+- Unbound 1.8.1
 
 ## RescueSystem booten
 
@@ -72,7 +71,6 @@ Jetzt sollten wir uns mittels PuTTY als `root` in das RescueSystem einloggen und
 putty -ssh -P 2222 root@127.0.0.1
 ```
 
-
 ## mfsBSD installieren
 
 Um unsere umfangreichen Vorbereitungen nun abzuschliessen, müssen wir nur noch unser [mfsBSD Image](/howtos/freebsd/mfsbsd_image/) installieren und booten.
@@ -101,7 +99,6 @@ Abschliessend stoppen wir die virtuelle Maschine vorübergehend und entfernen di
 "%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe" storageattach "FreeBSD" --storagectl "IDE Controller" --port 0 --device 0 --type dvddrive --medium emptydrive
 ```
 
-
 ## FreeBSD installieren
 
 Nachdem nun alle Vorbereitungen abgeschlossen sind, können wir endlich mit der eigentlichen FreeBSD Remote Installation beginnen, indem wir die virtuelle Maschine wieder booten.
@@ -115,7 +112,6 @@ Jetzt sollten wir uns mittels PuTTY als `root` mit dem Passwort `mfsroot` in das
 ``` powershell
 putty -ssh -P 2222 root@127.0.0.1
 ```
-
 
 ## Partitionieren der Festplatte
 
@@ -168,7 +164,6 @@ gmirror label -b load data ada0p3 ada1p3
 gmirror label -b prefer -F swap ada0p4 ada1p4
 ```
 
-
 ## Formatieren der Partitionen
 
 Nun müssen wir noch die Systempartition und die Partition für die Nutzdaten mit "UFS2" und einer 4K-Blockgrösse formatieren und aktivieren auch gleich die "soft-updates".
@@ -187,7 +182,6 @@ tunefs -l enable /dev/mirror/root
 tunefs -l enable /dev/mirror/data
 ```
 
-
 ## Mounten der Partitionen
 
 Die Partitionen mounten wir unterhalb von `/mnt`.
@@ -197,7 +191,6 @@ mount -t ufs /dev/mirror/root /mnt
 mkdir -p /mnt/data
 mount -t ufs /dev/mirror/data /mnt/data
 ```
-
 
 ## Installation der Chroot-Umgebung
 
@@ -220,7 +213,6 @@ gpart set -a bootme -i 2 ada0
 gpart set -a bootme -i 2 ada1
 ```
 
-
 ## Vorbereiten der Chroot-Umgebung
 
 Vor dem Wechsel in die Chroot-Umgebung müssen wir noch die `resolv.conf` in die Chroot-Umgebung kopieren und das Device-Filesysteme dorthin mounten.
@@ -230,7 +222,6 @@ cp /etc/resolv.conf /mnt/etc/resolv.conf
 
 mount -t devfs devfs /mnt/dev
 ```
-
 
 ## Betreten der Chroot-Umgebung
 
@@ -243,7 +234,6 @@ chroot /mnt /usr/bin/env -i HOME=/root TERM=$TERM /bin/tcsh
 
 cd /root
 ```
-
 
 ## Zeitzone einrichten
 
@@ -260,7 +250,6 @@ cat >> /etc/crontab << "EOF"
 59      */4     *       *       *       root    /usr/sbin/sntp -S ptbtime3.ptb.de >/dev/null 2>&1
 "EOF"
 ```
-
 
 ## Locale einrichten
 
@@ -290,7 +279,6 @@ LC_MESSAGES="en_US.UTF-8"
 LC_ALL=
 ```
 
-
 ## Shell einrichten
 
 Unter FreeBSD ist die Tenex C Shell (TCSH) die Standard-Shell. Für Bash-gewohnte Linux-User ist diese Shell etwas gewöhnungsbedürftig, und natürlich kann man sie später auch gegen eine andere Shell austauschen (im Basis-System ist neben der TCSH auch eine ASH enthalten). Skripte würde ich persönlich für die TCSH eher nicht schreiben, aber für die tägliche Administrationsarbeit ist die TCSH ein sehr brauchbares Werkzeug – wenn man sie erst mal etwas umkonfiguriert hat. Dies tun wir jetzt.
@@ -315,11 +303,9 @@ cp /root/.cshrc /.cshrc
 chsh -s /bin/tcsh root
 ```
 
-
 ## Systemsicherheit verstärken
 
 Die hier vorgestellten Massnahmen sind äusserst simple Basics, die aus Hygienegründen auf jedem FreeBSD System selbstverständlich sein sollten. Um ein FreeBSD System richtig zu härten (Hardened), kommt man jedoch nicht an komplexeren Methoden wie Security Event Auditing und Mandatory Access Control vorbei. Diese Themen werden im FreeBSD Handbuch recht ausführlich besprochen; für den Einstieg empfehle ich hier die Lektüre von [Chapter 13. Security](https://www.freebsd.org/doc/handbook/security.html){: target="_blank" rel="noopener"}, für die weiterführenden Themen die [Chapter 15. Mandatory Access Control](https://www.freebsd.org/doc/handbook/mac.html){: target="_blank" rel="noopener"} und [Chapter 16. Security Event Auditing](https://www.freebsd.org/doc/handbook/audit.html){: target="_blank" rel="noopener"}.
-
 
 ### OpenSSH konfigurieren
 
@@ -397,7 +383,6 @@ cat .ssh/id_ecdsa.pub >> .ssh/authorized_keys
 ssh-keygen -t rsa -b 4096 -O clear -O permit-pty -f ".ssh/id_rsa" -N ""
 cat .ssh/id_rsa.pub >> .ssh/authorized_keys
 ```
-
 
 ### /etc/sysctl.conf anpassen
 
@@ -482,7 +467,6 @@ vfs.zfs.min_auto_ashift=12
 "EOF"
 ```
 
-
 ### Stärkere Passwort-Hashes verwenden
 
 Um Bruteforce-Attacken erheblich auszubremsen setzen wir für die Passworte der Systemuser eine Mindestlänge (minpasswordlen) von 12 Zeichen in einem Mix aus Gross- und Kleinschreibung (mixpasswordcase) fest. Desweiteren lassen wir User nach 30 Minuten Inaktivität automatisch ausloggen (idletime). Wir bearbeiten hierzu mit dem Editor `ee` (`ee /etc/login.conf`) in der Datei `/etc/login.conf` die Login-Klasse `default`, indem wir vor der letzten Zeile folgende Zeilen hinzufügen.
@@ -505,7 +489,6 @@ Die neuen Einstellungen werden erst wirksam, wenn das Passwort eines Benutzers g
 passwd root
 ```
 
-
 ### Terminals absichern
 
 Um zu verhindern, dass das System im Single User Mode ohne jeglichen Schutz benutzbar ist, ändern wir in der Datei `/etc/ttys` die Zeile `console none...` wie folgt ab.
@@ -523,7 +506,6 @@ P|Pc|Pc console:\
         :ht:np:sp#115200:\
         :cl=\E[H\E[2J:
 ```
-
 
 ## System konfigurieren
 
@@ -725,7 +707,6 @@ ifconfig `route -n get -inet6 default | awk '/interface/ {print $2}'` inet6 | \
     xargs -I % sed -e 's/IPADDR6/%/g' -i '' /etc/hosts
 ```
 
-
 ### Systemgruppen anlegen
 
 Zur besseren Trennung beziehungsweise Gruppierung unterschiedlicher Nutzungszwecke legen wir ein paar Gruppen an (admin für rein administrative Nutzer, users für normale Nutzer, sshusers für Nutzer mit SSH-Zugang und sftponly für reine SFTP-Nutzer).
@@ -736,7 +717,6 @@ pw groupadd -n users -g 2000
 pw groupadd -n sshusers -g 3000
 pw groupadd -n sftponly -g 4000
 ```
-
 
 ### Systembenutzer anlegen
 
@@ -801,7 +781,6 @@ cat .ssh/id_rsa.pub >> .ssh/authorized_keys
 
 exit
 ```
-
 
 ## Buildsystem konfigurieren
 
@@ -885,7 +864,6 @@ WITHOUT_WIRELESS=YES
 "EOF"
 ```
 
-
 ## Kernel konfigurieren
 
 ``` bash
@@ -959,7 +937,6 @@ net.link.ifqmaxlen=1024
 "EOF"
 ```
 
-
 ## Abschluss der Installation
 
 Um uns künftig mit unserem Arbeitsuser einloggen zu können, müssen wir uns dessen SSH-Key (id_rsa) auf unser lokales System kopieren und ihn dann mit Hilfe der [PuTTYgen Dokumentation](https://the.earth.li/~sgtatham/putty/latest/htmldoc/Chapter8.html){: target="_blank" rel="noopener"} in einen für PuTTY lesbaren Private Key umwandeln (id_rsa.ppk).
@@ -985,7 +962,6 @@ umount /mnt
 shutdown -r now
 ```
 
-
 ### Einloggen und zu *root* werden
 
 ``` powershell
@@ -996,11 +972,9 @@ putty -ssh -P 2222 -i "%USERPROFILE%\VirtualBox VMs\FreeBSD\ssh\id_rsa.ppk" admi
 su - root
 ```
 
-
 ## System aktualisieren
 
 Nach dem Reboot aktualisieren und entschlacken wir das System.
-
 
 ### Source Tree auschecken
 
@@ -1020,13 +994,11 @@ cd /usr/src && svnlite update
 #cd /usr/src && svnlite switch svn://svn.freebsd.org/base/stable/12
 ```
 
-
 ### Konfiguration anpassen
 
 In den Abschnitten [Buildsystem konfigurieren](#buildsystem-konfigurieren) und [Kernel konfigurieren](#kernel-konfigurieren) haben wir uns bereits eine geeignete `make.conf` und gegebenenfalls auch eine individuelle Kernel-Konfiguration erstellt. Dennoch sei an dieser Stelle nochmals auf das FreeBSD Handbuch verwiesen. Insbesondere [Chapter 8. Configuring the FreeBSD Kernel](https://www.freebsd.org/doc/handbook/kernelconfig.html){: target="_blank" rel="noopener"} (Kernel selbst erstellen) und [23.5. Updating FreeBSD from Source](https://www.freebsd.org/doc/handbook/makeworld.html){: target="_blank" rel="noopener"} (Basissystem komplett aktualisieren) seien Jedem FreeBSD Administratoren ans Herz gelegt.
 
 Ausserdem empfiehlt es sich vor einem Update des Basissystems die Datei `/usr/src/UPDATING` zu lesen. Alle Angaben und Hinweise in dieser Datei sind aktueller und zutreffender als das Handbuch und sollten unbedingt befolgt werden.
-
 
 ### Vorbereitende Arbeiten
 
@@ -1053,7 +1025,6 @@ Ausserdem sollte [mergemaster](https://www.freebsd.org/cgi/man.cgi?query=mergema
 /usr/src/usr.sbin/mergemaster/mergemaster.sh -p
 ```
 
-
 ### Basissystem rekompilieren
 
 Das Kompilieren des Basissystems kann durchaus eine Stunde oder länger dauern.
@@ -1061,7 +1032,6 @@ Das Kompilieren des Basissystems kann durchaus eine Stunde oder länger dauern.
 ``` bash
 make -j2 buildworld
 ```
-
 
 ### Kernel rekompilieren und installieren
 
@@ -1094,7 +1064,6 @@ putty -ssh -P 2222 -i "%USERPROFILE%\VirtualBox VMs\FreeBSD\ssh\id_rsa.ppk" admi
 ``` bash
 su - root
 ```
-
 
 ### Basissystem installieren
 

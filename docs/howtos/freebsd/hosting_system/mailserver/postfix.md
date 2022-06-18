@@ -20,9 +20,8 @@ Zu den Voraussetzungen für dieses HowTo siehe bitte: [Voraussetzungen](/howtos/
 
 Unser WebHosting System wird um folgende Dienste erweitert.
 
--   Postfix 3.5.9 (Dovecot-SASL, postscreen)
--   Python-SPF-Engine 2.9.2 (SPF2)
-
+- Postfix 3.5.9 (Dovecot-SASL, postscreen)
+- Python-SPF-Engine 2.9.2 (SPF2)
 
 ## Installation
 
@@ -87,7 +86,6 @@ echo 'postfix_enable="YES"' >> /etc/rc.conf
 ```
 
 Wir wollen Postfix in der `/etc/mail/mailer.conf` aktivieren.
-
 
 ## Konfiguration
 
@@ -467,7 +465,6 @@ chmod 0750 /data/vmail
 chown vmail:vmail /data/vmail
 ```
 
-
 ## Python-SPF-Engine
 
 Wir installieren `mail/py-spf-engine` und dessen Abhängigkeiten.
@@ -512,7 +509,6 @@ Es muss noch ein DNS-Record angelegt werden, sofern er noch nicht existieren, od
 ``` dns-zone
 example.com.            IN  TXT     ( "v=spf1 a mx -all" )
 ```
-
 
 ## Abschluss
 

@@ -18,9 +18,8 @@ Zu den Voraussetzungen für dieses HowTo siehe bitte: [Voraussetzungen](/howtos/
 
 Unser WebHosting System wird folgende Dienste umfassen.
 
--   CertBot 1.11.0 (LetsEncrypt ACME API 2.0)
--   CertBot Wrapper 0.3.0 (LetsEncrypt API 2.0)
-
+- CertBot 1.11.0 (LetsEncrypt ACME API 2.0)
+- CertBot Wrapper 0.3.0 (LetsEncrypt API 2.0)
 
 ## Installation
 
@@ -39,11 +38,9 @@ cd /usr/ports/security/py-certbot
 make all install clean-depends clean
 ```
 
-
 ## Konfiguration
 
 Die Konfiguration des CertBot erfolgt mittels des CertBot Wrapper welchen wir nun installieren.
-
 
 ## CertBot Wrapper
 
@@ -136,7 +133,6 @@ Abschliessend müssen wir noch den Cronjob aus [Certificate Authority](/howtos/f
 ``` bash
 sed '/update-crls-chains/d' -i '' /etc/crontab
 ```
-
 
 ## Abschluss
 

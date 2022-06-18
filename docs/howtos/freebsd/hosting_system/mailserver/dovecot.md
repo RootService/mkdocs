@@ -20,8 +20,7 @@ Zu den Voraussetzungen für dieses HowTo siehe bitte: [Voraussetzungen](/howtos/
 
 Unser WebHosting System wird um folgende Dienste erweitert.
 
--   Dovecot 2.3.13 (IMAP only, 1GB Quota)
-
+- Dovecot 2.3.13 (IMAP only, 1GB Quota)
 
 ## Installation
 
@@ -60,7 +59,6 @@ make all install clean-depends clean
 
 echo 'dovecot_enable="YES"' >> /etc/rc.conf
 ```
-
 
 ## Konfiguration
 
@@ -220,7 +218,6 @@ chmod 0755 /usr/local/etc/dovecot/create_mailuser.sh
 # admin@example.com anlegen
 /usr/local/etc/dovecot/create_mailuser.sh admin@example.com
 ```
-
 
 ## Abschluss
 

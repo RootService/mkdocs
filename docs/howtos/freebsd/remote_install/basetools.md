@@ -24,17 +24,16 @@ Zu den Voraussetzungen für dieses HowTo siehe bitte: [Voraussetzungen](/howtos/
 
 Unsere BaseTools werden am Ende folgende Dienste umfassen.
 
--   cURL 7.75.0
--   Portmaster 3.19
--   SMARTmontools 7.2
--   Bash 5.1.4
--   Nano 5.5
--   w3m 0.5.3
--   GnuPG 2.2.27
--   GDBM 1.19
--   SVN 1.14.1
--   GIT 2.30.1
-
+- cURL 7.75.0
+- Portmaster 3.19
+- SMARTmontools 7.2
+- Bash 5.1.4
+- Nano 5.5
+- w3m 0.5.3
+- GnuPG 2.2.27
+- GDBM 1.19
+- SVN 1.14.1
+- GIT 2.30.1
 
 ## Einloggen und zu root werden
 
@@ -45,7 +44,6 @@ putty -ssh -P 2222 -i "%USERPROFILE%\VirtualBox VMs\FreeBSD\ssh\id_rsa.ppk" admi
 ``` bash
 su - root
 ```
-
 
 ## Software installieren
 
@@ -420,9 +418,7 @@ cd /usr/ports/devel/git
 make all install clean-depends clean
 ```
 
-
 Wenn wir ein Programm nicht kennen, dann finden wir zu jedem Port eine Datei `pkg-descr`, die eine kurze Beschreibung sowie (meistens) einen Link zur Projekt-Homepage der Software enthält. Für `smartmontools` zum Beispiel würden wir die Beschreibung unter `/usr/ports/sysutils/smartmontools/pkg-descr` finden.
-
 
 ## Software updaten
 
@@ -430,11 +426,11 @@ Wenn wir ein Programm nicht kennen, dann finden wir zu jedem Port eine Datei `pk
 
     Da wir die Pakete/Ports nicht als vorkompilierte Binary-Pakete installieren sondern selbst kompilieren, müssen wir natürlich auch die Updates der Ports selbst kompilieren. Um uns das dazu notwendige Auflösen der Abhängigkeiten und etwas Tipparbeit zu ersparen, überlassen wir dies künftig einfach einem kleinen Shell-Script. Dieses Script können wir einfach mittels `update-ports` ausführen und es erledigt dann folgende Arbeiten für uns:
 
--   Aktualisieren des Portstree mittels `portsnap`
--   Anzeigen neuer Einträge in `/usr/ports/UPDATING`
--   Ermitteln der zu aktualisierenden Ports und deren Abhängigkeiten
--   Aktualisieren der Ports und Abhängigkeiten mittels portmaster
--   Aufräumen des Portstree und der Distfiles mittels portmaster
+- Aktualisieren des Portstree mittels `portsnap`
+- Anzeigen neuer Einträge in `/usr/ports/UPDATING`
+- Ermitteln der zu aktualisierenden Ports und deren Abhängigkeiten
+- Aktualisieren der Ports und Abhängigkeiten mittels portmaster
+- Aufräumen des Portstree und der Distfiles mittels portmaster
 
 ``` bash
 cat > /usr/local/sbin/update-ports << "EOF"
@@ -472,7 +468,6 @@ exit 0
 
 chmod 0755 /usr/local/sbin/update-ports
 ```
-
 
 ## Wie geht es weiter?
 

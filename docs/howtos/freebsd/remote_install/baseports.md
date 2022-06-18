@@ -24,16 +24,15 @@ Zu den Voraussetzungen für dieses HowTo siehe bitte: [Voraussetzungen](/howtos/
 
 Unsere BasePorts werden am Ende folgende Dienste umfassen.
 
--   Perl 5.32.1
--   OpenSSL 1.1.1
--   LUA 5.2.4
--   TCL 8.6.11
--   SQLite 3.34.1
--   Python 3.7.10
--   Berkeley DB 5.3.28
--   Ruby 2.7.2
--   SUDO 1.9.5
-
+- Perl 5.32.1
+- OpenSSL 1.1.1
+- LUA 5.2.4
+- TCL 8.6.11
+- SQLite 3.34.1
+- Python 3.7.10
+- Berkeley DB 5.3.28
+- Ruby 2.7.2
+- SUDO 1.9.5
 
 ## Einloggen und zu *root* werden
 
@@ -44,7 +43,6 @@ putty -ssh -P 2222 -i "%USERPROFILE%\VirtualBox VMs\FreeBSD\ssh\id_rsa.ppk" admi
 ``` bash
 su - root
 ```
-
 
 ## Portstree einrichten
 
@@ -65,7 +63,6 @@ Wichtige Informationen zu neuen Paketversionen finden sich in `/usr/ports/UPDATI
 ``` bash
 less /usr/ports/UPDATING
 ```
-
 
 ## Software installieren
 
@@ -475,7 +472,6 @@ OPTIONS_FILE_UNSET+=GSSAPI_MIT
 cd /usr/ports/security/sudo
 make all install clean-depends clean
 ```
-
 
 ## Wie geht es weiter?
 

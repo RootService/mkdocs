@@ -21,8 +21,7 @@ Zu den Voraussetzungen für dieses HowTo siehe bitte: [Voraussetzungen](/howtos/
 
 Unser WebHosting System wird um folgende Dienste erweitert.
 
--   MySQL 8.0.23 (InnoDB, GTID)
-
+- MySQL 8.0.23 (InnoDB, GTID)
 
 ## Installation
 
@@ -128,7 +127,6 @@ echo 'mysql_dbdir="/data/db/mysql"' >> /etc/rc.conf
 echo 'mysql_optfile="/usr/local/etc/mysql/my.cnf"' >> /etc/rc.conf
 ```
 
-
 ## Konfiguration
 
 ???+ note
@@ -221,7 +219,6 @@ quick
 "EOF"
 ```
 
-
 ## Sicherheit
 
 MySQL wird nun zum ersten Mal gestartet, was durch das Erzeugen der InnoDB-Files einige Minuten dauern kann.
@@ -254,7 +251,6 @@ GRANT ALL PRIVILEGES ON *.* TO 'root'@'::1' WITH GRANT OPTION;
 FLUSH PRIVILEGES;
 QUIT;
 ```
-
 
 ## Abschluss
 

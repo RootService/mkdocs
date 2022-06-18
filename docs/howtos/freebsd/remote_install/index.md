@@ -18,54 +18,52 @@ Die Installation des FreeBSD BaseSystem setzt ein wie in [mfsBSD Image](/howtos/
 
 Unser BaseSystem wird am Ende folgende Dienste umfassen.
 
--   FreeBSD 12.2-RELEASE 64Bit
--   OpenSSL 1.1.1
--   OpenSSH 7.9
--   Unbound 1.10.1
+- FreeBSD 12.2-RELEASE 64Bit
+- OpenSSL 1.1.1
+- OpenSSH 7.9
+- Unbound 1.10.1
 
 Unsere BasePorts werden am Ende folgende Dienste umfassen.
 
--   Perl 5.32.1
--   OpenSSL 1.1.1
--   LUA 5.2.4
--   TCL 8.6.11
--   SQLite 3.34.1
--   Python 3.7.9
--   Berkeley DB 5.3.28
--   Ruby 2.7.2
--   SUDO 1.9.5
+- Perl 5.32.1
+- OpenSSL 1.1.1
+- LUA 5.2.4
+- TCL 8.6.11
+- SQLite 3.34.1
+- Python 3.7.9
+- Berkeley DB 5.3.28
+- Ruby 2.7.2
+- SUDO 1.9.5
 
 Unsere BaseTools werden am Ende folgende Dienste umfassen.
 
--   cURL 7.75.0
--   Portmaster 3.19
--   SMARTmontools 7.2
--   Bash 5.1.4
--   Nano 5.5
--   w3m 0.5.3
--   GnuPG 2.2.27
--   GDBM 1.19
--   SVN 1.14.0
--   GIT 2.30.1
+- cURL 7.75.0
+- Portmaster 3.19
+- SMARTmontools 7.2
+- Bash 5.1.4
+- Nano 5.5
+- w3m 0.5.3
+- GnuPG 2.2.27
+- GDBM 1.19
+- SVN 1.14.0
+- GIT 2.30.1
 
 Folgende Punkte sind in allen folgenden HowTos zu beachten.
 
--   Alle Dienste werden mit einem möglichst minimalen und bewährten Funktionsumfang installiert.
--   Alle Dienste werden mit einer möglichst sicheren und dennoch flexiblen Konfiguration versehen.
--   Alle Konfigurationen sind selbstständig auf notwendige individuelle Anpassungen zu kontrollieren.
--   Alle Benutzernamen werden als `__USERNAME__` dargestellt und sind selbstständig passend zu ersetzen.
--   Alle Passworte werden als `__PASSWORD__` dargestellt und sind selbstständig durch sichere Passworte zu ersetzen.
--   Die Domain des Servers lautet `example.com` und ist selbstständig durch die eigene Domain zu ersetzen.
--   Der Hostname des Servers lautet `devnull` und ist selbstständig durch den eigenen Hostnamen zu ersetzen (FQDN=devnull.example.com).
--   Es wird der FQDN `devnull.example.com` verwendet und ist selbstständig im DNS zu registrieren.
--   Die primäre IPv4 Adresse des Systems wird als `__IPV4ADDR__` dargestellt und ist selbsttändig zu ersetzen.
--   Die primäre IPv6 Adresse des Systems wird als `__IPV6ADDR__` dargestellt und ist selbsttändig zu ersetzen.
-
+- Alle Dienste werden mit einem möglichst minimalen und bewährten Funktionsumfang installiert.
+- Alle Dienste werden mit einer möglichst sicheren und dennoch flexiblen Konfiguration versehen.
+- Alle Konfigurationen sind selbstständig auf notwendige individuelle Anpassungen zu kontrollieren.
+- Alle Benutzernamen werden als `__USERNAME__` dargestellt und sind selbstständig passend zu ersetzen.
+- Alle Passworte werden als `__PASSWORD__` dargestellt und sind selbstständig durch sichere Passworte zu ersetzen.
+- Die Domain des Servers lautet `example.com` und ist selbstständig durch die eigene Domain zu ersetzen.
+- Der Hostname des Servers lautet `devnull` und ist selbstständig durch den eigenen Hostnamen zu ersetzen (FQDN=devnull.example.com).
+- Es wird der FQDN `devnull.example.com` verwendet und ist selbstständig im DNS zu registrieren.
+- Die primäre IPv4 Adresse des Systems wird als `__IPV4ADDR__` dargestellt und ist selbsttändig zu ersetzen.
+- Die primäre IPv6 Adresse des Systems wird als `__IPV6ADDR__` dargestellt und ist selbsttändig zu ersetzen.
 
 ## Vorbereitungen
 
 Die Installation des FreeBSD BaseSystem setzt ein wie in [mfsBSD Image](/howtos/freebsd/mfsbsd_image/) beschriebenes, bereits fertig erstelltes mfsBSD Image voraus.
-
 
 ## DNS Records
 
@@ -79,7 +77,6 @@ devnull.example.com.    IN  A       __IPV4ADDR__
 devnull.example.com.    IN  AAAA    __IPV6ADDR__
 ```
 
-
 ## Das Referenzsystem
 
 Als Referenzsystem für dieses HowTo habe ich mich für eine virtuelle Maschine auf Basis von [Oracle VM VirtualBox](https://www.virtualbox.org/){: target="_blank" rel="noopener"} unter [Microsoft Windows 10 Professional (64 Bit)](https://support.microsoft.com/products/windows){: target="_blank" rel="noopener"} entschieden. So lässt sich ohne grösseren Aufwand ein handelsüblicher dedizierter Server simulieren und anschliessend kann diese virtuelle Maschine als kostengünstiges lokales Testsystem weiter genutzt werden.
@@ -89,7 +86,6 @@ Trotzdem habe ich dieses HowTo so ausgelegt, dass es sich nahezu unverändert au
 Leider bringt Microsoft Windows keinen eigenen SSH-Client mit, so dass ich auf das sehr empfehlenswerte [PuTTY (64 Bit)](https://www.chiark.greenend.org.uk/~sgtatham/putty/){: target="_blank" rel="noopener"} zurückgreife. Zur Simulation des bei nahezu allen Anbietern dedizierter Server vorhandene Rettungssystem, nachfolgend RescueSystem genannt, wird in diesem HowTo die auf [Gentoo Linux](https://www.gentoo.org/){: target="_blank" rel="noopener"} basierende [SystemRescueCD](https://www.system-rescue.org/){: target="_blank" rel="noopener"} eingesetzt.
 
 VirtualBox und PuTTY werden mit den jeweiligen Standardoptionen installiert.
-
 
 ## Die Virtuelle Maschine
 
@@ -125,7 +121,6 @@ Die virtuelle Maschine, genauer die virtuelle Netzwerkkarte, kann dank NAT zwar 
 ```
 
 Nachdem die virtuelle Maschine nun konfiguriert ist, wird es Zeit diese zu booten.
-
 
 ## Los geht es
 

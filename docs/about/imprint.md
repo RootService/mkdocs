@@ -22,7 +22,6 @@ Hallerstrasse 1<br />
 
 E-Mail: <joeuser@rootservice.org>
 
-
 ## Kontakt
 
 Allgemein: «team[at]rootservice.org»

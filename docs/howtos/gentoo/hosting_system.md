@@ -27,31 +27,29 @@ Dieses HowTo setzt ein wie in [Remote Installation](/howtos/gentoo/remote_instal
 
 Folgende Punkte sind in diesem HowTo zu beachten:
 
--   Alle Dienste werden mit einem möglichst minimalen und bewährten Funktionsumfang installiert.
--   Alle Dienste werden mit einer möglichst sicheren und dennoch flexiblen Konfiguration versehen.
--   Alle Konfigurationen sind selbstständig auf notwendige individuelle Anpassungen zu kontrollieren.
--   Alle Passworte werden als `__PASSWORD__` dargestellt und sind selbstständig durch sichere Passworte zu ersetzen.
--   Alle Domainangaben werden als `example.com` dargestellt und sind selbstständig durch die eigene Domain zu ersetzen.
--   Die IP-Adresse des Servers wird als `10.0.2.15` dargestellt und ist selbstständig durch die eigene IP-Adresse zu ersetzen.
--   Postfix und Dovecot teilen sich sowohl den Hostnamen `mail.example.com` als auch das SSL-Zertifikat.
+- Alle Dienste werden mit einem möglichst minimalen und bewährten Funktionsumfang installiert.
+- Alle Dienste werden mit einer möglichst sicheren und dennoch flexiblen Konfiguration versehen.
+- Alle Konfigurationen sind selbstständig auf notwendige individuelle Anpassungen zu kontrollieren.
+- Alle Passworte werden als `__PASSWORD__` dargestellt und sind selbstständig durch sichere Passworte zu ersetzen.
+- Alle Domainangaben werden als `example.com` dargestellt und sind selbstständig durch die eigene Domain zu ersetzen.
+- Die IP-Adresse des Servers wird als `10.0.2.15` dargestellt und ist selbstständig durch die eigene IP-Adresse zu ersetzen.
+- Postfix und Dovecot teilen sich sowohl den Hostnamen `mail.example.com` als auch das SSL-Zertifikat.
 
 Unser WebHosting System wird folgende Dienste umfassen:
 
--   MySQL
--   Postfix
--   Dovecot
--   Apache
--   mod_php
+- MySQL
+- Postfix
+- Dovecot
+- Apache
+- mod_php
 
 Desweiteren werden wir folgende Applikationen installieren:
 
--   phpMyAdmin
--   PostfixAdmin
--   RoundCube
-
+- phpMyAdmin
+- PostfixAdmin
+- RoundCube
 
 ## OpenSSL
-
 
 ### OpenSSL konfigurieren
 
@@ -67,7 +65,6 @@ organizationalUnitName_default  = Administration
 commonName_default              = example.com
 emailAddress_default            = admin@example.com
 ```
-
 
 ### OpenSSL CA
 
@@ -86,7 +83,6 @@ openssl req -new -keyout demoCA/private/cakey.pem -out demoCA/careq.pem
 openssl ca -create_serial -out demoCA/cacert.pem -batch -keyfile demoCA/private/cakey.pem -selfsign -extensions v3_ca -infiles demoCA/careq.pem
 cd
 ```
-
 
 ### OpenSSL Zertifikate
 
@@ -107,7 +103,6 @@ openssl rsa -in webserver_key.pem -out webserver_keyrsa.pem
 cd
 ```
 
-
 ## MySQL
 
 MySQL unterstützt mehrere Engines, dieses HowTo beschränkt sich allerdings auf die Beiden am Häufigsten verwendeten: MyISAM und InnoDB. Werden weitere Engines benötigt, müssen die entsprechenden USE-Flags manuell gesetzt werden.
@@ -115,7 +110,6 @@ MySQL unterstützt mehrere Engines, dieses HowTo beschränkt sich allerdings auf
 ???+ note
 
     Sollen bereits existierende Datenbanken importiert werden, müssen diese, sofern noch nicht geschehen, zuvor nach UTF-8 konvertiert werden. Ist dies nicht möglich, weil beispielsweise eine Client-Applikation noch kein UTF-8 ünterstützt, so ist in der folgenden `/etc/mysql/my.cnf` jeweils `utf8` durch `latin1` zu ersetzen. Desweiteren muss in diesem Fall für `dev-db/mysql` in der `/etc/portage/package.use` zusätzlich das USE-Flag `latin1` gesetzt werden.
-
 
 ### MySQL installieren
 
@@ -128,7 +122,6 @@ emerge mysql
 
 rc-update add mysql default
 ```
-
 
 ### MySQL konfigurieren
 
@@ -298,7 +291,6 @@ interactive_timeout
 EOF
 ```
 
-
 ### MySQL absichern
 
 MySQL wird nun zum ersten Mal gestartet, was durch das Erzeugen der InnoDB-Files einige Minuten dauern und zu einer falschen Fehlermeldung des Init-Scripts führen kann. Daher warten wir bis im `tail -f` eine Zeile ähnlich der folgenden erscheint und beenden `tail` mittels `^C` (STRG+C).
@@ -317,11 +309,9 @@ tail -f /var/log/mysql/mysqld.err
 mysql_secure_installation
 ```
 
-
 ## Dovecot
 
 Dovecot wird inklusive MySQL und TLS/SSL Support installiert und für das Zusammenspiel mit PostfixAdmin konfiguriert.
-
 
 ### Dovecot installieren
 
@@ -334,7 +324,6 @@ emerge dovecot
 
 rc-update add dovecot default
 ```
-
 
 ### Dovecot konfigurieren
 
@@ -420,11 +409,9 @@ user_query = SELECT maildir, 207 AS uid, 207 AS gid, CONCAT('maildir:storage=', 
 EOF
 ```
 
-
 ## Postfix
 
 Postfix wird inklusive MySQL, Dovecot-SASL und TLS/SSL Support installiert und für das Zusammenspiel mit PostfixAdmin konfiguriert. Zudem werden die Empfehlungen aus dem [Postfix Anti-UCE Cheat Sheet](https://jimsun.linxnet.com/misc/postfix-anti-UCE.txt){: target="_blank" rel="noopener"} umgesetzt. Zusätzlich wird als gute und recht zuverlässige Anti-Spam Lösung [policyd-weight](https://www.policyd-weight.org/){: target="_blank" rel="noopener"} eingerichtet.
-
 
 ### Postfix installieren
 
@@ -439,7 +426,6 @@ emerge postfix
 rc-update add postfix default
 ```
 
-
 ### policyd-weight installieren
 
 ``` bash
@@ -451,7 +437,6 @@ emerge policyd-weight
 
 rc-update add policyd-weight default
 ```
-
 
 ### Postfix konfigurieren
 
@@ -880,11 +865,9 @@ chmod 0750 /var/vmail
 chown postfix:postfix /var/vmail
 ```
 
-
 ## Apache
 
 Die folgende Konfiguration verwendet für den Default-Host den Pfad `/var/www/vhosts/www.example.com`, für den Default-SSL-Host den Pfad `/var/www/vhosts/ssl.example.com` und für die regulären Virtual-Hosts den Pfad `/var/www/vhosts/sub.domain.tld`.
-
 
 ### Apache installieren
 
@@ -903,7 +886,6 @@ emerge apache
 
 rc-update add apache2 default
 ```
-
 
 ### Apache konfigurieren
 
@@ -1257,11 +1239,9 @@ NameVirtualHost 10.0.2.15:80
 EOF
 ```
 
-
 ## PHP
 
 Die Konfiguration entspricht weitestgehend den Empfehlungen der PHP-Entwickler und ist somit sowohl auf Security als auch auf Performance getrimmt.
-
 
 ### PHP installieren
 
@@ -1277,7 +1257,6 @@ EOF
 
 emerge php
 ```
-
 
 ### PHP konfigurieren
 
@@ -1645,7 +1624,6 @@ cp /etc/php/cgi-php5/php.ini /etc/php/cli-php5/php.ini
 cp /etc/php/cgi-php5/php.ini /etc/php/apache2-php5/php.ini
 ```
 
-
 ### PHP-PEAR installieren
 
 ``` bash
@@ -1655,9 +1633,7 @@ for pkg in `ls /usr/portage/dev-php | grep PEAR` ; do echo "dev-php/${pkg} ~amd6
 emerge pear
 ```
 
-
 ## phpMyAdmin
-
 
 ### phpMyAdmin installieren
 
@@ -1672,7 +1648,6 @@ chown -R www:www /var/www/vhosts/ssl.example.com/data/phpmyadmin
 find /var/www/vhosts/ssl.example.com/data/phpmyadmin -type d -print0 | xargs -0 chmod 0750
 find /var/www/vhosts/ssl.example.com/data/phpmyadmin -type f -print0 | xargs -0 chmod 0640
 ```
-
 
 ### phpMyAdmin konfigurieren
 
@@ -1689,9 +1664,7 @@ chmod 0640 /var/www/vhosts/ssl.example.com/data/phpmyadmin/config.inc.php
 rm -r /var/www/vhosts/ssl.example.com/data/phpmyadmin/config
 ```
 
-
 ## PostfixAdmin
-
 
 ### PostfixAdmin installieren
 
@@ -1722,7 +1695,6 @@ GRANT ALL PRIVILEGES ON postfix.* TO 'postfixadmin'@'localhost' IDENTIFIED BY '_
 FLUSH PRIVILEGES;
 QUIT;
 ```
-
 
 ### PostfixAdmin konfigurieren
 
@@ -1801,9 +1773,7 @@ sed -e "s/^\(my \$db_type = 'Pg';\)/#\1/" \
     -i /var/spool/vacation/vacation.pl
 ```
 
-
 ## RoundCube
-
 
 ### RoundCube installieren
 
@@ -1826,7 +1796,6 @@ GRANT ALL PRIVILEGES ON roundcube.* TO 'roundcube'@'localhost' IDENTIFIED BY '__
 FLUSH PRIVILEGES;
 QUIT;
 ```
-
 
 ### RoundCube konfigurieren
 

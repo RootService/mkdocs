@@ -18,13 +18,11 @@ tags:
 
 In diesem HowTo beschreibe ich step-by-step das Erstellen eines [mfsBSD](https://mfsbsd.vx.sk/){: target="_blank" rel="noopener"} Images mit dem die [Remote Installation](/howtos/freebsd/remote_install/) von [FreeBSD](https://www.freebsd.org/){: target="_blank" rel="noopener"} 64Bit auf einem dedizierten Server durchgeführt werden kann.
 
-
 ## Das Referenzsystem
 
 Als Referenzsystem habe ich mich für eine virtuelle Maschine auf Basis von [Oracle VM VirtualBox](https://www.virtualbox.org/){: target="_blank" rel="noopener"} unter [Microsoft Windows 10 Professional (64 Bit)](https://support.microsoft.com/products/windows){: target="_blank" rel="noopener"} entschieden. Leider bringt Microsoft Windows keinen eigenen SSH-Client mit, so dass ich auf das sehr empfehlenswerte [PuTTY (64 Bit)](https://www.chiark.greenend.org.uk/~sgtatham/putty/){: target="_blank" rel="noopener"} zurückgreife.
 
 VirtualBox und PuTTY werden mit den jeweiligen Standardoptionen installiert.
-
 
 ## Die Virtuelle Maschine
 
@@ -84,7 +82,6 @@ Aus diesem Grund werden wir, wenn der Bootvorgang abgeschlossen ist und wir den 
 ???+ hint
 
     Diese Shell nutzt das amerikanische Tastaturlayout, welches einige Tasten anders belegt als das deutsche Tastaturlayout.
-
 
 ## Minimalsystem installieren
 
@@ -407,7 +404,6 @@ Abschliessend beenden wir die virtuelle Maschine und werfen die Installations-DV
 "%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe" storageattach "mfsBSD" --storagectl "IDE Controller" --port 0 --device 0 --type dvddrive --medium emptydrive
 ```
 
-
 ## Einloggen ins virtuelle System
 
 Nachdem wir unser frisch installiertes System gebootet haben, sollten wir uns mittels PuTTY als `admin` einloggen können.
@@ -418,13 +414,11 @@ Nachdem wir unser frisch installiertes System gebootet haben, sollten wir uns mi
 putty -ssh -P 2222 admin@127.0.0.1
 ```
 
-
 ## ports-mgmt/pkg installieren
 
 ``` bash
 pkg install pkg
 ```
-
 
 ## mfsBSD erzeugen
 
@@ -473,6 +467,5 @@ Die virtuelle Maschine können wir an dieser Stelle nun beenden.
 ```
 
 Fertig.
-
 
 Viel Spass mit dem neuen mfsBSD Image
