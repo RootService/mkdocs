@@ -49,29 +49,29 @@ VirtualBox und PuTTY werden mit den jeweiligen Standardoptionen installiert.
 Als Erstes öffnen wir eine neue Eingabeaufforderung und legen manuell eine neue virtuelle Maschine an. Diese virtuelle Maschine bekommt den Namen `Gentoo` und wird mit 2048MB RAM, 32MB VideoRAM, zwei 32GB SATA-Festplatte, einem DVD-Player, sowie einer Intel-Netzwerkkarte ausgestattet. Zudem setzen wir die RTC (Real-Time Clock) der virtuellen Maschine auf UTC (Coordinated Universal Time), aktivieren den HPET (High Precision Event Timer) und legen die Bootreihenfolge fest.
 
 ``` powershell
-"%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe" createvm --name "Gentoo" --ostype Gentoo_64 --register
+& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" createvm --name "Gentoo" --ostype Gentoo_64 --register
 
-cd "%USERPROFILE%\VirtualBox VMs\Gentoo"
+cd "${Env:USERPROFILE}\VirtualBox VMs\Gentoo"
 
-"%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe" createhd --filename "Gentoo1.vdi" --size 32768
-"%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe" createhd --filename "Gentoo2.vdi" --size 32768
+& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" createhd --filename "Gentoo1.vdi" --size 32768
+& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" createhd --filename "Gentoo2.vdi" --size 32768
 
-"%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe" modifyvm "Gentoo" --chipset ICH9 --memory 2048 --vram 32 --hpet on --rtcuseutc on
-"%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe" modifyvm "Gentoo" --cpus 2 --cpuexecutioncap 50 --cpuhotplug off --hwvirtex on
-"%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe" modifyvm "Gentoo" --nic1 nat --nictype1 virtio --cableconnected1 on
-"%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe" modifyvm "Gentoo" --boot1 dvd --boot2 disk --boot3 none --boot4 none
+& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" modifyvm "Gentoo" --chipset ICH9 --memory 2048 --vram 32 --hpet on --rtcuseutc on
+& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" modifyvm "Gentoo" --cpus 2 --cpuexecutioncap 50 --cpuhotplug off --hwvirtex on
+& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" modifyvm "Gentoo" --nic1 nat --nictype1 virtio --cableconnected1 on
+& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" modifyvm "Gentoo" --boot1 dvd --boot2 disk --boot3 none --boot4 none
 
-"%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe" storagectl "Gentoo" --name "IDE Controller" --add ide --controller ICH6 --portcount 2
-"%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe" storagectl "Gentoo" --name "SATA Controller" --add sata --controller IntelAHCI --portcount 4
+& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" storagectl "Gentoo" --name "IDE Controller" --add ide --controller ICH6 --portcount 2
+& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" storagectl "Gentoo" --name "SATA Controller" --add sata --controller IntelAHCI --portcount 4
 
-"%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe" storageattach "Gentoo" --storagectl "SATA Controller" --port 0 --device 0 --type hdd --medium "Gentoo1.vdi"
-"%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe" storageattach "Gentoo" --storagectl "SATA Controller" --port 1 --device 0 --type hdd --medium "Gentoo2.vdi"
+& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" storageattach "Gentoo" --storagectl "SATA Controller" --port 0 --device 0 --type hdd --medium "Gentoo1.vdi"
+& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" storageattach "Gentoo" --storagectl "SATA Controller" --port 1 --device 0 --type hdd --medium "Gentoo2.vdi"
 ```
 
 Die virtuelle Maschine, genauer die virtuelle Netzwerkkarte, kann dank NAT zwar problemlos mit der Aussenwelt, aber leider nicht direkt mit dem Hostsystem kommunizieren. Aus diesem Grund richten wir nun für den SSH-Zugang noch ein Portforwarding ein, welches den Port 2222 des Hostsystems auf den Port 22 der virtuellen Maschine weiterleitet.
 
 ``` powershell
-"%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe" modifyvm "Gentoo" --natpf1 SSH,tcp,,2222,,22
+& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" modifyvm "Gentoo" --natpf1 SSH,tcp,,2222,,22
 ```
 
 Nachdem die virtuelle Maschine nun konfiguriert ist, wird es Zeit diese zu booten.
@@ -81,7 +81,7 @@ Nachdem die virtuelle Maschine nun konfiguriert ist, wird es Zeit diese zu boote
 Um unser Gentoo Linux Hardened installieren zu können, müssen wir unsere virtuelle Maschine mit einem RescueSystem booten. Hierfür eignet sich die auf [Gentoo Linux](https://www.gentoo.org/){: target="_blank" rel="noopener"} basierende [SystemRescueCD](https://www.system-rescue.org/){: target="_blank" rel="noopener"} am Besten, welche wir mittels des mit Windows mitgelieferten FTP-Client herunterladen und unserer virtuellen Maschine als Bootmedium zuweisen.
 
 ``` powershell
-cd "%USERPROFILE%\VirtualBox VMs\Gentoo"
+cd "${Env:USERPROFILE}\VirtualBox VMs\Gentoo"
 
 ftp -A ftp.halifax.rwth-aachen.de
 cd osdn/storage/g/s/sy/systemrescuecd/releases/7.01
@@ -89,13 +89,13 @@ binary
 get systemrescue-7.01-amd64.iso
 quit
 
-"%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe" storageattach "Gentoo" --storagectl "IDE Controller" --port 0 --device 0 --type dvddrive --medium "systemrescue-7.01-amd64.iso"
+& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" storageattach "Gentoo" --storagectl "IDE Controller" --port 0 --device 0 --type dvddrive --medium "systemrescue-7.01-amd64.iso"
 ```
 
 Wir können das RescueSystem jetzt booten.
 
 ``` powershell
-"%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe" startvm "Gentoo"
+& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" startvm "Gentoo"
 ```
 
 Im Bootmenü wählen wir die erste Option "boot with default options" aus.
@@ -764,9 +764,9 @@ exit
 Um uns künftig mit unserem Arbeitsuser einloggen zu können, müssen wir uns dessen SSH-Key (id_rsa) auf unser lokales System kopieren und ihn dann mit Hilfe der [PuTTYgen Dokumentation](https://the.earth.li/~sgtatham/putty/latest/htmldoc/Chapter8.html){: target="_blank" rel="noopener"} in einen für PuTTY lesbaren Key umwandeln.
 
 ``` powershell
-pscp -P 2222 -r root@127.0.0.1:/mnt/gentoo/home/admin/.ssh "%USERPROFILE%\VirtualBox VMs\Gentoo\ssh"
+pscp -P 2222 -r root@127.0.0.1:/mnt/gentoo/home/admin/.ssh "${Env:USERPROFILE}\VirtualBox VMs\Gentoo\ssh"
 
-puttygen "%USERPROFILE%\VirtualBox VMs\Gentoo\ssh\id_rsa"
+puttygen "${Env:USERPROFILE}\VirtualBox VMs\Gentoo\ssh\id_rsa"
 ```
 
 ## Reboot ins neue System
@@ -789,9 +789,9 @@ shutdown -P now
 ```
 
 ``` powershell
-"%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe" storageattach "Gentoo" --storagectl "IDE Controller" --port 0 --device 0 --type dvddrive --medium emptydrive
+& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" storageattach "Gentoo" --storagectl "IDE Controller" --port 0 --device 0 --type dvddrive --medium emptydrive
 
-"%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe" startvm "Gentoo"
+& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" startvm "Gentoo"
 
 putty -ssh -P 2222 admin@127.0.0.1
 ```

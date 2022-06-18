@@ -38,7 +38,7 @@ Unsere BaseTools werden am Ende folgende Dienste umfassen.
 ## Einloggen und zu root werden
 
 ``` powershell
-putty -ssh -P 2222 -i "%USERPROFILE%\VirtualBox VMs\FreeBSD\ssh\id_rsa.ppk" admin@127.0.0.1
+putty -ssh -P 2222 -i "${Env:USERPROFILE}\VirtualBox VMs\FreeBSD\ssh\id_rsa.ppk" admin@127.0.0.1
 ```
 
 ``` bash

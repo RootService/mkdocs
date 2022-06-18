@@ -38,19 +38,19 @@ Um unser [mfsBSD Image](/howtos/freebsd/mfsbsd_image/) installieren zu können, 
     Die Versionen nach 5.3.2 der SystemRescueCD basieren auf [Arch Linux](https://archlinux.org/){: target="_blank" rel="noopener"} und werden in diesem HowTo noch nicht supportet.
 
 ``` powershell
-cd "%USERPROFILE%\VirtualBox VMs\FreeBSD"
+cd "${Env:USERPROFILE}\VirtualBox VMs\FreeBSD"
 
 curl.exe -o systemrescuecd-x86-5.3.2.iso https://netcologne.dl.sourceforge.net/project/systemrescuecd/sysresccd-x86/5.3.2/systemrescuecd-x86-5.3.2.iso
 # curl -o systemrescue-7.01-amd64.iso https://ftp.halifax.rwth-aachen.de/osdn/storage/g/s/sy/systemrescuecd/releases/7.01/systemrescue-7.01-i686.iso
 
-"%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe" storageattach "FreeBSD" --storagectl "IDE Controller" --port 0 --device 0 --type dvddrive --medium "systemrescuecd-x86-5.3.2.iso"
-# "%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe" storageattach "FreeBSD" --storagectl "IDE Controller" --port 0 --device 0 --type dvddrive --medium "systemrescue-7.01-amd64.iso"
+& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" storageattach "FreeBSD" --storagectl "SATA Controller" --port 0 --device 0 --type dvddrive --medium "systemrescuecd-x86-5.3.2.iso"
+# & "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" storageattach "FreeBSD" --storagectl "SATA Controller" --port 0 --device 0 --type dvddrive --medium "systemrescue-7.01-amd64.iso"
 ```
 
 Wir können das RescueSystem jetzt booten.
 
 ``` powershell
-"%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe" startvm "FreeBSD"
+& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" startvm "FreeBSD"
 ```
 
 Im Bootmenü wählen wir die erste Option "boot with default options" aus.
@@ -78,7 +78,7 @@ Um unsere umfangreichen Vorbereitungen nun abzuschliessen, müssen wir nur noch 
 Als Erstes kopieren wir mittels PuTTYs SCP-Client (`pscp`) das mfsBSD Image in das RescueSystem.
 
 ``` powershell
-pscp -P 2222 "%USERPROFILE%\VirtualBox VMs\mfsBSD\mfsbsd-12.2-RELEASE-amd64.img" root@127.0.0.1:/tmp/mfsbsd-12.2-RELEASE-amd64.img
+pscp -P 2222 "${Env:USERPROFILE}\VirtualBox VMs\mfsBSD\mfsbsd-12.2-RELEASE-amd64.img" root@127.0.0.1:/tmp/mfsbsd-12.2-RELEASE-amd64.img
 ```
 
 Jetzt können wir das mfsBSD Image mittels `dd` auf der ersten Festplatte (`/dev/sda`) unserer virtuellen Maschine installieren und uns anschliessend wieder aus dem RescueSystem ausloggen.
@@ -94,9 +94,9 @@ exit
 Abschliessend stoppen wir die virtuelle Maschine vorübergehend und entfernen die SystemRescueCD aus dem virtuellen DVD-Laufwerk.
 
 ``` powershell
-"%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe" controlvm "FreeBSD" poweroff
+& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" controlvm "FreeBSD" poweroff
 
-"%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe" storageattach "FreeBSD" --storagectl "IDE Controller" --port 0 --device 0 --type dvddrive --medium emptydrive
+& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" storageattach "FreeBSD" --storagectl "SATA Controller" --port 0 --device 0 --type dvddrive --medium emptydrive
 ```
 
 ## FreeBSD installieren
@@ -104,7 +104,7 @@ Abschliessend stoppen wir die virtuelle Maschine vorübergehend und entfernen di
 Nachdem nun alle Vorbereitungen abgeschlossen sind, können wir endlich mit der eigentlichen FreeBSD Remote Installation beginnen, indem wir die virtuelle Maschine wieder booten.
 
 ``` powershell
-"%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe" startvm "FreeBSD"
+& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" startvm "FreeBSD"
 ```
 
 Jetzt sollten wir uns mittels PuTTY als `root` mit dem Passwort `mfsroot` in das mfsBSD Image einloggen und mit der Installation von FreeBSD beginnen können.
@@ -942,12 +942,12 @@ net.link.ifqmaxlen=1024
 Um uns künftig mit unserem Arbeitsuser einloggen zu können, müssen wir uns dessen SSH-Key (id_rsa) auf unser lokales System kopieren und ihn dann mit Hilfe der [PuTTYgen Dokumentation](https://the.earth.li/~sgtatham/putty/latest/htmldoc/Chapter8.html){: target="_blank" rel="noopener"} in einen für PuTTY lesbaren Private Key umwandeln (id_rsa.ppk).
 
 ``` powershell
-pscp -P 2222 -r root@127.0.0.1:/mnt/usr/home/admin/.ssh "%USERPROFILE%\VirtualBox VMs\FreeBSD\ssh"
+pscp -P 2222 -r root@127.0.0.1:/mnt/usr/home/admin/.ssh "${Env:USERPROFILE}\VirtualBox VMs\FreeBSD\ssh"
 
-puttygen "%USERPROFILE%\VirtualBox VMs\FreeBSD\ssh\id_rsa"
+puttygen "${Env:USERPROFILE}\VirtualBox VMs\FreeBSD\ssh\id_rsa"
 
 # Einloggen ab hier nur noch mit Key
-putty -ssh -P 2222 -i "%USERPROFILE%\VirtualBox VMs\FreeBSD\ssh\id_rsa.ppk" admin@127.0.0.1
+putty -ssh -P 2222 -i "${Env:USERPROFILE}\VirtualBox VMs\FreeBSD\ssh\id_rsa.ppk" admin@127.0.0.1
 ```
 
 Nun ist es endlich soweit: Wir verlassen das Chroot, unmounten die Partitionen und rebooten zum ersten Mal in unser neues FreeBSD Basis-System.
@@ -965,7 +965,7 @@ shutdown -r now
 ### Einloggen und zu *root* werden
 
 ``` powershell
-putty -ssh -P 2222 -i "%USERPROFILE%\VirtualBox VMs\FreeBSD\ssh\id_rsa.ppk" admin@127.0.0.1
+putty -ssh -P 2222 -i "${Env:USERPROFILE}\VirtualBox VMs\FreeBSD\ssh\id_rsa.ppk" admin@127.0.0.1
 ```
 
 ``` bash
@@ -1058,7 +1058,7 @@ Wenn wir unser System zu einem späteren Zeitpunkt nochmals aktualisieren, sollt
 Einloggen und zu `root` werden
 
 ``` powershell
-putty -ssh -P 2222 -i "%USERPROFILE%\VirtualBox VMs\FreeBSD\ssh\id_rsa.ppk" admin@127.0.0.1
+putty -ssh -P 2222 -i "${Env:USERPROFILE}\VirtualBox VMs\FreeBSD\ssh\id_rsa.ppk" admin@127.0.0.1
 ```
 
 ``` bash

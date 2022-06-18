@@ -20,43 +20,43 @@ In diesem HowTo beschreibe ich step-by-step das Erstellen eines [mfsBSD](https:/
 
 ## Das Referenzsystem
 
-Als Referenzsystem habe ich mich für eine virtuelle Maschine auf Basis von [Oracle VM VirtualBox](https://www.virtualbox.org/){: target="_blank" rel="noopener"} unter [Microsoft Windows 10 Professional (64 Bit)](https://support.microsoft.com/products/windows){: target="_blank" rel="noopener"} entschieden. Leider bringt Microsoft Windows keinen eigenen SSH-Client mit, so dass ich auf das sehr empfehlenswerte [PuTTY (64 Bit)](https://www.chiark.greenend.org.uk/~sgtatham/putty/){: target="_blank" rel="noopener"} zurückgreife.
+Als Referenzsystem habe ich mich für eine virtuelle Maschine auf Basis von [Oracle VM VirtualBox](https://www.virtualbox.org/){: target="_blank" rel="noopener"} unter [Microsoft Windows 11 Professional (64 Bit)](https://support.microsoft.com/products/windows){: target="_blank" rel="noopener"} entschieden. Leider bringt Microsoft Windows keinen eigenen SSH-Client mit, so dass ich auf das sehr empfehlenswerte [PuTTY (64 Bit)](https://www.chiark.greenend.org.uk/~sgtatham/putty/){: target="_blank" rel="noopener"} zurückgreife.
 
 VirtualBox und PuTTY werden mit den jeweiligen Standardoptionen installiert.
 
 ## Die Virtuelle Maschine
 
-Als Erstes öffnen wir eine neue Eingabeaufforderung und legen manuell eine neue virtuelle Maschine an. Diese virtuelle Maschine bekommt den Namen `mfsBSD` und wird mit einem Dual-Core Prozessor, Intels ICH9-Chipsatz, 4096MB RAM, 64MB VideoRAM, einer 64GB SATA-Festplatte, einem DVD-Player, einer Intel-Netzwerkkarte, einem IDE-Controller sowie einem SATA-Controller ausgestattet. Zudem setzen wir die RTC (Real-Time Clock) der virtuellen Maschine auf UTC (Coordinated Universal Time), aktivieren den HPET (High Precision Event Timer) und legen die Bootreihenfolge fest.
+Als Erstes öffnen wir eine neue Eingabeaufforderung und legen manuell eine neue virtuelle Maschine an. Diese virtuelle Maschine bekommt den Namen `mfsBSD` und wird mit einem Dual-Core Prozessor, Intels ICH9-Chipsatz, 4096MB RAM, 64MB VideoRAM, einer 64GB SSD-Festplatte, einem DVD-Player, einer Intel-Netzwerkkarte, einem NVMe-Controller sowie einem SATA-Controller ausgestattet. Zudem setzen wir die RTC (Real-Time Clock) der virtuellen Maschine auf UTC (Coordinated Universal Time), aktivieren den HPET (High Precision Event Timer) und legen die Bootreihenfolge fest.
 
 ``` powershell
-"%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe" createvm --name "mfsBSD" --ostype FreeBSD_64 --register
+& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" createvm --name "mfsBSD" --ostype FreeBSD_64 --register
 
-cd "%USERPROFILE%\VirtualBox VMs\mfsBSD"
+cd "${Env:USERPROFILE}\VirtualBox VMs\mfsBSD"
 
-"%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe" createmedium disk --filename "mfsBSD1.vdi" --format VDI --size 64536
+& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" createmedium disk --filename "mfsBSD1.vdi" --format VDI --size 64536
 
-"%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe" modifyvm "mfsBSD" --firmware bios --cpus 2 --cpuexecutioncap 100 --cpuhotplug off
-"%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe" modifyvm "mfsBSD" --chipset ICH9 --graphicscontroller vmsvga --audio none --usb off
-"%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe" modifyvm "mfsBSD" --hwvirtex on --ioapic on --hpet on --rtcuseutc on --memory 4096 --vram 64
-"%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe" modifyvm "mfsBSD" --nic1 nat --nictype1 82540EM --natnet1 "192.168/16" --cableconnected1 on
-"%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe" modifyvm "mfsBSD" --boot1 dvd --boot2 disk --boot3 none --boot4 none
+& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" modifyvm "mfsBSD" --firmware bios --cpus 2 --cpuexecutioncap 100 --cpuhotplug off
+& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" modifyvm "mfsBSD" --chipset ICH9 --graphicscontroller vmsvga --audio none --usb off
+& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" modifyvm "mfsBSD" --hwvirtex on --ioapic on --hpet on --rtcuseutc on --memory 4096 --vram 64
+& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" modifyvm "mfsBSD" --nic1 nat --nictype1 82540EM --natnet1 "192.168/16" --cableconnected1 on
+& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" modifyvm "mfsBSD" --boot1 dvd --boot2 disk --boot3 none --boot4 none
 
-"%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe" storagectl "mfsBSD" --name "IDE Controller" --add ide --controller ICH6 --bootable on
-"%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe" storagectl "mfsBSD" --name "SATA Controller" --add sata --controller IntelAHCI --portcount 4 --bootable on
+& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" storagectl "mfsBSD" --name "NVMe Controller" --add pcie --controller NVMe --portcount 4 --bootable on
+& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" storagectl "mfsBSD" --name "SATA Controller" --add sata --controller IntelAHCI --portcount 4 --bootable on
 
-"%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe" storageattach "mfsBSD" --storagectl "SATA Controller" --port 0 --device 0 --type hdd --medium "mfsBSD1.vdi"
+& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" storageattach "mfsBSD" --storagectl "NVMe Controller" --port 0 --device 0 --type hdd --nonrotational on --medium "mfsBSD1.vdi"
 ```
 
 Die virtuelle Maschine, genauer die virtuelle Netzwerkkarte, kann dank NAT zwar problemlos mit der Aussenwelt, aber leider nicht direkt mit dem Hostsystem kommunizieren. Aus diesem Grund richten wir nun für den SSH-Zugang noch ein Portforwarding ein, welches den Port 2222 des Hostsystems auf den Port 22 der virtuellen Maschine weiterleitet.
 
 ``` powershell
-"%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe" modifyvm "mfsBSD" --natpf1 "VBoxSSH,tcp,,2222,,22"
+& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" modifyvm "mfsBSD" --natpf1 "VBoxSSH,tcp,,2222,,22"
 ```
 
 Als nächstes wird die FreeBSD 64Bit Installations-DVD heruntergeladen und dieser virtuellen Maschine als Bootmedium zugewiesen.
 
 ``` powershell
-cd "%USERPROFILE%\VirtualBox VMs\mfsBSD"
+cd "${Env:USERPROFILE}\VirtualBox VMs\mfsBSD"
 
 ftp -A ftp.de.freebsd.org
 cd FreeBSD/releases/amd64/amd64/ISO-IMAGES/12.2
@@ -64,13 +64,13 @@ binary
 get FreeBSD-12.2-RELEASE-amd64-dvd1.iso
 quit
 
-"%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe" storageattach "mfsBSD" --storagectl "IDE Controller" --port 0 --device 0 --type dvddrive --medium "FreeBSD-12.2-RELEASE-amd64-dvd1.iso"
+& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" storageattach "mfsBSD" --storagectl "SATA Controller" --port 0 --device 0 --type dvddrive --medium "FreeBSD-12.2-RELEASE-amd64-dvd1.iso"
 ```
 
 Nachdem die virtuelle Maschine nun fertig konfiguriert ist, wird es Zeit diese zu booten.
 
 ``` powershell
-"%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe" startvm "mfsBSD"
+& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" startvm "mfsBSD"
 ```
 
 Im Bootmenü wird die erste Option durch Drücken der Taste "Enter" beziehungsweise "Return", oder automatisch nach 10 Sekunden gewählt.
@@ -399,9 +399,9 @@ umount /mnt
 Abschliessend beenden wir die virtuelle Maschine und werfen die Installations-DVD aus.
 
 ``` powershell
-"%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe" controlvm "mfsBSD" acpipowerbutton
+& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" controlvm "mfsBSD" acpipowerbutton
 
-"%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe" storageattach "mfsBSD" --storagectl "IDE Controller" --port 0 --device 0 --type dvddrive --medium emptydrive
+& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" storageattach "mfsBSD" --storagectl "SATA Controller" --port 0 --device 0 --type dvddrive --medium emptydrive
 ```
 
 ## Einloggen ins virtuelle System
@@ -409,7 +409,7 @@ Abschliessend beenden wir die virtuelle Maschine und werfen die Installations-DV
 Nachdem wir unser frisch installiertes System gebootet haben, sollten wir uns mittels PuTTY als `admin` einloggen können.
 
 ``` powershell
-"%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe" startvm "mfsBSD"
+& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" startvm "mfsBSD"
 
 putty -ssh -P 2222 admin@127.0.0.1
 ```
@@ -457,13 +457,13 @@ make BASE=/usr/freebsd-dist RELEASE=12.2-RELEASE ARCH=amd64 PKG_STATIC=/usr/loca
 Anschliessend liegt unter `/usr/local/mfsbsd/mfsbsd-master/mfsbsd-12.2-RELEASE-amd64.img` unser fertiges mfsBSD-Image. Dieses kopieren wir nun per PuTTY auf den Windows Host.
 
 ``` powershell
-pscp -P 2222 admin@127.0.0.1:/usr/local/mfsbsd/mfsbsd-master/mfsbsd-12.2-RELEASE-amd64.img "%USERPROFILE%\VirtualBox VMs\mfsBSD\mfsbsd-12.2-RELEASE-amd64.img"
+pscp -P 2222 admin@127.0.0.1:/usr/local/mfsbsd/mfsbsd-master/mfsbsd-12.2-RELEASE-amd64.img "${Env:USERPROFILE}\VirtualBox VMs\mfsBSD\mfsbsd-12.2-RELEASE-amd64.img"
 ```
 
 Die virtuelle Maschine können wir an dieser Stelle nun beenden.
 
 ``` powershell
-"%ProgramFiles%\Oracle\VirtualBox\VBoxManage.exe" controlvm "mfsBSD" acpipowerbutton
+& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" controlvm "mfsBSD" acpipowerbutton
 ```
 
 Fertig.
