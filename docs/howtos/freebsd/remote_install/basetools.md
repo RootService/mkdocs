@@ -187,8 +187,8 @@ Wir konfigurieren `smartmontools`.
 
 ``` bash
 sed 's/^DEVICESCAN/#DEVICESCAN/' /usr/local/etc/smartd.conf.sample > /usr/local/etc/smartd.conf
-echo '/dev/ada0 -a -o on -S on -s (S/../.././02|L/../../6/03)' >> /usr/local/etc/smartd.conf
-echo '/dev/ada1 -a -o on -S on -s (S/../.././02|L/../../6/03)' >> /usr/local/etc/smartd.conf
+echo '/dev/nvd0 -a -o on -S on -s (S/../.././02|L/../../6/03)' >> /usr/local/etc/smartd.conf
+echo '/dev/nvd1 -a -o on -S on -s (S/../.././02|L/../../6/03)' >> /usr/local/etc/smartd.conf
 
 echo 'smartd_enable="YES"' >> /etc/rc.conf
 ```
@@ -198,7 +198,7 @@ Die `/etc/periodic.conf` wird um folgenden Inhalt erweitert.
 ``` bash
 cat >> /etc/periodic.conf << "EOF"
 daily_status_smart_enable="YES"
-daily_status_smart_devices="/dev/ada0 /dev/ada1"
+daily_status_smart_devices="/dev/nvd0 /dev/nvd1"
 "EOF"
 ```
 

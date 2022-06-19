@@ -18,7 +18,7 @@ Die Installation des FreeBSD BaseSystem setzt ein wie in [mfsBSD Image](/howtos/
 
 Unser BaseSystem wird am Ende folgende Dienste umfassen.
 
-- FreeBSD 12.2-RELEASE 64Bit
+- FreeBSD 13.1-RELEASE 64Bit
 - OpenSSL 1.1.1
 - OpenSSH 7.9
 - Unbound 1.10.1
@@ -85,11 +85,11 @@ Trotzdem habe ich dieses HowTo so ausgelegt, dass es sich nahezu unverändert au
 
 Leider bringt Microsoft Windows keinen eigenen SSH-Client mit, so dass ich auf das sehr empfehlenswerte [PuTTY (64 Bit)](https://www.chiark.greenend.org.uk/~sgtatham/putty/){: target="_blank" rel="noopener"} zurückgreife. Zur Simulation des bei nahezu allen Anbietern dedizierter Server vorhandene Rettungssystem, nachfolgend RescueSystem genannt, wird in diesem HowTo die auf [Gentoo Linux](https://www.gentoo.org/){: target="_blank" rel="noopener"} basierende [SystemRescueCD](https://www.system-rescue.org/){: target="_blank" rel="noopener"} eingesetzt.
 
-VirtualBox und PuTTY werden mit den jeweiligen Standardoptionen installiert.
+VirtualBox (inklusive dem Extensionpack) und PuTTY werden mit den jeweiligen Standardoptionen installiert.
 
 ## Die Virtuelle Maschine
 
-Als Erstes öffnen wir eine neue Eingabeaufforderung und legen manuell eine neue virtuelle Maschine an. Diese virtuelle Maschine bekommt den Namen `FreeBSD` und wird mit einem Dual-Core Prozessor, Intels ICH9-Chipsatz, 4096MB RAM, 64MB VideoRAM, zwei 64GB SSD-Festplatten, einem DVD-Player, einer Intel-Netzwerkkarte, einem NVMe-Controller sowie einem SATA-Controller ausgestattet. Zudem setzen wir die RTC (Real-Time Clock) der virtuellen Maschine auf UTC (Coordinated Universal Time), aktivieren den HPET (High Precision Event Timer) und legen die Bootreihenfolge fest.
+Als Erstes öffnen wir eine neue Eingabeaufforderung und legen manuell eine neue virtuelle Maschine an. Diese virtuelle Maschine bekommt den Namen `FreeBSD` und wird mit einem Dual-Core Prozessor, Intels ICH9-Chipsatz, 4096MB RAM, 64MB VideoRAM, zwei 64GB SSD-Festplatten, einem DVD-Player, einer Intel-Netzwerkkarte, einem NVMe-Controller sowie einem AHCI-Controller ausgestattet. Zudem setzen wir die RTC (Real-Time Clock) der virtuellen Maschine auf UTC (Coordinated Universal Time), aktivieren den HPET (High Precision Event Timer) und legen die Bootreihenfolge fest.
 
 ``` powershell
 & "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" createvm --name "FreeBSD" --ostype FreeBSD_64 --register
@@ -106,10 +106,11 @@ cd "${Env:USERPROFILE}\VirtualBox VMs\FreeBSD"
 & "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" modifyvm "FreeBSD" --boot1 dvd --boot2 disk --boot3 none --boot4 none
 
 & "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" storagectl "FreeBSD" --name "NVMe Controller" --add pcie --controller NVMe --portcount 4 --bootable on
-& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" storagectl "FreeBSD" --name "SATA Controller" --add sata --controller IntelAHCI --portcount 4 --bootable on
+& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" storagectl "FreeBSD" --name "AHCI Controller" --add sata --controller IntelAHCI --portcount 4 --bootable on
 
 & "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" storageattach "FreeBSD" --storagectl "NVMe Controller" --port 0 --device 0 --type hdd --nonrotational on --medium "FreeBSD1.vdi"
 & "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" storageattach "FreeBSD" --storagectl "NVMe Controller" --port 1 --device 0 --type hdd --nonrotational on --medium "FreeBSD2.vdi"
+& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" storageattach "FreeBSD" --storagectl "AHCI Controller" --port 0 --device 0 --type dvddrive --medium emptydrive
 ```
 
 Die virtuelle Maschine, genauer die virtuelle Netzwerkkarte, kann dank NAT zwar problemlos mit der Aussenwelt, aber leider nicht direkt mit dem Hostsystem kommunizieren. Aus diesem Grund richten wir nun für den SSH-Zugang noch ein Portforwarding ein, welches den Port 2222 des Hostsystems auf den Port 22 der virtuellen Maschine weiterleitet.

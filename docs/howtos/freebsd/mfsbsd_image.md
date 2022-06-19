@@ -22,11 +22,11 @@ In diesem HowTo beschreibe ich step-by-step das Erstellen eines [mfsBSD](https:/
 
 Als Referenzsystem habe ich mich für eine virtuelle Maschine auf Basis von [Oracle VM VirtualBox](https://www.virtualbox.org/){: target="_blank" rel="noopener"} unter [Microsoft Windows 11 Professional (64 Bit)](https://support.microsoft.com/products/windows){: target="_blank" rel="noopener"} entschieden. Leider bringt Microsoft Windows keinen eigenen SSH-Client mit, so dass ich auf das sehr empfehlenswerte [PuTTY (64 Bit)](https://www.chiark.greenend.org.uk/~sgtatham/putty/){: target="_blank" rel="noopener"} zurückgreife.
 
-VirtualBox und PuTTY werden mit den jeweiligen Standardoptionen installiert.
+VirtualBox (inklusive dem Extensionpack) und PuTTY werden mit den jeweiligen Standardoptionen installiert.
 
 ## Die Virtuelle Maschine
 
-Als Erstes öffnen wir eine neue Eingabeaufforderung und legen manuell eine neue virtuelle Maschine an. Diese virtuelle Maschine bekommt den Namen `mfsBSD` und wird mit einem Dual-Core Prozessor, Intels ICH9-Chipsatz, 4096MB RAM, 64MB VideoRAM, einer 64GB SSD-Festplatte, einem DVD-Player, einer Intel-Netzwerkkarte, einem NVMe-Controller sowie einem SATA-Controller ausgestattet. Zudem setzen wir die RTC (Real-Time Clock) der virtuellen Maschine auf UTC (Coordinated Universal Time), aktivieren den HPET (High Precision Event Timer) und legen die Bootreihenfolge fest.
+Als Erstes öffnen wir eine neue Eingabeaufforderung und legen manuell eine neue virtuelle Maschine an. Diese virtuelle Maschine bekommt den Namen `mfsBSD` und wird mit einem Dual-Core Prozessor, Intels ICH9-Chipsatz, 4096MB RAM, 64MB VideoRAM, einer 64GB SSD-Festplatte, einem DVD-Player, einer Intel-Netzwerkkarte, einem NVMe-Controller sowie einem AHCI-Controller ausgestattet. Zudem setzen wir die RTC (Real-Time Clock) der virtuellen Maschine auf UTC (Coordinated Universal Time), aktivieren den HPET (High Precision Event Timer) und legen die Bootreihenfolge fest.
 
 ``` powershell
 & "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" createvm --name "mfsBSD" --ostype FreeBSD_64 --register
@@ -42,9 +42,10 @@ cd "${Env:USERPROFILE}\VirtualBox VMs\mfsBSD"
 & "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" modifyvm "mfsBSD" --boot1 dvd --boot2 disk --boot3 none --boot4 none
 
 & "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" storagectl "mfsBSD" --name "NVMe Controller" --add pcie --controller NVMe --portcount 4 --bootable on
-& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" storagectl "mfsBSD" --name "SATA Controller" --add sata --controller IntelAHCI --portcount 4 --bootable on
+& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" storagectl "mfsBSD" --name "AHCI Controller" --add sata --controller IntelAHCI --portcount 4 --bootable on
 
 & "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" storageattach "mfsBSD" --storagectl "NVMe Controller" --port 0 --device 0 --type hdd --nonrotational on --medium "mfsBSD1.vdi"
+& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" storageattach "mfsBSD" --storagectl "AHCI Controller" --port 0 --device 0 --type dvddrive --medium emptydrive
 ```
 
 Die virtuelle Maschine, genauer die virtuelle Netzwerkkarte, kann dank NAT zwar problemlos mit der Aussenwelt, aber leider nicht direkt mit dem Hostsystem kommunizieren. Aus diesem Grund richten wir nun für den SSH-Zugang noch ein Portforwarding ein, welches den Port 2222 des Hostsystems auf den Port 22 der virtuellen Maschine weiterleitet.
@@ -59,12 +60,12 @@ Als nächstes wird die FreeBSD 64Bit Installations-DVD heruntergeladen und diese
 cd "${Env:USERPROFILE}\VirtualBox VMs\mfsBSD"
 
 ftp -A ftp.de.freebsd.org
-cd FreeBSD/releases/amd64/amd64/ISO-IMAGES/12.2
+cd FreeBSD/releases/amd64/amd64/ISO-IMAGES/13.1
 binary
-get FreeBSD-12.2-RELEASE-amd64-dvd1.iso
+get FreeBSD-13.1-RELEASE-amd64-dvd1.iso
 quit
 
-& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" storageattach "mfsBSD" --storagectl "SATA Controller" --port 0 --device 0 --type dvddrive --medium "FreeBSD-12.2-RELEASE-amd64-dvd1.iso"
+& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" storageattach "mfsBSD" --storagectl "AHCI Controller" --port 0 --device 0 --type dvddrive --medium "FreeBSD-13.1-RELEASE-amd64-dvd1.iso"
 ```
 
 Nachdem die virtuelle Maschine nun fertig konfiguriert ist, wird es Zeit diese zu booten.
@@ -92,22 +93,22 @@ Wir werden drei Partitionen anlegen, die Erste für den Bootcode, die Zweite als
 ``` bash
 sysctl kern.geom.debugflags=0x10
 
-gpart create -s gpt ada0
-gpart add -t freebsd-boot -b 4096 -s 512 -a 4096 ada0
-gpart add -t freebsd-ufs  -b 8192 -s 56G -a 4096 ada0
-gpart add -t freebsd-swap         -s  4G -a 4096 ada0
+gpart create -s gpt nvd0
+gpart add -t freebsd-boot -b 4096 -s 512 -a 4096 nvd0
+gpart add -t freebsd-ufs  -b 8192 -s 56G -a 4096 nvd0
+gpart add -t freebsd-swap         -s  4G -a 4096 nvd0
 ```
 
 Nun müssen wir noch die Systempartition mit "UFS2" und einer 4K-Blockgrösse formatieren und aktivieren auch gleich die "soft-updates".
 
 ``` bash
-newfs -O2 -U -f 4096 /dev/ada0p2
+newfs -O2 -U -f 4096 /dev/nvd0p2
 ```
 
 Die Systempartition mounten wir nach `/mnt` und entpacken darauf ein FreeBSD-Minimalsystem mit dem wir problemlos weiterarbeiten können.
 
 ``` bash
-mount -t ufs /dev/ada0p2 /mnt
+mount -t ufs /dev/nvd0p2 /mnt
 
 tar Jxpvf /usr/freebsd-dist/base.txz   -C /mnt/
 tar Jxpvf /usr/freebsd-dist/kernel.txz -C /mnt/
@@ -120,7 +121,7 @@ cp -a /usr/freebsd-dist /mnt/usr/
 Unser System soll natürlich auch von der Festplatte booten können, weshalb wir jetzt den Bootcode und Bootloader in der Bootpartittion installieren.
 
 ``` bash
-gpart bootcode -b /mnt/boot/pmbr -p /mnt/boot/gptboot -i 1 ada0
+gpart bootcode -b /mnt/boot/pmbr -p /mnt/boot/gptboot -i 1 nvd0
 ```
 
 Vor dem Wechsel in die Chroot-Umgebung müssen wir noch die `resolv.conf` in die Chroot-Umgebung kopieren und das Device-Filesysteme dorthin mounten.
@@ -141,36 +142,10 @@ chroot /mnt
 cd /root
 ```
 
-Zunächst setzen wir die Systemzeit (CMOS clock) mittels `tzsetup` auf "UTC", die "Region" auf Europe, das "Country" auf Germany und "CET" beziehungsweise "CEST" trifft ebenfalls zu.
+Zunächst setzen wir die Systemzeit (CMOS clock) mittels `tzsetup`, hierzu wählen wir zunächst "Europe", dann "Germany" und zum Schluss "CET" beziehungsweise "CEST" aus.
 
 ``` bash
 tzsetup
-```
-
-Auf Servern sollte für Systemuser eine amerikanisch-englische Locale mit Unicode (UTF-8) verwendet werden. Wir bearbeiten hierzu mit dem Editor `ee` (`ee /etc/login.conf`) in der Datei `/etc/login.conf` die Login-Klasse `default`, indem wir vor der letzten Zeile folgende Zeilen hinzufügen.
-
-``` text
-        :charset=UTF-8:\
-        :lang=en_US.UTF-8:\
-```
-
-Anschliessend muss die Datei in eine Systemdatenbank umgewandelt werden.
-
-``` bash
-cap_mkdb /etc/login.conf
-```
-
-Nach dem nächsten Login sollte der Befehl `locale` die folgende Ausgabe liefern.
-
-``` text
-LANG=en_US.UTF-8
-LC_CTYPE="en_US.UTF-8"
-LC_COLLATE="en_US.UTF-8"
-LC_TIME="en_US.UTF-8"
-LC_NUMERIC="en_US.UTF-8"
-LC_MONETARY="en_US.UTF-8"
-LC_MESSAGES="en_US.UTF-8"
-LC_ALL=
 ```
 
 Unter FreeBSD ist die Tenex C Shell (TCSH) die Standard-Shell. Für Bash-gewohnte Linux-User ist diese Shell etwas gewöhnungsbedürftig, und natürlich kann man sie später auch gegen eine andere Shell austauschen (im Basis-System ist neben der TCSH auch eine ASH enthalten). Skripte würde ich persönlich für die TCSH eher nicht schreiben, aber für die tägliche Administrationsarbeit ist die TCSH ein sehr brauchbares Werkzeug – wenn man sie erst mal etwas umkonfiguriert hat. Dies tun wir jetzt.
@@ -251,10 +226,10 @@ Die `fstab` ist bei unserem minimalistischen Partitionslayout zwar nicht zwingen
 
 ``` text
 # Device                     Mountpoint              FStype  Options         Dump    Pass
-/dev/ada0p2                  /                       ufs     rw              1       1
+/dev/nvd0p2                  /                       ufs     rw              1       1
 dev                          /dev                    devfs   rw              0       0
 proc                         /proc                   procfs  rw              0       0
-/dev/ada0p3                  none                    swap    sw              0       0
+/dev/nvd0p3                  none                    swap    sw              0       0
 ```
 
 In der `rc.conf` werden diverse Grundeinstellungen für das System und die installierten Dienste vorgenommen. Wir legen sie daher mittela `ee /etc/rc.conf` mit folgendem Inhalt an.
@@ -299,6 +274,7 @@ cron_flags="$cron_flags -j 0 -J 0 -m root"
 nscd_enable="YES"
 ntpd_enable="YES"
 ntpd_sync_on_start="YES"
+resolv_enable="NO"
 
 ##############################################################
 ### Jail Configuration #######################################
@@ -316,9 +292,8 @@ Da dies lediglich ein lokales temporäres System zum Erzeugen unseres mfsBSD-Ima
 
 ``` bash
 sed -e 's|^#\(PermitRootLogin\).*$|\1 yes|' \
-    -e 's|^#\(PubkeyAuthentication\).*$|\1 yes|' \
     -e 's|^#\(PasswordAuthentication\).*$|\1 yes|' \
-    -e 's|^#\(PermitEmptyPasswords\).*$|\1 no|' \
+    -e 's|^#\(KbdInteractiveAuthentication\).*$|\1 no|' \
     -e 's|^#\(ChallengeResponseAuthentication\).*$|\1 no|' \
     -e 's|^#\(UsePAM\).*$|\1 no|' \
     -e 's|^#\(AllowAgentForwarding\).*$|\1 no|' \
@@ -326,10 +301,6 @@ sed -e 's|^#\(PermitRootLogin\).*$|\1 yes|' \
     -e 's|^#\(GatewayPorts\).*$|\1 no|' \
     -e 's|^#\(X11Forwarding\).*$|\1 no|' \
     -e 's|^#\(PermitUserEnvironment\).*$|\1 no|' \
-    -e 's|^#\(ClientAliveInterval\).*$|\1 10|' \
-    -e 's|^#\(ClientAliveCountMax\).*$|\1 6|' \
-    -e 's|^#\(PidFile\).*$|\1 /var/run/sshd.pid|' \
-    -e 's|^#\(MaxStartups\).*$|\1 10:30:100|' \
     -e 's|^#\(PermitTunnel\).*$|\1 no|' \
     -e 's|^#\(ChrootDirectory\).*$|\1 %h|' \
     -e 's|^#\(UseBlacklist\).*$|\1 no|' \
@@ -401,7 +372,7 @@ Abschliessend beenden wir die virtuelle Maschine und werfen die Installations-DV
 ``` powershell
 & "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" controlvm "mfsBSD" acpipowerbutton
 
-& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" storageattach "mfsBSD" --storagectl "SATA Controller" --port 0 --device 0 --type dvddrive --medium emptydrive
+& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" storageattach "mfsBSD" --storagectl "AHCI Controller" --port 0 --device 0 --type dvddrive --medium emptydrive
 ```
 
 ## Einloggen ins virtuelle System
@@ -451,13 +422,13 @@ sed -e 's/^#\(mfsbsd.rootpw=\).*$/\1"mfsroot"/' conf/loader.conf.sample > conf/l
 Für unsere Zwecke reicht die Standardkonfiguration des mfsBSD-Buildscripts aus, so dass wir unser mfsBSD-Image direkt erzeugen können.
 
 ``` bash
-make BASE=/usr/freebsd-dist RELEASE=12.2-RELEASE ARCH=amd64 PKG_STATIC=/usr/local/sbin/pkg-static MFSROOT_MAXSIZE=120m
+make BASE=/usr/freebsd-dist RELEASE=13.1-RELEASE ARCH=amd64 PKG_STATIC=/usr/local/sbin/pkg-static MFSROOT_MAXSIZE=120m
 ```
 
-Anschliessend liegt unter `/usr/local/mfsbsd/mfsbsd-master/mfsbsd-12.2-RELEASE-amd64.img` unser fertiges mfsBSD-Image. Dieses kopieren wir nun per PuTTY auf den Windows Host.
+Anschliessend liegt unter `/usr/local/mfsbsd/mfsbsd-master/mfsbsd-13.1-RELEASE-amd64.img` unser fertiges mfsBSD-Image. Dieses kopieren wir nun per PuTTY auf den Windows Host.
 
 ``` powershell
-pscp -P 2222 admin@127.0.0.1:/usr/local/mfsbsd/mfsbsd-master/mfsbsd-12.2-RELEASE-amd64.img "${Env:USERPROFILE}\VirtualBox VMs\mfsBSD\mfsbsd-12.2-RELEASE-amd64.img"
+pscp -P 2222 admin@127.0.0.1:/usr/local/mfsbsd/mfsbsd-master/mfsbsd-13.1-RELEASE-amd64.img "${Env:USERPROFILE}\VirtualBox VMs\mfsBSD\mfsbsd-13.1-RELEASE-amd64.img"
 ```
 
 Die virtuelle Maschine können wir an dieser Stelle nun beenden.

@@ -24,7 +24,7 @@ Zu den Voraussetzungen für dieses HowTo siehe bitte: [Voraussetzungen](/howtos/
 
 Unser BaseSystem wird folgende Dienste umfassen.
 
-- FreeBSD 12.2-RELEASE 64Bit
+- FreeBSD 13.1-RELEASE 64Bit
 - OpenSSL 1.1.1
 - OpenSSH 7.8
 - Unbound 1.8.1
@@ -43,8 +43,8 @@ cd "${Env:USERPROFILE}\VirtualBox VMs\FreeBSD"
 curl.exe -o systemrescuecd-x86-5.3.2.iso https://netcologne.dl.sourceforge.net/project/systemrescuecd/sysresccd-x86/5.3.2/systemrescuecd-x86-5.3.2.iso
 # curl -o systemrescue-7.01-amd64.iso https://ftp.halifax.rwth-aachen.de/osdn/storage/g/s/sy/systemrescuecd/releases/7.01/systemrescue-7.01-i686.iso
 
-& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" storageattach "FreeBSD" --storagectl "SATA Controller" --port 0 --device 0 --type dvddrive --medium "systemrescuecd-x86-5.3.2.iso"
-# & "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" storageattach "FreeBSD" --storagectl "SATA Controller" --port 0 --device 0 --type dvddrive --medium "systemrescue-7.01-amd64.iso"
+& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" storageattach "FreeBSD" --storagectl "AHCI Controller" --port 0 --device 0 --type dvddrive --medium "systemrescuecd-x86-5.3.2.iso"
+# & "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" storageattach "FreeBSD" --storagectl "AHCI Controller" --port 0 --device 0 --type dvddrive --medium "systemrescue-7.01-amd64.iso"
 ```
 
 Wir können das RescueSystem jetzt booten.
@@ -78,7 +78,7 @@ Um unsere umfangreichen Vorbereitungen nun abzuschliessen, müssen wir nur noch 
 Als Erstes kopieren wir mittels PuTTYs SCP-Client (`pscp`) das mfsBSD Image in das RescueSystem.
 
 ``` powershell
-pscp -P 2222 "${Env:USERPROFILE}\VirtualBox VMs\mfsBSD\mfsbsd-12.2-RELEASE-amd64.img" root@127.0.0.1:/tmp/mfsbsd-12.2-RELEASE-amd64.img
+pscp -P 2222 "${Env:USERPROFILE}\VirtualBox VMs\mfsBSD\mfsbsd-13.1-RELEASE-amd64.img" root@127.0.0.1:/tmp/mfsbsd-13.1-RELEASE-amd64.img
 ```
 
 Jetzt können wir das mfsBSD Image mittels `dd` auf der ersten Festplatte (`/dev/sda`) unserer virtuellen Maschine installieren und uns anschliessend wieder aus dem RescueSystem ausloggen.
@@ -86,7 +86,7 @@ Jetzt können wir das mfsBSD Image mittels `dd` auf der ersten Festplatte (`/dev
 ``` bash
 dd if=/dev/zero of=/dev/sda count=256 bs=1M
 
-dd if=/tmp/mfsbsd-12.2-RELEASE-amd64.img of=/dev/sda bs=1M
+dd if=/tmp/mfsbsd-13.1-RELEASE-amd64.img of=/dev/sda bs=1M
 
 exit
 ```
@@ -96,7 +96,7 @@ Abschliessend stoppen wir die virtuelle Maschine vorübergehend und entfernen di
 ``` powershell
 & "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" controlvm "FreeBSD" poweroff
 
-& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" storageattach "FreeBSD" --storagectl "SATA Controller" --port 0 --device 0 --type dvddrive --medium emptydrive
+& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" storageattach "FreeBSD" --storagectl "AHCI Controller" --port 0 --device 0 --type dvddrive --medium emptydrive
 ```
 
 ## FreeBSD installieren
@@ -118,8 +118,8 @@ putty -ssh -P 2222 root@127.0.0.1
 Bevor wir anfangen, bereinigen wir die Festplatten von jeglichen Datenrückständen, indem wir sie mit Nullen überschreiben. Je nach Festplattengrösse kann dies einige Stunden bis Tage in Anspruch nehmen. Aus diesem Grund verlegen wir diese Jobs mittels `nohup` in den Hintergrund, so dass wir uns zwischenzeitlich ausloggen können ohne dass dabei die Jobs automatisch von der Shell abgebrochen werden. Ob die Jobs fertig sind, lässt dann mittels `ps -auxfwww` und `top -atCP` ermitteln.
 
 ``` bash
-nohup dd if=/dev/zero of=/dev/ada0 bs=1M  &
-nohup dd if=/dev/zero of=/dev/ada1 bs=1M  &
+nohup dd if=/dev/zero of=/dev/nvd0 bs=1M  &
+nohup dd if=/dev/zero of=/dev/nvd1 bs=1M  &
 ```
 
 Da jeder Administrator andere Präferenzen an sein Partitionslayout stellt und wir andernfalls mit diesem HowTo nicht weiterkommen, verwenden wir im Folgenden ein Standard-Partitionslayout. Fortgeschrittenere FreeBSD-Administratoren können dieses Partitionslayout selbstverständlich an ihre eigenen Bedürfnisse anpassen.
@@ -137,21 +137,21 @@ Wir werden auf beiden Festplatten jeweils vier Partitionen anlegen, die Erste f�
 ``` bash
 sysctl kern.geom.debugflags=0x10
 
-gpart destroy -F ada0
-gpart destroy -F ada1
+gpart destroy -F nvd0
+gpart destroy -F nvd1
 
-gpart create -s gpt ada0
-gpart create -s gpt ada1
+gpart create -s gpt nvd0
+gpart create -s gpt nvd1
 
-gpart add -t freebsd-boot -b 4096 -s 512 -a 4096 ada0
-gpart add -t freebsd-ufs  -b 8192 -s 32G -a 4096 ada0
-gpart add -t freebsd-ufs          -s 24G -a 4096 ada0
-gpart add -t freebsd-swap         -s  4G -a 4096 ada0
+gpart add -t freebsd-boot -b 4096 -s 512 -a 4096 nvd0
+gpart add -t freebsd-ufs  -b 8192 -s 32G -a 4096 nvd0
+gpart add -t freebsd-ufs          -s 24G -a 4096 nvd0
+gpart add -t freebsd-swap         -s  4G -a 4096 nvd0
 
-gpart add -t freebsd-boot -b 4096 -s 512 -a 4096 ada1
-gpart add -t freebsd-ufs  -b 8192 -s 32G -a 4096 ada1
-gpart add -t freebsd-ufs          -s 24G -a 4096 ada1
-gpart add -t freebsd-swap         -s  4G -a 4096 ada1
+gpart add -t freebsd-boot -b 4096 -s 512 -a 4096 nvd1
+gpart add -t freebsd-ufs  -b 8192 -s 32G -a 4096 nvd1
+gpart add -t freebsd-ufs          -s 24G -a 4096 nvd1
+gpart add -t freebsd-swap         -s  4G -a 4096 nvd1
 ```
 
 Für eine leicht erhöhte Datensicherheit legen wir mittels `gmirror` ein Software-RAID1 an.
@@ -159,9 +159,9 @@ Für eine leicht erhöhte Datensicherheit legen wir mittels `gmirror` ein Softwa
 ``` bash
 kldload geom_mirror
 
-gmirror label -b load root ada0p2 ada1p2
-gmirror label -b load data ada0p3 ada1p3
-gmirror label -b prefer -F swap ada0p4 ada1p4
+gmirror label -b load root nvd0p2 nvd1p2
+gmirror label -b load data nvd0p3 nvd1p3
+gmirror label -b prefer -F swap nvd0p4 nvd1p4
 ```
 
 ## Formatieren der Partitionen
@@ -197,8 +197,8 @@ mount -t ufs /dev/mirror/data /mnt/data
 Auf die gemounteten Partitionen entpacken wir ein FreeBSD Basesystem mit dem wir problemlos weiterarbeiten können. Je nach Auslastung des FreeBSD FTP-Servers kann dies ein wenig dauern, bitte nicht ungeduldig werden.
 
 ``` bash
-fetch -4 -q -o - --no-verify-peer https://download.freebsd.org/ftp/releases/amd64/amd64/12.2-RELEASE/base.txz   | tar Jxpvf - -C /mnt/
-fetch -4 -q -o - --no-verify-peer https://download.freebsd.org/ftp/releases/amd64/amd64/12.2-RELEASE/kernel.txz | tar Jxpvf - -C /mnt/
+fetch -4 -q -o - --no-verify-peer https://download.freebsd.org/ftp/releases/amd64/amd64/13.1-RELEASE/base.txz   | tar Jxpvf - -C /mnt/
+fetch -4 -q -o - --no-verify-peer https://download.freebsd.org/ftp/releases/amd64/amd64/13.1-RELEASE/kernel.txz | tar Jxpvf - -C /mnt/
 
 cp -a /mnt/boot/kernel /mnt/boot/GENERIC
 ```
@@ -206,11 +206,11 @@ cp -a /mnt/boot/kernel /mnt/boot/GENERIC
 Unser System soll natürlich auch von den Festplatten booten können, weshalb wir jetzt den Bootcode und Bootloader in den Bootpartitionen installieren.
 
 ``` bash
-gpart bootcode -b /mnt/boot/pmbr -p /mnt/boot/gptboot -i 1 ada0
-gpart bootcode -b /mnt/boot/pmbr -p /mnt/boot/gptboot -i 1 ada1
+gpart bootcode -b /mnt/boot/pmbr -p /mnt/boot/gptboot -i 1 nvd0
+gpart bootcode -b /mnt/boot/pmbr -p /mnt/boot/gptboot -i 1 nvd1
 
-gpart set -a bootme -i 2 ada0
-gpart set -a bootme -i 2 ada1
+gpart set -a bootme -i 2 nvd0
+gpart set -a bootme -i 2 nvd1
 ```
 
 ## Vorbereiten der Chroot-Umgebung
@@ -251,34 +251,6 @@ cat >> /etc/crontab << "EOF"
 "EOF"
 ```
 
-## Locale einrichten
-
-Auf Servern sollte für Systemuser eine amerikanisch-englische Locale mit Unicode (UTF-8) verwendet werden. Wir bearbeiten hierzu mit dem Editor `ee` (`ee /etc/login.conf`) in der Datei `/etc/login.conf` die Login-Klasse `default`, indem wir vor der letzten Zeile folgende Zeilen hinzufügen.
-
-``` text
-        :charset=UTF-8:\
-        :lang=en_US.UTF-8:\
-```
-
-Anschliessend muss die Datei in eine Systemdatenbank umgewandelt werden.
-
-``` bash
-cap_mkdb /etc/login.conf
-```
-
-Nach dem nächsten Login sollte der Befehl `locale` die folgende Ausgabe liefern.
-
-``` text
-LANG=en_US.UTF-8
-LC_CTYPE="en_US.UTF-8"
-LC_COLLATE="en_US.UTF-8"
-LC_TIME="en_US.UTF-8"
-LC_NUMERIC="en_US.UTF-8"
-LC_MONETARY="en_US.UTF-8"
-LC_MESSAGES="en_US.UTF-8"
-LC_ALL=
-```
-
 ## Shell einrichten
 
 Unter FreeBSD ist die Tenex C Shell (TCSH) die Standard-Shell. Für Bash-gewohnte Linux-User ist diese Shell etwas gewöhnungsbedürftig, und natürlich kann man sie später auch gegen eine andere Shell austauschen (im Basis-System ist neben der TCSH auch eine ASH enthalten). Skripte würde ich persönlich für die TCSH eher nicht schreiben, aber für die tägliche Administrationsarbeit ist die TCSH ein sehr brauchbares Werkzeug – wenn man sie erst mal etwas umkonfiguriert hat. Dies tun wir jetzt.
@@ -316,6 +288,7 @@ sed -e 's|^#\(PermitRootLogin\).*$|\1 yes|' \
     -e 's|^#\(PubkeyAuthentication\).*$|\1 yes|' \
     -e 's|^#\(PasswordAuthentication\).*$|\1 yes|' \
     -e 's|^#\(PermitEmptyPasswords\).*$|\1 no|' \
+    -e 's|^#\(KbdInteractiveAuthentication\).*$|\1 no|' \
     -e 's|^#\(ChallengeResponseAuthentication\).*$|\1 no|' \
     -e 's|^#\(UsePAM\).*$|\1 no|' \
     -e 's|^#\(AllowAgentForwarding\).*$|\1 no|' \
@@ -905,6 +878,7 @@ kernels="GENERIC MYKERNEL"
 
 # Kernel modules
 ahci_load="YES"
+nvme_load="YES"
 geom_mirror_load="YES"
 opensolaris_load="YES"
 zfs_load="YES"

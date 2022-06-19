@@ -62,10 +62,10 @@ cd "${Env:USERPROFILE}\VirtualBox VMs\Gentoo"
 & "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" modifyvm "Gentoo" --boot1 dvd --boot2 disk --boot3 none --boot4 none
 
 & "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" storagectl "Gentoo" --name "IDE Controller" --add ide --controller ICH6 --portcount 2
-& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" storagectl "Gentoo" --name "SATA Controller" --add sata --controller IntelAHCI --portcount 4
+& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" storagectl "Gentoo" --name "AHCI Controller" --add sata --controller IntelAHCI --portcount 4
 
-& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" storageattach "Gentoo" --storagectl "SATA Controller" --port 0 --device 0 --type hdd --medium "Gentoo1.vdi"
-& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" storageattach "Gentoo" --storagectl "SATA Controller" --port 1 --device 0 --type hdd --medium "Gentoo2.vdi"
+& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" storageattach "Gentoo" --storagectl "AHCI Controller" --port 0 --device 0 --type hdd --medium "Gentoo1.vdi"
+& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" storageattach "Gentoo" --storagectl "AHCI Controller" --port 1 --device 0 --type hdd --medium "Gentoo2.vdi"
 ```
 
 Die virtuelle Maschine, genauer die virtuelle Netzwerkkarte, kann dank NAT zwar problemlos mit der Aussenwelt, aber leider nicht direkt mit dem Hostsystem kommunizieren. Aus diesem Grund richten wir nun für den SSH-Zugang noch ein Portforwarding ein, welches den Port 2222 des Hostsystems auf den Port 22 der virtuellen Maschine weiterleitet.
