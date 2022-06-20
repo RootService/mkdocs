@@ -36,15 +36,16 @@ Um unser [mfsBSD Image](/howtos/freebsd/mfsbsd_image/) installieren zu können, 
 ???+ hint
 
     Die Versionen nach 5.3.2 der SystemRescueCD basieren auf [Arch Linux](https://archlinux.org/){: target="_blank" rel="noopener"} und werden in diesem HowTo noch nicht supportet.
+    Darüberhinaus haben die neueren Versionen teilweise Probleme in VirtualBox gebootet zu werden.
 
 ``` powershell
 cd "${Env:USERPROFILE}\VirtualBox VMs\FreeBSD"
 
-curl.exe -o systemrescuecd-x86-5.3.2.iso https://netcologne.dl.sourceforge.net/project/systemrescuecd/sysresccd-x86/5.3.2/systemrescuecd-x86-5.3.2.iso
-# curl -o systemrescue-7.01-amd64.iso https://ftp.halifax.rwth-aachen.de/osdn/storage/g/s/sy/systemrescuecd/releases/7.01/systemrescue-7.01-i686.iso
+curl -o systemrescuecd-x86-5.3.2.iso https://netcologne.dl.sourceforge.net/project/systemrescuecd/sysresccd-x86/5.3.2/systemrescuecd-x86-5.3.2.iso
+# curl -o systemrescue-9.03-amd64.iso https://netcologne.dl.sourceforge.net/project/systemrescuecd/sysresccd-x86/9.03/systemrescue-9.03-amd64.iso
 
 & "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" storageattach "FreeBSD" --storagectl "AHCI Controller" --port 0 --device 0 --type dvddrive --medium "systemrescuecd-x86-5.3.2.iso"
-# & "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" storageattach "FreeBSD" --storagectl "AHCI Controller" --port 0 --device 0 --type dvddrive --medium "systemrescue-7.01-amd64.iso"
+# & "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" storageattach "FreeBSD" --storagectl "AHCI Controller" --port 0 --device 0 --type dvddrive --medium "systemrescue-9.03-amd64.iso"
 ```
 
 Wir können das RescueSystem jetzt booten.
@@ -53,9 +54,7 @@ Wir können das RescueSystem jetzt booten.
 & "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" startvm "FreeBSD"
 ```
 
-Im Bootmenü wählen wir die erste Option "boot with default options" aus.
-
-Wer mit dem amerikanischen Tastaturlayout nicht zurechtkommt, sollte nach dem Booten die Keymap auf `de` umstellen.
+Im Bootmenü wählen wir die erste Option "Boot with default options" aus und wer mit dem amerikanischen Tastaturlayout nicht zurechtkommt, sollte während dem Booten die Keymap auf `de` umstellen.
 
 Ist der Bootvorgang abgeschlossen, wird als Erstes das root-Passwort für das RescueSystem gesetzt und der SSH-Server gestartet.
 
@@ -84,9 +83,9 @@ pscp -P 2222 "${Env:USERPROFILE}\VirtualBox VMs\mfsBSD\mfsbsd-13.1-RELEASE-amd64
 Jetzt können wir das mfsBSD Image mittels `dd` auf der ersten Festplatte (`/dev/sda`) unserer virtuellen Maschine installieren und uns anschliessend wieder aus dem RescueSystem ausloggen.
 
 ``` bash
-dd if=/dev/zero of=/dev/sda count=256 bs=1M
+dd if=/dev/zero of=/dev/nvme0n1 count=512 bs=1M
 
-dd if=/tmp/mfsbsd-13.1-RELEASE-amd64.img of=/dev/sda bs=1M
+dd if=/tmp/mfsbsd-13.1-RELEASE-amd64.img of=/dev/nvme0n1 bs=1M
 
 exit
 ```
@@ -143,13 +142,13 @@ gpart destroy -F nvd1
 gpart create -s gpt nvd0
 gpart create -s gpt nvd1
 
-gpart add -t freebsd-boot -b 4096 -s 512 -a 4096 nvd0
-gpart add -t freebsd-ufs  -b 8192 -s 32G -a 4096 nvd0
+gpart add -t efi          -b 4096 -s 62M -a 4096 nvd0
+gpart add -t freebsd-ufs          -s 32G -a 4096 nvd0
 gpart add -t freebsd-ufs          -s 24G -a 4096 nvd0
 gpart add -t freebsd-swap         -s  4G -a 4096 nvd0
 
-gpart add -t freebsd-boot -b 4096 -s 512 -a 4096 nvd1
-gpart add -t freebsd-ufs  -b 8192 -s 32G -a 4096 nvd1
+gpart add -t efi          -b 4096 -s 62M -a 4096 nvd1
+gpart add -t freebsd-ufs          -s 32G -a 4096 nvd1
 gpart add -t freebsd-ufs          -s 24G -a 4096 nvd1
 gpart add -t freebsd-swap         -s  4G -a 4096 nvd1
 ```
@@ -171,9 +170,6 @@ Nun müssen wir noch die Systempartition und die Partition für die Nutzdaten mi
 ``` bash
 newfs -O2 -U -f 4096 /dev/mirror/root
 newfs -O2 -U -f 4096 /dev/mirror/data
-
-tunefs -n enable /dev/mirror/root
-tunefs -n enable /dev/mirror/data
 
 tunefs -a enable /dev/mirror/root
 tunefs -a enable /dev/mirror/data
@@ -199,17 +195,40 @@ Auf die gemounteten Partitionen entpacken wir ein FreeBSD Basesystem mit dem wir
 ``` bash
 fetch -4 -q -o - --no-verify-peer https://download.freebsd.org/ftp/releases/amd64/amd64/13.1-RELEASE/base.txz   | tar Jxpvf - -C /mnt/
 fetch -4 -q -o - --no-verify-peer https://download.freebsd.org/ftp/releases/amd64/amd64/13.1-RELEASE/kernel.txz | tar Jxpvf - -C /mnt/
+fetch -4 -q -o - --no-verify-peer https://download.freebsd.org/ftp/releases/amd64/amd64/13.1-RELEASE/src.txz    | tar Jxpvf - -C /mnt/
 
 cp -a /mnt/boot/kernel /mnt/boot/GENERIC
 ```
 
 Unser System soll natürlich auch von den Festplatten booten können, weshalb wir jetzt den Bootcode und Bootloader in den Bootpartitionen installieren.
 
+Festplatte 1:
+
 ``` bash
-gpart bootcode -b /mnt/boot/pmbr -p /mnt/boot/gptboot -i 1 nvd0
-gpart bootcode -b /mnt/boot/pmbr -p /mnt/boot/gptboot -i 1 nvd1
+newfs_msdos -F 32 -c 1 /dev/nvd0p1
+
+mount -t msdosfs -o longnames /dev/nvd0p1 /mnt/boot/efi
+
+mkdir -p /mnt/boot/efi/EFI/BOOT
+cp /mnt/boot/loader.efi /mnt/boot/efi/EFI/BOOT/BOOTX64.efi
+
+umount /mnt/boot/efi
 
 gpart set -a bootme -i 2 nvd0
+```
+
+Festplatte 2:
+
+``` bash
+newfs_msdos -F 32 -c 1 /dev/nvd1p1
+
+mount -t msdosfs -o longnames /dev/nvd1p1 /mnt/boot/efi
+
+mkdir -p /mnt/boot/efi/EFI/BOOT
+cp /mnt/boot/loader.efi /mnt/boot/efi/EFI/BOOT/BOOTX64.efi
+
+umount /mnt/boot/efi
+
 gpart set -a bootme -i 2 nvd1
 ```
 
@@ -442,7 +461,7 @@ vfs.zfs.min_auto_ashift=12
 
 ### Stärkere Passwort-Hashes verwenden
 
-Um Bruteforce-Attacken erheblich auszubremsen setzen wir für die Passworte der Systemuser eine Mindestlänge (minpasswordlen) von 12 Zeichen in einem Mix aus Gross- und Kleinschreibung (mixpasswordcase) fest. Desweiteren lassen wir User nach 30 Minuten Inaktivität automatisch ausloggen (idletime). Wir bearbeiten hierzu mit dem Editor `ee` (`ee /etc/login.conf`) in der Datei `/etc/login.conf` die Login-Klasse `default`, indem wir vor der letzten Zeile folgende Zeilen hinzufügen.
+Um Bruteforce-Attacken erheblich auszubremsen setzen wir für die Passworte der Systemuser eine Mindestlänge (minpasswordlen) von 12 Zeichen in einem Mix aus Gross- und Kleinschreibung (mixpasswordcase) fest. Desweiteren lassen wir User nach 30 Minuten Inaktivität automatisch ausloggen (idletime). Wir bearbeiten hierzu mit dem Editor `ee` (`ee /etc/login.conf`) in der Datei `/etc/login.conf` die Login-Klasse `default`, indem wir vor der vorletzten Zeile folgende Zeilen hinzufügen.
 
 ``` text
         :mixpasswordcase=true:\
@@ -482,7 +501,7 @@ P|Pc|Pc console:\
 
 ## System konfigurieren
 
-Mail alias für `root` einrichten.
+Mail alias für `root` einrichten (bitte example.com ersetzen).
 
 ``` bash
 sed -e 's/^#[[:space:]]*\(root:[[:space:]]*\).*$/\1 admin@example.com/' \
@@ -543,7 +562,7 @@ proc                       /proc                   procfs  rw                  0
 "EOF"
 ```
 
-In der `/etc/rc.conf` werden diverse Grundeinstellungen für das System und die installierten Dienste vorgenommen.
+In der `/etc/rc.conf` werden diverse Grundeinstellungen für das System und die installierten Dienste vorgenommen (bitte example.com ersetzen).
 
 ``` bash
 cat > /etc/rc.conf << "EOF"
@@ -659,7 +678,7 @@ ifconfig `route -n get -inet6 default | awk '/interface/ {print $2}'` inet6 | \
     xargs -I % sed -e 's/PREFLEN6/%/g' -i '' /etc/rc.conf
 ```
 
-Wir richten die `/etc/hosts` ein.
+Wir richten die `/etc/hosts` ein (bitte example.com ersetzen).
 
 ``` bash
 # localhost
@@ -759,7 +778,7 @@ exit
 
 ``` bash
 cat > /etc/make.conf << "EOF"
-KERNCONF?=GENERIC MYKERNEL
+KERNCONF?=GENERIC
 SVN=/usr/bin/svnlite
 SVN_UPDATE=yes
 #MAKE_JOBS_NUMBER=4
@@ -839,27 +858,6 @@ WITHOUT_WIRELESS=YES
 
 ## Kernel konfigurieren
 
-``` bash
-svnlite checkout svn://svn.freebsd.org/base/releng/`/bin/freebsd-version -u | cut -d- -f1` /usr/src
-
-mkdir -p /root/kernels
-
-cat > /root/kernels/MYKERNEL << "EOF"
-include GENERIC
-ident   MYKERNEL
-options ALTQ
-options ALTQ_CBQ
-options ALTQ_RED
-options ALTQ_RIO
-options ALTQ_HFSC
-options ALTQ_CDNR
-options ALTQ_PRIQ
-options ALTQ_NOPCC
-"EOF"
-
-ln -s /root/kernels/MYKERNEL /usr/src/sys/amd64/conf/
-```
-
 Kernel Parameter in `/boot/loader.conf` setzen.
 
 ``` bash
@@ -874,7 +872,7 @@ verbose_loading="YES"
 
 # Kernel selection
 kernel="GENERIC"
-kernels="GENERIC MYKERNEL"
+kernels="GENERIC"
 
 # Kernel modules
 ahci_load="YES"
@@ -950,22 +948,38 @@ su - root
 
 Nach dem Reboot aktualisieren und entschlacken wir das System.
 
+### ports-mgmt/pkg installieren
+
+Wir installieren als Erstes `pkg`.
+
+``` bash
+pkg install pkg
+```
+
+### devel/git installieren
+
+Wir installieren als Nächstes `git` und seine Abhängigkeiten.
+
+``` bash
+pkg install git
+```
+
 ### Source Tree auschecken
 
 Am Besten funktioniert bei FreeBSD immer noch die Aktualisierung über die System-Sourcen. Auf diesem Wege kann man ein System über viele Release-Generationen hinweg aktuell halten, ohne eine Neuinstallation durchzuführen. Das Verfahren ist zwar etwas zeitaufwändig, aber erprobt und führt bei richtiger Anwendung zu einem sauberen, aktuellen System.
 
-Zunächst wird hierzu das aktuelle Quellenverzeichnis von FreeBSD benötigt, weshalb wir es mittels [svnlite](https://www.freebsd.org/cgi/man.cgi?query=svnlite&sektion=1){: target="_blank" rel="noopener"}, einem im Funktionsumfang reduziertem SVN-Client von FreeBSD, auschecken.
+Zunächst wird hierzu das aktuelle Quellenverzeichnis von FreeBSD benötigt, weshalb wir es mittels [git](https://www.freebsd.org/cgi/man.cgi?query=git&sektion=1&format=html){: target="_blank" rel="noopener"} auschecken.
 
 ``` bash
-# Neues Quellenverzeichnis anlegen (checkout)
-rm -r /usr/src && svnlite checkout svn://svn.freebsd.org/base/releng/`/bin/freebsd-version -u | cut -d- -f1` /usr/src
-ln -s /root/kernels/MYKERNEL /usr/src/sys/amd64/conf/
+# Neues Quellenverzeichnis anlegen (clone)
+rm -r /usr/src
+git clone -o freebsd -b releng/`/bin/freebsd-version -u | cut -d- -f1` https://git.FreeBSD.org/src.git /usr/src
 
-# Vorhandenes Quellenverzeichnis aktualisieren (update)
-cd /usr/src && svnlite update
+# Vorhandenes Quellenverzeichnis aktualisieren (pull)
+git -C /usr/src pull --rebase
 
-# Vorhandenes Quellenverzeichnis zu FreeBSD 12-STABLE wechseln (switch)
-#cd /usr/src && svnlite switch svn://svn.freebsd.org/base/stable/12
+# Vorhandenes Quellenverzeichnis zu FreeBSD 13-STABLE wechseln (checkout)
+git -C /usr/src checkout stable/13
 ```
 
 ### Konfiguration anpassen
@@ -985,12 +999,9 @@ Zunächst müssen eventuell vorhandene Object-Dateien im Verzeichnis `/usr/obj` 
 ``` bash
 cd /usr/src
 
-make clean
+make clean cleanworld
 
-svnlite update
-
-chflags -R noschg /usr/obj/*
-rm -rf /usr/obj/*
+git -C /usr/src pull --rebase
 ```
 
 Ausserdem sollte [mergemaster](https://www.freebsd.org/cgi/man.cgi?query=mergemaster&sektion=8){: target="_blank" rel="noopener"} im Pre-Build-Mode angeworfen werden, damit es während der Aktualisierung nicht zu Fehlern kommt, weil z. B. bestimmte User oder Gruppen noch nicht vorhanden sind.
@@ -1015,10 +1026,6 @@ Wenn die eigene Kernel-Konfiguration wie bei uns bereits in der `/etc/make.conf`
 make -j2 KERNCONF=GENERIC buildkernel
 make KERNCONF=GENERIC INSTALLKERNEL=GENERIC INSTKERNNAME=GENERIC installkernel
 sed -e 's/^#fdesc/fdesc/' -i '' /etc/fstab
-
-make -j2 KERNCONF=MYKERNEL buildkernel
-make KERNCONF=MYKERNEL INSTALLKERNEL=MYKERNEL INSTKERNNAME=MYKERNEL installkernel
-sed -e 's/^\(kernel=\).*$/\1"MYKERNEL"/' -i '' /boot/loader.conf
 ```
 
 Normalerweise wäre nun ein Reboot in den Single User Mode an der Reihe. Da sich ein Remote-System in diesem Modus ohne KVM-Lösung aber nicht bedienen lässt, begnügen wir uns damit, das System regulär neu zu starten.

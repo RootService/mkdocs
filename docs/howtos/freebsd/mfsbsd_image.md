@@ -26,7 +26,7 @@ VirtualBox (inklusive dem Extensionpack) und PuTTY werden mit den jeweiligen Sta
 
 ## Die Virtuelle Maschine
 
-Als Erstes öffnen wir eine neue Eingabeaufforderung und legen manuell eine neue virtuelle Maschine an. Diese virtuelle Maschine bekommt den Namen `mfsBSD` und wird mit einem Dual-Core Prozessor, Intels ICH9-Chipsatz, 4096MB RAM, 64MB VideoRAM, einer 64GB SSD-Festplatte, einem DVD-Player, einer Intel-Netzwerkkarte, einem NVMe-Controller sowie einem AHCI-Controller ausgestattet. Zudem setzen wir die RTC (Real-Time Clock) der virtuellen Maschine auf UTC (Coordinated Universal Time), aktivieren den HPET (High Precision Event Timer) und legen die Bootreihenfolge fest.
+Als Erstes öffnen wir eine neue PowerShell und legen manuell eine neue virtuelle Maschine an. Diese virtuelle Maschine bekommt den Namen `mfsBSD` und wird mit einer UEFI-Firmware, einem Dual-Core Prozessor, Intels ICH9-Chipsatz, 4096MB RAM, 64MB VideoRAM, einer 64GB SSD-Festplatte, einem DVD-Player, einer Intel-Netzwerkkarte, einem NVMe-Controller sowie einem AHCI-Controller ausgestattet. Zudem setzen wir die RTC (Real-Time Clock) der virtuellen Maschine auf UTC (Coordinated Universal Time), aktivieren den HPET (High Precision Event Timer) und legen die Bootreihenfolge fest.
 
 ``` powershell
 & "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" createvm --name "mfsBSD" --ostype FreeBSD_64 --register
@@ -35,7 +35,7 @@ cd "${Env:USERPROFILE}\VirtualBox VMs\mfsBSD"
 
 & "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" createmedium disk --filename "mfsBSD1.vdi" --format VDI --size 64536
 
-& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" modifyvm "mfsBSD" --firmware bios --cpus 2 --cpuexecutioncap 100 --cpuhotplug off
+& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" modifyvm "mfsBSD" --firmware efi --cpus 2 --cpuexecutioncap 100 --cpuhotplug off
 & "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" modifyvm "mfsBSD" --chipset ICH9 --graphicscontroller vmsvga --audio none --usb off
 & "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" modifyvm "mfsBSD" --hwvirtex on --ioapic on --hpet on --rtcuseutc on --memory 4096 --vram 64
 & "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" modifyvm "mfsBSD" --nic1 nat --nictype1 82540EM --natnet1 "192.168/16" --cableconnected1 on
@@ -94,8 +94,8 @@ Wir werden drei Partitionen anlegen, die Erste für den Bootcode, die Zweite als
 sysctl kern.geom.debugflags=0x10
 
 gpart create -s gpt nvd0
-gpart add -t freebsd-boot -b 4096 -s 512 -a 4096 nvd0
-gpart add -t freebsd-ufs  -b 8192 -s 56G -a 4096 nvd0
+gpart add -t efi          -b 4096 -s 62M -a 4096 nvd0
+gpart add -t freebsd-ufs          -s 56G -a 4096 nvd0
 gpart add -t freebsd-swap         -s  4G -a 4096 nvd0
 ```
 
@@ -121,7 +121,16 @@ cp -a /usr/freebsd-dist /mnt/usr/
 Unser System soll natürlich auch von der Festplatte booten können, weshalb wir jetzt den Bootcode und Bootloader in der Bootpartittion installieren.
 
 ``` bash
-gpart bootcode -b /mnt/boot/pmbr -p /mnt/boot/gptboot -i 1 nvd0
+newfs_msdos -F 32 -c 1 /dev/nvd0p1
+
+mount -t msdosfs -o longnames /dev/nvd0p1 /mnt/boot/efi
+
+mkdir -p /mnt/boot/efi/EFI/BOOT
+cp /mnt/boot/loader.efi /mnt/boot/efi/EFI/BOOT/BOOTX64.efi
+
+umount /mnt/boot/efi
+
+gpart set -a bootme -i 2 nvd0
 ```
 
 Vor dem Wechsel in die Chroot-Umgebung müssen wir noch die `resolv.conf` in die Chroot-Umgebung kopieren und das Device-Filesysteme dorthin mounten.
@@ -365,6 +374,8 @@ exit
 
 umount /mnt/dev
 umount /mnt
+
+exit
 ```
 
 Abschliessend beenden wir die virtuelle Maschine und werfen die Installations-DVD aus.
@@ -387,17 +398,19 @@ putty -ssh -P 2222 admin@127.0.0.1
 
 ## ports-mgmt/pkg installieren
 
+Hierzu wechseln wir nun per `su` zu `root` und installieren pkg.
+
 ``` bash
+su - root
+
 pkg install pkg
 ```
 
 ## mfsBSD erzeugen
 
-Wir werden nun unser mfsBSD-Image erzeugen, um damit später unser eigentliches dediziertes System booten und installieren zu können. Hierzu wechseln wir nun per `su` zu `root` und legen uns ein Arbeitsverzeichnis an.
+Wir werden nun unser mfsBSD-Image erzeugen, um damit später unser eigentliches dediziertes System booten und installieren zu können. Hierzu legen uns zunächst ein Arbeitsverzeichnis an.
 
 ``` bash
-su - root
-
 mkdir /usr/local/mfsbsd
 ```
 
@@ -432,6 +445,10 @@ pscp -P 2222 admin@127.0.0.1:/usr/local/mfsbsd/mfsbsd-master/mfsbsd-13.1-RELEASE
 ```
 
 Die virtuelle Maschine können wir an dieser Stelle nun beenden.
+
+``` bash
+exit
+```
 
 ``` powershell
 & "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" controlvm "mfsBSD" acpipowerbutton

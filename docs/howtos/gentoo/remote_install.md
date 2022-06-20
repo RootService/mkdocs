@@ -36,7 +36,7 @@ Folgende Punkte sind in diesem HowTo zu beachten.
 
 ## Das Referenzsystem
 
-Als Referenzsystem für dieses HowTo habe ich mich für eine virtuelle Maschine auf Basis von [Oracle VM VirtualBox](https://www.virtualbox.org/){: target="_blank" rel="noopener"} unter [Microsoft Windows 10 Professional (64 Bit)](https://support.microsoft.com/products/windows){: target="_blank" rel="noopener"} entschieden. So lässt sich ohne grösseren Aufwand ein handelsüblicher dedizierter Server simulieren und anschliessend kann diese virtuelle Maschine als kostengünstiges lokales Testsystem weiter genutzt werden.
+Als Referenzsystem für dieses HowTo habe ich mich für eine virtuelle Maschine auf Basis von [Oracle VM VirtualBox](https://www.virtualbox.org/){: target="_blank" rel="noopener"} unter [Microsoft Windows 7 Professional (64 Bit)](https://support.microsoft.com/products/windows){: target="_blank" rel="noopener"} entschieden. So lässt sich ohne grösseren Aufwand ein handelsüblicher dedizierter Server simulieren und anschliessend kann diese virtuelle Maschine als kostengünstiges lokales Testsystem weiter genutzt werden.
 
 Trotzdem habe ich dieses HowTo so ausgelegt, dass es sich nahezu unverändert auf dedizierte Server übertragen lässt und dieses auch auf mehreren dedizierten Servern getestet.
 
@@ -46,7 +46,7 @@ VirtualBox und PuTTY werden mit den jeweiligen Standardoptionen installiert.
 
 ## Die Virtuelle Maschine
 
-Als Erstes öffnen wir eine neue Eingabeaufforderung und legen manuell eine neue virtuelle Maschine an. Diese virtuelle Maschine bekommt den Namen `Gentoo` und wird mit 2048MB RAM, 32MB VideoRAM, zwei 32GB SATA-Festplatte, einem DVD-Player, sowie einer Intel-Netzwerkkarte ausgestattet. Zudem setzen wir die RTC (Real-Time Clock) der virtuellen Maschine auf UTC (Coordinated Universal Time), aktivieren den HPET (High Precision Event Timer) und legen die Bootreihenfolge fest.
+Als Erstes öffnen wir eine neue PowerShell und legen manuell eine neue virtuelle Maschine an. Diese virtuelle Maschine bekommt den Namen `Gentoo` und wird mit 2048MB RAM, 32MB VideoRAM, zwei 32GB SATA-Festplatte, einem DVD-Player, sowie einer Intel-Netzwerkkarte ausgestattet. Zudem setzen wir die RTC (Real-Time Clock) der virtuellen Maschine auf UTC (Coordinated Universal Time), aktivieren den HPET (High Precision Event Timer) und legen die Bootreihenfolge fest.
 
 ``` powershell
 & "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" createvm --name "Gentoo" --ostype Gentoo_64 --register
@@ -56,9 +56,10 @@ cd "${Env:USERPROFILE}\VirtualBox VMs\Gentoo"
 & "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" createhd --filename "Gentoo1.vdi" --size 32768
 & "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" createhd --filename "Gentoo2.vdi" --size 32768
 
-& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" modifyvm "Gentoo" --chipset ICH9 --memory 2048 --vram 32 --hpet on --rtcuseutc on
-& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" modifyvm "Gentoo" --cpus 2 --cpuexecutioncap 50 --cpuhotplug off --hwvirtex on
-& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" modifyvm "Gentoo" --nic1 nat --nictype1 virtio --cableconnected1 on
+& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" modifyvm "Gentoo" --firmware bios --cpus 2 --cpuexecutioncap 100 --cpuhotplug off
+& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" modifyvm "Gentoo" --chipset ICH9 --graphicscontroller vmsvga --audio none --usb off
+& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" modifyvm "Gentoo" --hwvirtex on --ioapic on --hpet on --rtcuseutc on --memory 4096 --vram 64
+& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" modifyvm "Gentoo" --nic1 nat --nictype1 82540EM --natnet1 "192.168/16" --cableconnected1 on
 & "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" modifyvm "Gentoo" --boot1 dvd --boot2 disk --boot3 none --boot4 none
 
 & "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" storagectl "Gentoo" --name "IDE Controller" --add ide --controller ICH6 --portcount 2

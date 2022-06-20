@@ -89,7 +89,7 @@ VirtualBox (inklusive dem Extensionpack) und PuTTY werden mit den jeweiligen Sta
 
 ## Die Virtuelle Maschine
 
-Als Erstes öffnen wir eine neue Eingabeaufforderung und legen manuell eine neue virtuelle Maschine an. Diese virtuelle Maschine bekommt den Namen `FreeBSD` und wird mit einem Dual-Core Prozessor, Intels ICH9-Chipsatz, 4096MB RAM, 64MB VideoRAM, zwei 64GB SSD-Festplatten, einem DVD-Player, einer Intel-Netzwerkkarte, einem NVMe-Controller sowie einem AHCI-Controller ausgestattet. Zudem setzen wir die RTC (Real-Time Clock) der virtuellen Maschine auf UTC (Coordinated Universal Time), aktivieren den HPET (High Precision Event Timer) und legen die Bootreihenfolge fest.
+Als Erstes öffnen wir eine neue PowerShell und legen manuell eine neue virtuelle Maschine an. Diese virtuelle Maschine bekommt den Namen `FreeBSD` und wird mit einer UEFI-Firmware, einem Dual-Core Prozessor, Intels ICH9-Chipsatz, 4096MB RAM, 64MB VideoRAM, zwei 64GB SSD-Festplatten, einem DVD-Player, einer Intel-Netzwerkkarte, einem NVMe-Controller sowie einem AHCI-Controller ausgestattet. Zudem setzen wir die RTC (Real-Time Clock) der virtuellen Maschine auf UTC (Coordinated Universal Time), aktivieren den HPET (High Precision Event Timer) und legen die Bootreihenfolge fest.
 
 ``` powershell
 & "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" createvm --name "FreeBSD" --ostype FreeBSD_64 --register
@@ -99,7 +99,7 @@ cd "${Env:USERPROFILE}\VirtualBox VMs\FreeBSD"
 & "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" createmedium disk --filename "FreeBSD1.vdi" --format VDI --size 64536
 & "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" createmedium disk --filename "FreeBSD2.vdi" --format VDI --size 64536
 
-& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" modifyvm "FreeBSD" --firmware bios --cpus 2 --cpuexecutioncap 100 --cpuhotplug off
+& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" modifyvm "FreeBSD" --firmware efi --cpus 2 --cpuexecutioncap 100 --cpuhotplug off
 & "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" modifyvm "FreeBSD" --chipset ICH9 --graphicscontroller vmsvga --audio none --usb off
 & "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" modifyvm "FreeBSD" --hwvirtex on --ioapic on --hpet on --rtcuseutc on --memory 4096 --vram 64
 & "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" modifyvm "FreeBSD" --nic1 nat --nictype1 82540EM --natnet1 "192.168/16" --cableconnected1 on
