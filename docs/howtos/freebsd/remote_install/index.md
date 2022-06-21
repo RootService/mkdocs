@@ -20,33 +20,32 @@ Unser BaseSystem wird am Ende folgende Dienste umfassen.
 
 - FreeBSD 13.1-RELEASE 64Bit
 - OpenSSL 1.1.1
-- OpenSSH 7.9
-- Unbound 1.10.1
+- OpenSSH 8.8
+- Unbound 1.13.1
 
 Unsere BasePorts werden am Ende folgende Dienste umfassen.
 
 - Perl 5.32.1
 - OpenSSL 1.1.1
 - LUA 5.2.4
-- TCL 8.6.11
-- SQLite 3.34.1
-- Python 3.7.9
-- Berkeley DB 5.3.28
-- Ruby 2.7.2
-- SUDO 1.9.5
+- TCL 8.6.12
+- Python 3.8.13
+- Ruby 3.0.4
+- Berkeley DB 18.1.40
 
 Unsere BaseTools werden am Ende folgende Dienste umfassen.
 
-- cURL 7.75.0
-- Portmaster 3.19
-- SMARTmontools 7.2
-- Bash 5.1.4
-- Nano 5.5
+- Sudo 1.9.11
+- cURL 7.83.1
+- GIT 2.36.1
+- Portmaster 3.23
+- SMARTmontools 7.3
+- Bash 5.1.16
+- Nano 6.2
 - w3m 0.5.3
-- GnuPG 2.2.27
-- GDBM 1.19
-- SVN 1.14.0
-- GIT 2.30.1
+- GnuPG 2.3.3
+- GDBM 1.23
+- SVN 1.14.2
 
 Folgende Punkte sind in allen folgenden HowTos zu beachten.
 
