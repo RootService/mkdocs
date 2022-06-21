@@ -18,6 +18,8 @@ Diese HowTos setzen ein wie in [Remote Installation](/howtos/freebsd/remote_inst
 
 Unser WebHosting System wird am Ende folgende Dienste umfassen.
 
+- CertBot 1.27.0 (LetsEncrypt ACME API 2.0)
+- Unbound 1.16.0 (DNScrypt, DNS over HTTPS)
 - MySQL 8.0.29 (InnoDB, GTID)
 - Dovecot 2.3.19 (IMAP only, 1GB Quota)
 - Postfix 3.7.2 (Dovecot-SASL, postscreen)
@@ -27,7 +29,6 @@ Unser WebHosting System wird am Ende folgende Dienste umfassen.
 - Apache 2.4.54 (MPM-Event, HTTP/2, mod_brotli)
 - NGinx 1.22.0 (HTTP/2, mod_brotli)
 - PHP 8.0.20 (PHP-FPM, Composer, PEAR)
-- CertBot 1.27.0 (LetsEncrypt ACME API 2.0)
 
 Folgende Punkte sind in allen folgenden HowTos zu beachten.
 
