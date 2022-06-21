@@ -2,7 +2,7 @@
 title: 'Apache'
 description: 'In diesem HowTo wird step-by-step die Installation des Apache Webservers für ein WebHosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2022-04-28'
+updated: '2022-06-21'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 contributors:
@@ -20,7 +20,7 @@ Zu den Voraussetzungen für dieses HowTo siehe bitte: [Voraussetzungen](/howtos/
 
 Unser WebHosting System wird um folgende Dienste erweitert.
 
-- Apache 2.4.46 (MPM-Event, HTTP/2, mod_brotli)
+- Apache 2.4.54 (MPM-Event, HTTP/2, mod_brotli)
 
 ## Installation
 
@@ -29,7 +29,7 @@ Wir installieren `www/apache24` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/www_apache24
 cat > /var/db/ports/www_apache24/options << "EOF"
-_OPTIONS_READ=apache24-2.4.46
+_OPTIONS_READ=apache24-2.4.54
 _FILE_COMPLETE_OPTIONS_LIST=ACCESS_COMPAT ACTIONS ALIAS ALLOWMETHODS ASIS AUTHNZ_FCGI AUTHNZ_LDAP AUTHN_ANON AUTHN_CORE AUTHN_DBD AUTHN_DBM AUTHN_FILE AUTHN_SOCACHE AUTHZ_CORE AUTHZ_DBD AUTHZ_DBM AUTHZ_GROUPFILE AUTHZ_HOST AUTHZ_OWNER AUTHZ_USER AUTH_BASIC AUTH_DIGEST AUTH_FORM AUTOINDEX BROTLI BUFFER CACHE CACHE_DISK CACHE_SOCACHE CERN_META CGI CGID CHARSET_LITE DATA DAV DAV_FS DAV_LOCK DBD DEFLATE DIALUP DIR DOCS DUMPIO ENV EXPIRES EXT_FILTER FILE_CACHE FILTER HEADERS HEARTBEAT HEARTMONITOR HTTP2 IDENT IMAGEMAP INCLUDE INFO IPV4_MAPPED LBMETHOD_BYBUSYNESS LBMETHOD_BYREQUESTS LBMETHOD_BYTRAFFIC LBMETHOD_HEARTBEAT LDAP LOGIO LOG_DEBUG LOG_FORENSIC LUA LUAJIT MACRO MD MIME MIME_MAGIC NEGOTIATION PROXY RATELIMIT REFLECTOR REMOTEIP REQTIMEOUT REQUEST REWRITE SED SESSION SETENVIF SLOTMEM_PLAIN SLOTMEM_SHM SOCACHE_DBM SOCACHE_DC SOCACHE_MEMCACHE SOCACHE_REDIS SOCACHE_SHMCB SPELING SSL STATUS SUBSTITUTE SUEXEC SUEXEC_SYSLOG UNIQUE_ID USERDIR USERTRACK VERSION VHOST_ALIAS WATCHDOG XML2ENC MPM_PREFORK MPM_WORKER MPM_EVENT MPM_SHARED PROXY_AJP PROXY_BALANCER PROXY_CONNECT PROXY_EXPRESS PROXY_FCGI  PROXY_HTTP2 PROXY_FDPASS PROXY_FTP PROXY_HCHECK PROXY_HTML PROXY_HTTP  PROXY_SCGI PROXY_UWSGI PROXY_WSTUNNEL  SESSION_COOKIE SESSION_CRYPTO SESSION_DBD  BUCKETEER CASE_FILTER CASE_FILTER_IN ECHO EXAMPLE_HOOKS EXAMPLE_IPC  OPTIONAL_FN_EXPORT OPTIONAL_FN_IMPORT OPTIONAL_HOOK_EXPORT  OPTIONAL_HOOK_IMPORT
 OPTIONS_FILE_SET+=ACCESS_COMPAT
 OPTIONS_FILE_SET+=ACTIONS
@@ -80,26 +80,26 @@ OPTIONS_FILE_SET+=EXT_FILTER
 OPTIONS_FILE_SET+=FILE_CACHE
 OPTIONS_FILE_SET+=FILTER
 OPTIONS_FILE_SET+=HEADERS
-OPTIONS_FILE_UNSET+=HEARTBEAT
-OPTIONS_FILE_UNSET+=HEARTMONITOR
+OPTIONS_FILE_SET+=HEARTBEAT
+OPTIONS_FILE_SET+=HEARTMONITOR
 OPTIONS_FILE_SET+=HTTP2
 OPTIONS_FILE_UNSET+=IDENT
 OPTIONS_FILE_SET+=IMAGEMAP
 OPTIONS_FILE_SET+=INCLUDE
 OPTIONS_FILE_SET+=INFO
 OPTIONS_FILE_UNSET+=IPV4_MAPPED
-OPTIONS_FILE_UNSET+=LBMETHOD_BYBUSYNESS
-OPTIONS_FILE_UNSET+=LBMETHOD_BYREQUESTS
-OPTIONS_FILE_UNSET+=LBMETHOD_BYTRAFFIC
-OPTIONS_FILE_UNSET+=LBMETHOD_HEARTBEAT
+OPTIONS_FILE_SET+=LBMETHOD_BYBUSYNESS
+OPTIONS_FILE_SET+=LBMETHOD_BYREQUESTS
+OPTIONS_FILE_SET+=LBMETHOD_BYTRAFFIC
+OPTIONS_FILE_SET+=LBMETHOD_HEARTBEAT
 OPTIONS_FILE_UNSET+=LDAP
 OPTIONS_FILE_SET+=LOGIO
 OPTIONS_FILE_SET+=LOG_DEBUG
-OPTIONS_FILE_UNSET+=LOG_FORENSIC
+OPTIONS_FILE_SET+=LOG_FORENSIC
 OPTIONS_FILE_UNSET+=LUA
 OPTIONS_FILE_UNSET+=LUAJIT
 OPTIONS_FILE_SET+=MACRO
-OPTIONS_FILE_UNSET+=MD
+OPTIONS_FILE_SET+=MD
 OPTIONS_FILE_SET+=MIME
 OPTIONS_FILE_SET+=MIME_MAGIC
 OPTIONS_FILE_SET+=NEGOTIATION
@@ -117,7 +117,7 @@ OPTIONS_FILE_SET+=SLOTMEM_PLAIN
 OPTIONS_FILE_SET+=SLOTMEM_SHM
 OPTIONS_FILE_SET+=SOCACHE_DBM
 OPTIONS_FILE_UNSET+=SOCACHE_DC
-OPTIONS_FILE_UNSET+=SOCACHE_MEMCACHE
+OPTIONS_FILE_SET+=SOCACHE_MEMCACHE
 OPTIONS_FILE_UNSET+=SOCACHE_REDIS
 OPTIONS_FILE_SET+=SOCACHE_SHMCB
 OPTIONS_FILE_UNSET+=SPELING
@@ -130,14 +130,14 @@ OPTIONS_FILE_SET+=UNIQUE_ID
 OPTIONS_FILE_SET+=USERDIR
 OPTIONS_FILE_SET+=USERTRACK
 OPTIONS_FILE_SET+=VERSION
-OPTIONS_FILE_UNSET+=VHOST_ALIAS
+OPTIONS_FILE_SET+=VHOST_ALIAS
 OPTIONS_FILE_SET+=WATCHDOG
 OPTIONS_FILE_SET+=XML2ENC
 OPTIONS_FILE_UNSET+=MPM_PREFORK
 OPTIONS_FILE_UNSET+=MPM_WORKER
 OPTIONS_FILE_SET+=MPM_EVENT
 OPTIONS_FILE_SET+=MPM_SHARED
-OPTIONS_FILE_UNSET+=PROXY_AJP
+OPTIONS_FILE_SET+=PROXY_AJP
 OPTIONS_FILE_SET+=PROXY_BALANCER
 OPTIONS_FILE_SET+=PROXY_CONNECT
 OPTIONS_FILE_SET+=PROXY_EXPRESS
@@ -247,6 +247,7 @@ LoadModule cache_module libexec/apache24/mod_cache.so
 LoadModule cache_socache_module libexec/apache24/mod_cache_socache.so
 LoadModule socache_shmcb_module libexec/apache24/mod_socache_shmcb.so
 LoadModule socache_dbm_module libexec/apache24/mod_socache_dbm.so
+#LoadModule socache_memcache_module libexec/apache24/mod_socache_memcache.so
 #LoadModule watchdog_module libexec/apache24/mod_watchdog.so
 #LoadModule macro_module libexec/apache24/mod_macro.so
 #LoadModule dbd_module libexec/apache24/mod_dbd.so
@@ -263,13 +264,13 @@ LoadModule filter_module libexec/apache24/mod_filter.so
 #LoadModule substitute_module libexec/apache24/mod_substitute.so
 #LoadModule sed_module libexec/apache24/mod_sed.so
 LoadModule deflate_module libexec/apache24/mod_deflate.so
-#LoadFile /usr/local/lib/libxml2.so
 #LoadModule xml2enc_module libexec/apache24/mod_xml2enc.so
 #LoadModule proxy_html_module libexec/apache24/mod_proxy_html.so
 LoadModule brotli_module libexec/apache24/mod_brotli.so
 LoadModule mime_module libexec/apache24/mod_mime.so
 LoadModule log_config_module libexec/apache24/mod_log_config.so
 #LoadModule log_debug_module libexec/apache24/mod_log_debug.so
+#LoadModule log_forensic_module libexec/apache24/mod_log_forensic.so
 #LoadModule logio_module libexec/apache24/mod_logio.so
 LoadModule env_module libexec/apache24/mod_env.so
 #LoadModule mime_magic_module libexec/apache24/mod_mime_magic.so
@@ -290,6 +291,7 @@ LoadModule proxy_fcgi_module libexec/apache24/mod_proxy_fcgi.so
 #LoadModule proxy_uwsgi_module libexec/apache24/mod_proxy_uwsgi.so
 #LoadModule proxy_fdpass_module libexec/apache24/mod_proxy_fdpass.so
 #LoadModule proxy_wstunnel_module libexec/apache24/mod_proxy_wstunnel.so
+#LoadModule proxy_ajp_module libexec/apache24/mod_proxy_ajp.so
 #LoadModule proxy_balancer_module libexec/apache24/mod_proxy_balancer.so
 #LoadModule proxy_express_module libexec/apache24/mod_proxy_express.so
 #LoadModule proxy_hcheck_module libexec/apache24/mod_proxy_hcheck.so
@@ -302,7 +304,14 @@ LoadModule proxy_fcgi_module libexec/apache24/mod_proxy_fcgi.so
 LoadModule ssl_module libexec/apache24/mod_ssl.so
 LoadModule http2_module libexec/apache24/mod_http2.so
 #LoadModule proxy_http2_module libexec/apache24/mod_proxy_http2.so
+#LoadModule md_module libexec/apache24/mod_md.so
+#LoadModule lbmethod_byrequests_module libexec/apache24/mod_lbmethod_byrequests.so
+#LoadModule lbmethod_bytraffic_module libexec/apache24/mod_lbmethod_bytraffic.so
+#LoadModule lbmethod_bybusyness_module libexec/apache24/mod_lbmethod_bybusyness.so
+#LoadModule lbmethod_heartbeat_module libexec/apache24/mod_lbmethod_heartbeat.so
 LoadModule unixd_module libexec/apache24/mod_unixd.so
+#LoadModule heartbeat_module libexec/apache24/mod_heartbeat.so
+#LoadModule heartmonitor_module libexec/apache24/mod_heartmonitor.so
 #LoadModule dav_module libexec/apache24/mod_dav.so
 LoadModule status_module libexec/apache24/mod_status.so
 #LoadModule autoindex_module libexec/apache24/mod_autoindex.so
@@ -316,6 +325,7 @@ LoadModule info_module libexec/apache24/mod_info.so
 </IfModule>
 #LoadModule dav_fs_module libexec/apache24/mod_dav_fs.so
 #LoadModule dav_lock_module libexec/apache24/mod_dav_lock.so
+#LoadModule vhost_alias_module libexec/apache24/mod_vhost_alias.so
 LoadModule negotiation_module libexec/apache24/mod_negotiation.so
 LoadModule dir_module libexec/apache24/mod_dir.so
 #LoadModule imagemap_module libexec/apache24/mod_imagemap.so
@@ -649,27 +659,30 @@ FileETag None
 </IfModule>
 <IfModule headers_module>
     Header set Access-Control-Allow-Methods "GET, POST, OPTIONS"
+#    Header set Access-Control-Allow-Headers "Origin, X-Requested-With, Content-Type, Accept, Accept-Encoding"
     Header set Access-Control-Allow-Origin "null"
     <IfModule setenvif_module>
         SetEnvIf Origin ":" IS_CORS
         Header set Access-Control-Allow-Origin "*" env=IS_CORS
     </IfModule>
     Header set Access-Control-Max-Age "600"
-    Header set Upgrade-Insecure-Requests "1"
-    Header set Referrer-Policy "strict-origin-when-cross-origin"
     Header set Content-Security-Policy "\
+block-all-mixed-content; \
 upgrade-insecure-requests; \
-default-src 'self' 'unsafe-inline' 'unsafe-eval' https: wss: data: blob: filesystem:; \
-form-action 'self' https: wss:; \
+default-src 'self' 'unsafe-inline' https: data: blob: mediastream:; \
+script-src 'self' 'unsafe-inline' 'unsafe-eval' https: blob: mediastream:; \
+form-action 'self' https:; \
 frame-ancestors 'self'; \
 sandbox allow-forms allow-modals allow-pointer-lock allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts allow-top-navigation"
-    Header set X-Frame-Options "SAMEORIGIN"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+    Header set Timing-Allow-Origin "*"
+    Header set Upgrade-Insecure-Requests "1"
     Header set X-Content-Type-Options "nosniff"
-    Header set X-XSS-Protection "1; mode=block"
     Header set X-DNS-Prefetch-Control "on"
     Header set X-Download-Options "noopen"
+    Header set X-Frame-Options "SAMEORIGIN"
     Header set X-Permitted-Cross-Domain-Policies "none"
-    Header set Timing-Allow-Origin "*"
+    Header set X-XSS-Protection "1; mode=block"
 </IfModule>
 IncludeOptional "etc/apache24/modules.d/[0-9][0-9][0-9]_*.conf"
 ServerName localhost
@@ -703,7 +716,7 @@ Include "etc/apache24/vhosts.conf"
     SSLStrictSNIVHostCheck On
     SSLProtocol -ALL +TLSv1.2 +TLSv1.3
     SSLOptions +StrictRequire +StdEnvVars
-    SSLCipherSuite "TLSv1.2 +CHACHA20 +AESGCM !DH !AESCCM !CAMELLIA !PSK !RSA !SHA1 !SHA256 !SHA384 !kDHd !kDHr !kECDH !aDSS !aNULL"
+    SSLCipherSuite "TLSv1.2 +CHACHA20 +AESGCM !DH !AESCCM !ARIA !CAMELLIA !IDEA !PSK !RSA !SHA1 !SHA256 !SHA384 !kDHd !kDHr !kECDH !aDSS !aNULL"
     SSLCipherSuite TLSv1.3 "TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384:TLS_AES_128_GCM_SHA256"
     SSLOpenSSLConfCmd Curves "X448:X25519:secp384r1:prime256v1"
     SSLOCSPEnable On
@@ -736,16 +749,6 @@ Include "etc/apache24/vhosts.conf"
     </IfModule>
 </IfModule>
 <IfModule headers_module>
-    Header always merge Cache-Control "private"
-    Header merge Cache-Control "private"
-    Header always merge Cache-Control "no-cache"
-    Header merge Cache-Control "no-cache"
-    Header always merge Cache-Control "no-transform"
-    Header merge Cache-Control "no-transform"
-    Header always merge Cache-Control "must-revalidate"
-    Header merge Cache-Control "must-revalidate"
-    Header always merge Cache-Control "proxy-revalidate"
-    Header merge Cache-Control "proxy-revalidate"
     Header always edit* Set-Cookie "^(.*)(?i:\s*;\s*HttpOnly)(.*)$" "$1$2"
     Header edit* Set-Cookie "^(.*)(?i:\s*;\s*HttpOnly)(.*)$" "$1$2"
     Header always edit Set-Cookie "^(.*)$" "$1; HttpOnly"
@@ -790,7 +793,7 @@ cat > /usr/local/etc/apache24/vhosts.conf << "EOF"
     DocumentRoot "/data/www/vhosts/mail.example.com/data"
     <Directory "/data/www/vhosts/mail.example.com/data">
         Options None +FollowSymLinks
-        AllowOverride Options FileInfo AuthConfig Limit
+        AllowOverride None
         Require all granted
     </Directory>
     <IfModule rewrite_module>
@@ -809,7 +812,7 @@ cat > /usr/local/etc/apache24/vhosts.conf << "EOF"
     DocumentRoot "/data/www/vhosts/www.example.com/data"
     <Directory "/data/www/vhosts/www.example.com/data">
         Options None +FollowSymLinks
-        AllowOverride Options FileInfo AuthConfig Limit
+        AllowOverride None
         Require all granted
     </Directory>
     <IfModule rewrite_module>
@@ -836,7 +839,7 @@ cat > /usr/local/etc/apache24/vhosts-ssl.conf << "EOF"
     DocumentRoot "/data/www/vhosts/_default_/data"
     <Directory "/data/www/vhosts/_default_/data">
         Options None +FollowSymLinks
-        AllowOverride None
+        AllowOverride Options FileInfo AuthConfig Limit
         Require all granted
     </Directory>
     <FilesMatch "(.+\.php.?)(/.*)?$">
@@ -846,8 +849,8 @@ cat > /usr/local/etc/apache24/vhosts-ssl.conf << "EOF"
     <Proxy "fcgi://localhost" enablereuse=on max=10>
     </Proxy>
     SSLEngine on
-    SSLCertificateFile "/data/pki/certs/devnull.example.com.crt"
-    SSLCertificateKeyFile "/data/pki/private/devnull.example.com.key"
+    SSLCertificateFile "/usr/local/etc/letsencrypt/live/devnull.example.com/fullchain.pem"
+    SSLCertificateKeyFile "/usr/local/etc/letsencrypt/live/devnull.example.com/privkey.pem"
 </VirtualHost>
 
 <VirtualHost *:443>
@@ -868,8 +871,8 @@ cat > /usr/local/etc/apache24/vhosts-ssl.conf << "EOF"
     <Proxy "fcgi://localhost" enablereuse=on max=10>
     </Proxy>
     SSLEngine on
-    SSLCertificateFile "/data/pki/certs/mail.example.com.crt"
-    SSLCertificateKeyFile "/data/pki/private/mail.example.com.key"
+    SSLCertificateFile "/usr/local/etc/letsencrypt/live/mail.example.com/fullchain.pem"
+    SSLCertificateKeyFile "/usr/local/etc/letsencrypt/live/mail.example.com/privkey.pem"
 </VirtualHost>
 
 <VirtualHost *:443>
@@ -887,7 +890,8 @@ cat > /usr/local/etc/apache24/vhosts-ssl.conf << "EOF"
     <IfModule rewrite_module>
         RewriteEngine On
         RewriteCond "%{HTTP_HOST}" "!^www\.example\.com$" [NC]
-        RewriteRule "^/?(.*)" "https://www.example.com/$1" [L,QSA,R=301]
+        RewriteCond "%{REQUEST_FILENAME}" "!^/?(?:\.well-known|robots\.txt)" [NC]
+        RewriteRule "^/?(.*)" "https://www.example.com/$1" [L,QSA,R=308]
     </IfModule>
     <FilesMatch "(.+\.php.?)(/.*)?$">
         ProxyFCGIBackendType GENERIC
@@ -896,8 +900,8 @@ cat > /usr/local/etc/apache24/vhosts-ssl.conf << "EOF"
     <Proxy "fcgi://localhost" enablereuse=on max=10>
     </Proxy>
     SSLEngine on
-    SSLCertificateFile "/data/pki/certs/www.example.com.crt"
-    SSLCertificateKeyFile "/data/pki/private/www.example.com.key"
+    SSLCertificateFile "/usr/local/etc/letsencrypt/live/www.example.com/fullchain.pem"
+    SSLCertificateKeyFile "/usr/local/etc/letsencrypt/live/www.example.com/privkey.pem"
 </VirtualHost>
 "EOF"
 ```

@@ -2,7 +2,7 @@
 title: 'Dovecot'
 description: 'In diesem HowTo wird step-by-step die Installation des Dovecot Mailservers für ein WebHosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2022-04-28'
+updated: '2022-06-21'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 contributors:
@@ -20,20 +20,48 @@ Zu den Voraussetzungen für dieses HowTo siehe bitte: [Voraussetzungen](/howtos/
 
 Unser WebHosting System wird um folgende Dienste erweitert.
 
-- Dovecot 2.3.13 (IMAP only, 1GB Quota)
+- Dovecot 2.3.19 (IMAP only, 1GB Quota)
 
 ## Installation
 
 Wir installieren `mail/dovecot` und dessen Abhängigkeiten.
 
 ``` bash
+mkdir -p /var/db/ports/security_libsodium
+cat > /var/db/ports/security_libsodium/options << "EOF"
+_OPTIONS_READ=libsodium-1.0.18
+_FILE_COMPLETE_OPTIONS_LIST=DOCS
+OPTIONS_FILE_SET+=DOCS
+"EOF"
+
+mkdir -p /var/db/ports/textproc_libexttextcat
+cat > /var/db/ports/textproc_libexttextcat/options << "EOF"
+_OPTIONS_READ=libexttextcat-3.4.6
+_FILE_COMPLETE_OPTIONS_LIST=DOCS
+OPTIONS_FILE_SET+=DOCS
+"EOF"
+
+mkdir -p /var/db/ports/lang_lua53
+cat > /var/db/ports/lang_lua53/options << "EOF"
+_OPTIONS_READ=lua53-5.3.6
+_FILE_COMPLETE_OPTIONS_LIST= EDITNONE LIBEDIT_DL LIBEDIT READLINE DOCS ASSERT APICHECK
+OPTIONS_FILE_UNSET+=EDITNONE
+OPTIONS_FILE_SET+=LIBEDIT_DL
+OPTIONS_FILE_UNSET+=LIBEDIT
+OPTIONS_FILE_UNSET+=READLINE
+OPTIONS_FILE_SET+=DOCS
+OPTIONS_FILE_UNSET+=ASSERT
+OPTIONS_FILE_UNSET+=APICHECK
+"EOF"
+
 mkdir -p /var/db/ports/mail_dovecot
 cat > /var/db/ports/mail_dovecot/options << "EOF"
-_OPTIONS_READ=dovecot-2.3.13
-_FILE_COMPLETE_OPTIONS_LIST=DOCS EXAMPLES LIBSODIUM LIBWRAP LUA LZ4 GSSAPI_NONE GSSAPI_BASE GSSAPI_HEIMDAL GSSAPI_MIT CDB LDAP MYSQL PGSQL SQLITE ICU LUCENE SOLR TEXTCAT
+_OPTIONS_READ=dovecot-2.3.19.1
+_FILE_COMPLETE_OPTIONS_LIST=DOCS EXAMPLES LIBSODIUM LIBUNWIND LIBWRAP LUA LZ4 GSSAPI_NONE GSSAPI_BASE GSSAPI_HEIMDAL GSSAPI_MIT CDB LDAP MYSQL PGSQL SQLITE ICU LUCENE SOLR TEXTCAT
 OPTIONS_FILE_SET+=DOCS
 OPTIONS_FILE_SET+=EXAMPLES
 OPTIONS_FILE_SET+=LIBSODIUM
+OPTIONS_FILE_UNSET+=LIBUNWIND
 OPTIONS_FILE_UNSET+=LIBWRAP
 OPTIONS_FILE_SET+=LUA
 OPTIONS_FILE_SET+=LZ4
@@ -43,7 +71,7 @@ OPTIONS_FILE_UNSET+=GSSAPI_HEIMDAL
 OPTIONS_FILE_UNSET+=GSSAPI_MIT
 OPTIONS_FILE_UNSET+=CDB
 OPTIONS_FILE_UNSET+=LDAP
-OPTIONS_FILE_SET+=MYSQL
+OPTIONS_FILE_UNSET+=MYSQL
 OPTIONS_FILE_UNSET+=PGSQL
 OPTIONS_FILE_SET+=SQLITE
 OPTIONS_FILE_SET+=ICU
@@ -132,9 +160,6 @@ protocol imap {
   imap_metadata = yes
   mail_plugins = quota imap_quota
 }
-protocol pop3 {
-  mail_plugins = quota
-}
 protocols = imap lmtp
 quota_full_tempfail = yes
 service auth {
@@ -176,10 +201,10 @@ service stats {
   }
 }
 ssl = required
-ssl_cert = </data/pki/certs/mail.example.com.crt
-ssl_cipher_list = TLSv1.2 +CHACHA20 +AES +SHA !DH !AESCCM !CAMELLIA !PSK !RSA !SHA1 !SHA256 !SHA384 !kDHd !kDHr !kECDH !aDSS !aNULL
+ssl_cert = </usr/local/etc/letsencrypt/live/mail.example.com/fullchain.pem
+ssl_cipher_list = TLSv1.2 +CHACHA20 +AES +SHA !DH !AESCCM !ARIA !CAMELLIA !IDEA !PSK !RSA !SHA1 !SHA256 !SHA384 !kDHd !kDHr !kECDH !aDSS !aNULL
 ssl_dh = </usr/local/etc/dovecot/dh.pem
-ssl_key = </data/pki/private/mail.example.com.key
+ssl_key = </usr/local/etc/letsencrypt/live/mail.example.com/privkey.pem
 ssl_min_protocol = TLSv1.2
 ssl_options = NO_COMPRESSION
 ssl_prefer_server_ciphers = yes

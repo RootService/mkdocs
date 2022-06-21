@@ -2,7 +2,7 @@
 title: 'OpenDKIM'
 description: 'In diesem HowTo wird step-by-step die Installation von OpenDKIM für ein WebHosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2022-04-28'
+updated: '2022-06-21'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 tags:
@@ -25,10 +25,20 @@ Unser WebHosting System wird um folgende Dienste erweitert.
 Wir installieren `mail/opendkim` und dessen Abhängigkeiten.
 
 ``` bash
+mkdir -p /var/db/ports/textproc_libtre
+cat > /var/db/ports/textproc_libtre/options << "EOF"
+_OPTIONS_READ=libtre-0.8.0
+_FILE_COMPLETE_OPTIONS_LIST=DOCS NLS OPTIMIZED_CFLAGS PGO
+OPTIONS_FILE_SET+=DOCS
+OPTIONS_FILE_SET+=NLS
+OPTIONS_FILE_UNSET+=OPTIMIZED_CFLAGS
+OPTIONS_FILE_UNSET+=PGO
+"EOF"
+
 mkdir -p /var/db/ports/dns_ldns
 cat > /var/db/ports/dns_ldns/options << "EOF"
-_OPTIONS_READ=ldns-1.7.1
-_FILE_COMPLETE_OPTIONS_LIST=DANETAUSAGE DOXYGEN DRILL EXAMPLES GOST RRTYPEAMTRELAY RRTYPEAVC RRTYPENINFO RRTYPERKEY RRTYPETA
+_OPTIONS_READ=ldns-1.8.1
+_FILE_COMPLETE_OPTIONS_LIST=DANETAUSAGE DOXYGEN DRILL EXAMPLES GOST RRTYPEAMTRELAY RRTYPEAVC RRTYPENINFO RRTYPERKEY RRTYPESVCBHTTPS RRTYPETA
 OPTIONS_FILE_UNSET+=DANETAUSAGE
 OPTIONS_FILE_UNSET+=DOXYGEN
 OPTIONS_FILE_SET+=DRILL
@@ -38,17 +48,8 @@ OPTIONS_FILE_SET+=RRTYPEAMTRELAY
 OPTIONS_FILE_SET+=RRTYPEAVC
 OPTIONS_FILE_SET+=RRTYPENINFO
 OPTIONS_FILE_SET+=RRTYPERKEY
+OPTIONS_FILE_SET+=RRTYPESVCBHTTPS
 OPTIONS_FILE_SET+=RRTYPETA
-"EOF"
-
-mkdir -p /var/db/ports/textproc_libtre
-cat > /var/db/ports/textproc_libtre/options << "EOF"
-_OPTIONS_READ=libtre-0.8.0
-_FILE_COMPLETE_OPTIONS_LIST=DOCS NLS OPTIMIZED_CFLAGS PGO
-OPTIONS_FILE_SET+=DOCS
-OPTIONS_FILE_SET+=NLS
-OPTIONS_FILE_UNSET+=OPTIMIZED_CFLAGS
-OPTIONS_FILE_UNSET+=PGO
 "EOF"
 
 mkdir -p /var/db/ports/mail_opendkim
@@ -104,6 +105,8 @@ make all install clean-depends clean
 echo 'milteropendkim_socket="inet:8891@localhost"' >> /etc/rc.conf
 echo 'milteropendkim_enable="YES"' >> /etc/rc.conf
 ```
+
+Bitte example.com ersetzen:
 
 ``` bash
 mkdir -p /data/db/opendkim/keys/example.com

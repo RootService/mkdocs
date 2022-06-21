@@ -2,7 +2,7 @@
 title: 'Voraussetzungen'
 description: 'In diesem HowTo werden step-by-step die Voraussetzungen für ein WebHosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2022-04-28'
+updated: '2022-06-21'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 tags:
@@ -18,17 +18,16 @@ Diese HowTos setzen ein wie in [Remote Installation](/howtos/freebsd/remote_inst
 
 Unser WebHosting System wird am Ende folgende Dienste umfassen.
 
-- MySQL 8.0.23 (InnoDB, GTID)
-- Dovecot 2.3.13 (IMAP only, 1GB Quota)
-- Postfix 3.5.9 (Dovecot-SASL, postscreen)
-- Python-SPF-Engine 2.9.2 (SPF2)
+- MySQL 8.0.29 (InnoDB, GTID)
+- Dovecot 2.3.19 (IMAP only, 1GB Quota)
+- Postfix 3.7.2 (Dovecot-SASL, postscreen)
+- Python-SPF-Engine 2.9.3 (SPF2)
 - OpenDKIM 2.10.3 (VBR, 2048 Bit RSA)
-- OpenDMARC 1.3.2 (SPF2, FailureReports)
-- Apache 2.4.46 (MPM-Event, HTTP/2, mod_brotli)
-- NGinx 1.14.0 (HTTP/2, mod_brotli)
-- PHP 8.0.2 (PHP-FPM, Composer, PEAR)
-- CertBot 1.11.0 (LetsEncrypt ACME API 2.0)
-- CertBot Wrapper 0.3.0 (LetsEncrypt API 2.0)
+- OpenDMARC 1.4.2 (SPF2, FailureReports)
+- Apache 2.4.54 (MPM-Event, HTTP/2, mod_brotli)
+- NGinx 1.22.0 (HTTP/2, mod_brotli)
+- PHP 8.0.20 (PHP-FPM, Composer, PEAR)
+- CertBot 1.27.0 (LetsEncrypt ACME API 2.0)
 
 Folgende Punkte sind in allen folgenden HowTos zu beachten.
 
@@ -61,12 +60,12 @@ mkdir -p /usr/local/etc/pkg/repos
 echo "FreeBSD: { enabled: no }" > /usr/local/etc/pkg/repos/FreeBSD.conf
 ```
 
-Die von uns jeweils gewünschten Build-Optionen der Ports legen wir dabei mittels der `options`-Files des neuen Portkonfigurationsframeworks `OptionsNG` fest.
+Die von uns jeweils gewünschten Build-Optionen der Ports legen wir dabei mittels der `options`-Files des Portkonfigurationsframeworks `OptionsNG` fest.
 
 Da wir unsere Nutzdaten weitestgehend unter `/data` ablegen werden, legen wir ein paar hierfür benötigte Verzeichnisse an, sofern nicht bereits geschehen.
 
 ``` bash
-mkdir -p /data/db /data/ssl /data/www
+mkdir -p /data/db /data/ssl /data/www/acme/.well-known
 ```
 
 ## DNS Records
@@ -88,10 +87,6 @@ www.example.com.        IN  AAAA    __IPV6ADDR__
 
 example.com.            IN  MX  10  mail.example.com.
 ```
-
-## OpenSSL
-
-Diese HowTos setzen aktuell die (temporäre) Erstellung einer eigenen [Certificate Authority](/howtos/freebsd/certificate_authority/) voraus. Dieser Punkt wird hoffentlich in Zukunft nicht mehr nötig sein.
 
 ## Los geht es
 

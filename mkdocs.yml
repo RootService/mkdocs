@@ -24,14 +24,14 @@ theme:
         paypal: rootservice/paypal
     favicon: assets/favicons
     palette:
-        - media: "(prefers-color-scheme: dark)" 
+        - media: "(prefers-color-scheme: dark)"
           scheme: slate
           primary: amber
           accent: indigo
           toggle:
             icon: material/weather-sunny
             name: Switch to light mode
-        - media: "(prefers-color-scheme: light)" 
+        - media: "(prefers-color-scheme: light)"
           scheme: default
           primary: amber
           accent: indigo
@@ -73,7 +73,7 @@ extra:
 #          link: /de/
 #          lang: de
 #        - name: English
-#          link: /en/ 
+#          link: /en/
 #          lang: en
 
 plugins:
@@ -175,6 +175,8 @@ nav:
                 - 'howtos/freebsd/remote_install/basetools.md'
             - Hosting System:
                 - 'howtos/freebsd/hosting_system/index.md'
+                - Sicherheit:
+                    - 'howtos/freebsd/hosting_system/security/certbot.md'
                 - Datenbanken:
                     - 'howtos/freebsd/hosting_system/databases/mysql.md'
                 - Mailserver:
@@ -186,8 +188,6 @@ nav:
                     - 'howtos/freebsd/hosting_system/webserver/apache.md'
                     - 'howtos/freebsd/hosting_system/webserver/nginx.md'
                     - 'howtos/freebsd/hosting_system/webserver/php.md'
-                - Sicherheit:
-                    - 'howtos/freebsd/hosting_system/security/certbot.md'
             - 'howtos/freebsd/certificate_authority.md'
         - Gentoo:
             - 'howtos/gentoo/remote_install.md'
@@ -201,4 +201,3 @@ nav:
         - 'about/terms.md'
         - 'about/privacy.md'
     - 'about/imprint.md'
-

@@ -2,7 +2,7 @@
 title: 'OpenDMARC'
 description: 'In diesem HowTo wird step-by-step die Installation von OpenDMARC für ein WebHosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2022-04-28'
+updated: '2022-06-21'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 tags:
@@ -18,20 +18,13 @@ Zu den Voraussetzungen für dieses HowTo siehe bitte: [Voraussetzungen](/howtos/
 
 Unser WebHosting System wird um folgende Dienste erweitert.
 
-- OpenDMARC 1.3.2 (SPF2, FailureReports)
+- OpenDMARC 1.4.2 (SPF2, FailureReports)
 
 ## Installation
 
 Wir installieren `mail/opendmarc` und dessen Abhängigkeiten.
 
 ``` bash
-mkdir -p /var/db/ports/databases_p5-DBD-mysql
-cat > /var/db/ports/databases_p5-DBD-mysql/options << "EOF"
-_OPTIONS_READ=p5-DBD-mysql-4.050
-_FILE_COMPLETE_OPTIONS_LIST=SSL
-OPTIONS_FILE_SET+=SSL
-"EOF"
-
 mkdir -p /var/db/ports/databases_p5-DBI
 cat > /var/db/ports/databases_p5-DBI/options << "EOF"
 _OPTIONS_READ=p5-DBI-1.643
@@ -39,9 +32,16 @@ _FILE_COMPLETE_OPTIONS_LIST=PROXY
 OPTIONS_FILE_UNSET+=PROXY
 "EOF"
 
+mkdir -p /var/db/ports/databases_p5-DBD-mysql
+cat > /var/db/ports/databases_p5-DBD-mysql/options << "EOF"
+_OPTIONS_READ=p5-DBD-mysql-4.050
+_FILE_COMPLETE_OPTIONS_LIST=SSL
+OPTIONS_FILE_SET+=SSL
+"EOF"
+
 mkdir -p /var/db/ports/mail_opendmarc
 cat > /var/db/ports/mail_opendmarc/options << "EOF"
-_OPTIONS_READ=opendmarc-1.3.2
+_OPTIONS_READ=opendmarc-1.4.2
 _FILE_COMPLETE_OPTIONS_LIST=DOCS SPF
 OPTIONS_FILE_SET+=DOCS
 OPTIONS_FILE_SET+=SPF

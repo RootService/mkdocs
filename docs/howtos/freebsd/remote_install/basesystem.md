@@ -2,7 +2,7 @@
 title: 'BaseSystem'
 description: 'In diesem HowTo wird step-by-step die Remote Installation des FreeBSD 64Bit BaseSystem auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2022-04-28'
+updated: '2022-06-20'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 contributors:
@@ -18,7 +18,7 @@ tags:
 
 ## Einleitung
 
-In diesem HowTo beschreibe ich step-by-step die Remote Installation des [FreeBSD](https://www.freebsd.org/){: target="_blank" rel="noopener"} 64Bit BaseSystem mittels [mfsBSD](https://mfsbsd.vx.sk/){: target="_blank" rel="noopener"} auf einem dedizierten Server. Um eine weitere Republikation der offiziellen [FreeBSD Dokumentation](https://www.freebsd.org/doc/handbook/){: target="_blank" rel="noopener"} zu vermeiden, werde ich in diesem HowTo nicht alle Punkte bis ins Detail erläutern.
+In diesem HowTo beschreibe ich step-by-step die Remote Installation des [FreeBSD](https://www.freebsd.org/){: target="_blank" rel="noopener"} 64Bit BaseSystem mittels [mfsBSD](https://mfsbsd.vx.sk/){: target="_blank" rel="noopener"} auf einem dedizierten Server. Um eine weitere Republikation der offiziellen [FreeBSD Dokumentation](https://docs.freebsd.org/en/books/handbook/){: target="_blank" rel="noopener"} zu vermeiden, werde ich in diesem HowTo nicht alle Punkte bis ins Detail erläutern.
 
 Zu den Voraussetzungen für dieses HowTo siehe bitte: [Voraussetzungen](/howtos/freebsd/remote_install/)
 
@@ -26,8 +26,8 @@ Unser BaseSystem wird folgende Dienste umfassen.
 
 - FreeBSD 13.1-RELEASE 64Bit
 - OpenSSL 1.1.1
-- OpenSSH 7.8
-- Unbound 1.8.1
+- OpenSSH 8.8
+- Unbound 1.13.1
 
 ## RescueSystem booten
 
@@ -80,7 +80,7 @@ Als Erstes kopieren wir mittels PuTTYs SCP-Client (`pscp`) das mfsBSD Image in d
 pscp -P 2222 "${Env:USERPROFILE}\VirtualBox VMs\mfsBSD\mfsbsd-13.1-RELEASE-amd64.img" root@127.0.0.1:/tmp/mfsbsd-13.1-RELEASE-amd64.img
 ```
 
-Jetzt können wir das mfsBSD Image mittels `dd` auf der ersten Festplatte (`/dev/sda`) unserer virtuellen Maschine installieren und uns anschliessend wieder aus dem RescueSystem ausloggen.
+Jetzt können wir das mfsBSD Image mittels `dd` auf der ersten Festplatte (`/dev/nvme0n1`) unserer virtuellen Maschine installieren und uns anschliessend wieder aus dem RescueSystem ausloggen.
 
 ``` bash
 dd if=/dev/zero of=/dev/nvme0n1 count=512 bs=1M
@@ -195,7 +195,6 @@ Auf die gemounteten Partitionen entpacken wir ein FreeBSD Basesystem mit dem wir
 ``` bash
 fetch -4 -q -o - --no-verify-peer https://download.freebsd.org/ftp/releases/amd64/amd64/13.1-RELEASE/base.txz   | tar Jxpvf - -C /mnt/
 fetch -4 -q -o - --no-verify-peer https://download.freebsd.org/ftp/releases/amd64/amd64/13.1-RELEASE/kernel.txz | tar Jxpvf - -C /mnt/
-fetch -4 -q -o - --no-verify-peer https://download.freebsd.org/ftp/releases/amd64/amd64/13.1-RELEASE/src.txz    | tar Jxpvf - -C /mnt/
 
 cp -a /mnt/boot/kernel /mnt/boot/GENERIC
 ```
@@ -296,7 +295,7 @@ chsh -s /bin/tcsh root
 
 ## Systemsicherheit verstärken
 
-Die hier vorgestellten Massnahmen sind äusserst simple Basics, die aus Hygienegründen auf jedem FreeBSD System selbstverständlich sein sollten. Um ein FreeBSD System richtig zu härten (Hardened), kommt man jedoch nicht an komplexeren Methoden wie Security Event Auditing und Mandatory Access Control vorbei. Diese Themen werden im FreeBSD Handbuch recht ausführlich besprochen; für den Einstieg empfehle ich hier die Lektüre von [Chapter 13. Security](https://www.freebsd.org/doc/handbook/security.html){: target="_blank" rel="noopener"}, für die weiterführenden Themen die [Chapter 15. Mandatory Access Control](https://www.freebsd.org/doc/handbook/mac.html){: target="_blank" rel="noopener"} und [Chapter 16. Security Event Auditing](https://www.freebsd.org/doc/handbook/audit.html){: target="_blank" rel="noopener"}.
+Die hier vorgestellten Massnahmen sind äusserst simple Basics, die aus Hygienegründen auf jedem FreeBSD System selbstverständlich sein sollten. Um ein FreeBSD System richtig zu härten (Hardened), kommt man jedoch nicht an komplexeren Methoden wie Security Event Auditing und Mandatory Access Control vorbei. Diese Themen werden im FreeBSD Handbuch recht ausführlich besprochen; für den Einstieg empfehle ich hier die Lektüre von [Chapter 14. Security](https://docs.freebsd.org/en/books/handbook/security/){: target="_blank" rel="noopener"}, für die weiterführenden Themen die [Chapter 16. Mandatory Access Control](https://docs.freebsd.org/en/books/handbook/mac/){: target="_blank" rel="noopener"} und [Chapter 17. Security Event Auditing](https://docs.freebsd.org/en/books/handbook/audit/){: target="_blank" rel="noopener"}.
 
 ### OpenSSH konfigurieren
 
@@ -501,7 +500,7 @@ P|Pc|Pc console:\
 
 ## System konfigurieren
 
-Mail alias für `root` einrichten (bitte example.com ersetzen).
+Mail alias für `root` einrichten.
 
 ``` bash
 sed -e 's/^#[[:space:]]*\(root:[[:space:]]*\).*$/\1 admin@example.com/' \
@@ -562,7 +561,7 @@ proc                       /proc                   procfs  rw                  0
 "EOF"
 ```
 
-In der `/etc/rc.conf` werden diverse Grundeinstellungen für das System und die installierten Dienste vorgenommen (bitte example.com ersetzen).
+In der `/etc/rc.conf` werden diverse Grundeinstellungen für das System und die installierten Dienste vorgenommen.
 
 ``` bash
 cat > /etc/rc.conf << "EOF"
@@ -678,7 +677,7 @@ ifconfig `route -n get -inet6 default | awk '/interface/ {print $2}'` inet6 | \
     xargs -I % sed -e 's/PREFLEN6/%/g' -i '' /etc/rc.conf
 ```
 
-Wir richten die `/etc/hosts` ein (bitte example.com ersetzen).
+Wir richten die `/etc/hosts` ein.
 
 ``` bash
 # localhost
@@ -779,16 +778,10 @@ exit
 ``` bash
 cat > /etc/make.conf << "EOF"
 KERNCONF?=GENERIC
-SVN=/usr/bin/svnlite
-SVN_UPDATE=yes
 #MAKE_JOBS_NUMBER=4
 PRINTERDEVICE=ascii
 LICENSES_ACCEPTED+=EULA
 DISABLE_VULNERABILITIES=yes
-.if ${.CURDIR:M/usr/ports/*}
-OPTIONS_SET=CRYPTO DOCS EXAMPLES GSSAPI_NONE NLS IPV6 LIBEDIT OPENSSL THREADS
-OPTIONS_UNSET=DEBUG DTRACE GSSAPI_BASE GSSAPI_HEIMDAL GSSAPI_MIT NIS READLINE TEST TESTS X11
-.endif
 "EOF"
 ```
 
@@ -956,7 +949,7 @@ Wir installieren als Erstes `pkg`.
 pkg install pkg
 ```
 
-### devel/git installieren
+### Git installieren
 
 Wir installieren als Nächstes `git` und seine Abhängigkeiten.
 
@@ -982,9 +975,40 @@ git -C /usr/src pull --rebase
 git -C /usr/src checkout stable/13
 ```
 
+### Portstree auschecken
+
+Um unser Basissystem später um sinnvolle Programme erweitern zu können, fehlt uns noch der sogenannte Portstree. Diesen checken wir nun ebenfalls mittels `git` aus (kann durchaus eine Stunde oder länger dauern).
+
+``` bash
+rm -r /usr/ports
+git clone https://git.FreeBSD.org/ports.git /usr/ports
+make -C /usr/ports fetchindex
+```
+
+Damit ist der Portstree einsatzbereit. Um den Tree künftig zu aktualisieren genügt der folgende Befehl.
+
+``` bash
+git -C /usr/ports pull --rebase
+make -C /usr/ports fetchindex
+```
+
+Wichtige Informationen zu neuen Paketversionen finden sich in `/usr/ports/UPDATING` und sollten dringend beachtet werden.
+
+``` bash
+less /usr/ports/UPDATING
+```
+
+### Git deinstallieren
+
+Wir deinstallieren `git` und seine Abhängigkeiten nun vorerst wieder.
+
+``` bash
+pkg remove -f \*
+```
+
 ### Konfiguration anpassen
 
-In den Abschnitten [Buildsystem konfigurieren](#buildsystem-konfigurieren) und [Kernel konfigurieren](#kernel-konfigurieren) haben wir uns bereits eine geeignete `make.conf` und gegebenenfalls auch eine individuelle Kernel-Konfiguration erstellt. Dennoch sei an dieser Stelle nochmals auf das FreeBSD Handbuch verwiesen. Insbesondere [Chapter 8. Configuring the FreeBSD Kernel](https://www.freebsd.org/doc/handbook/kernelconfig.html){: target="_blank" rel="noopener"} (Kernel selbst erstellen) und [23.5. Updating FreeBSD from Source](https://www.freebsd.org/doc/handbook/makeworld.html){: target="_blank" rel="noopener"} (Basissystem komplett aktualisieren) seien Jedem FreeBSD Administratoren ans Herz gelegt.
+In den Abschnitten [Buildsystem konfigurieren](#buildsystem-konfigurieren) und [Kernel konfigurieren](#kernel-konfigurieren) haben wir uns bereits eine geeignete `make.conf` und gegebenenfalls auch eine individuelle Kernel-Konfiguration erstellt. Dennoch sei an dieser Stelle nochmals auf das FreeBSD Handbuch verwiesen. Insbesondere [Chapter 8. Configuring the FreeBSD Kernel](https://docs.freebsd.org/en/books/handbook/kernelconfig/){: target="_blank" rel="noopener"} und [24.6. Updating FreeBSD from Source](https://docs.freebsd.org/en/books/handbook/cutting-edge/#makeworld){: target="_blank" rel="noopener"} seien Jedem FreeBSD Administratoren ans Herz gelegt.
 
 Ausserdem empfiehlt es sich vor einem Update des Basissystems die Datei `/usr/src/UPDATING` zu lesen. Alle Angaben und Hinweise in dieser Datei sind aktueller und zutreffender als das Handbuch und sollten unbedingt befolgt werden.
 
@@ -1004,7 +1028,7 @@ make clean cleanworld
 git -C /usr/src pull --rebase
 ```
 
-Ausserdem sollte [mergemaster](https://www.freebsd.org/cgi/man.cgi?query=mergemaster&sektion=8){: target="_blank" rel="noopener"} im Pre-Build-Mode angeworfen werden, damit es während der Aktualisierung nicht zu Fehlern kommt, weil z. B. bestimmte User oder Gruppen noch nicht vorhanden sind.
+Ausserdem sollte [mergemaster](https://www.freebsd.org/cgi/man.cgi?query=mergemaster&sektion=8&format=html){: target="_blank" rel="noopener"} im Pre-Build-Mode angeworfen werden, damit es während der Aktualisierung nicht zu Fehlern kommt, weil z. B. bestimmte User oder Gruppen noch nicht vorhanden sind.
 
 ``` bash
 /usr/src/usr.sbin/mergemaster/mergemaster.sh -p

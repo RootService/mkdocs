@@ -2,7 +2,7 @@
 title: 'Postfix'
 description: 'In diesem HowTo wird step-by-step die Installation des Postfix Mailservers für ein WebHosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2022-04-28'
+updated: '2022-06-21'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 contributors:
@@ -20,8 +20,8 @@ Zu den Voraussetzungen für dieses HowTo siehe bitte: [Voraussetzungen](/howtos/
 
 Unser WebHosting System wird um folgende Dienste erweitert.
 
-- Postfix 3.5.9 (Dovecot-SASL, postscreen)
-- Python-SPF-Engine 2.9.2 (SPF2)
+- Postfix 3.7.2 (Dovecot-SASL, postscreen)
+- Python-SPF-Engine 2.9.3 (SPF2)
 
 ## Installation
 
@@ -30,14 +30,15 @@ Wir installieren `mail/postfix` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/security_cyrus-sasl2
 cat > /var/db/ports/security_cyrus-sasl2/options << "EOF"
-_OPTIONS_READ=cyrus-sasl-2.1.27
-_FILE_COMPLETE_OPTIONS_LIST=ALWAYSTRUE AUTHDAEMOND DOCS KEEP_DB_OPEN  OBSOLETE_CRAM_ATTR OBSOLETE_DIGEST_ATTR BDB1 BDB GDBM LMDB ANONYMOUS CRAM DIGEST LOGIN NTLM OTP PLAIN SCRAM
+_OPTIONS_READ=cyrus-sasl-2.1.28
+_FILE_COMPLETE_OPTIONS_LIST=ALWAYSTRUE AUTHDAEMOND DOCS KEEP_DB_OPEN  OBSOLETE_CRAM_ATTR OBSOLETE_DIGEST_ATTR  SASLDB_IN_VAR BDB1 BDB GDBM LMDB ANONYMOUS CRAM DIGEST LOGIN NTLM OTP PLAIN SCRAM
 OPTIONS_FILE_UNSET+=ALWAYSTRUE
 OPTIONS_FILE_UNSET+=AUTHDAEMOND
 OPTIONS_FILE_SET+=DOCS
 OPTIONS_FILE_UNSET+=KEEP_DB_OPEN
 OPTIONS_FILE_UNSET+=OBSOLETE_CRAM_ATTR
 OPTIONS_FILE_UNSET+=OBSOLETE_DIGEST_ATTR
+OPTIONS_FILE_SET+=SASLDB_IN_VAR
 OPTIONS_FILE_UNSET+=BDB1
 OPTIONS_FILE_UNSET+=BDB
 OPTIONS_FILE_UNSET+=GDBM
@@ -54,8 +55,8 @@ OPTIONS_FILE_SET+=SCRAM
 
 mkdir -p /var/db/ports/mail_postfix
 cat > /var/db/ports/mail_postfix/options << "EOF"
-_OPTIONS_READ=postfix-3.5.9
-_FILE_COMPLETE_OPTIONS_LIST=BDB BLACKLISTD CDB DOCS EAI INST_BASE LDAP LDAP_SASL LMDB MYSQL NIS PCRE PGSQL SASL SQLITE TEST TLS SASLKRB5 SASLKMIT
+_OPTIONS_READ=postfix-3.7.2
+_FILE_COMPLETE_OPTIONS_LIST=BDB BLACKLISTD CDB DOCS EAI INST_BASE LDAP LMDB MYSQL NIS PCRE2 PGSQL SASL SQLITE TEST TLS SASLKMIT SASLKRB5
 OPTIONS_FILE_UNSET+=BDB
 OPTIONS_FILE_UNSET+=BLACKLISTD
 OPTIONS_FILE_SET+=CDB
@@ -63,18 +64,17 @@ OPTIONS_FILE_SET+=DOCS
 OPTIONS_FILE_SET+=EAI
 OPTIONS_FILE_UNSET+=INST_BASE
 OPTIONS_FILE_UNSET+=LDAP
-OPTIONS_FILE_UNSET+=LDAP_SASL
 OPTIONS_FILE_SET+=LMDB
-OPTIONS_FILE_SET+=MYSQL
+OPTIONS_FILE_UNSET+=MYSQL
 OPTIONS_FILE_UNSET+=NIS
-OPTIONS_FILE_SET+=PCRE
+OPTIONS_FILE_SET+=PCRE2
 OPTIONS_FILE_UNSET+=PGSQL
 OPTIONS_FILE_SET+=SASL
 OPTIONS_FILE_SET+=SQLITE
 OPTIONS_FILE_UNSET+=TEST
 OPTIONS_FILE_SET+=TLS
-OPTIONS_FILE_UNSET+=SASLKRB5
 OPTIONS_FILE_UNSET+=SASLKMIT
+OPTIONS_FILE_UNSET+=SASLKRB5
 "EOF"
 
 
@@ -96,14 +96,14 @@ cat > /usr/local/etc/postfix/main.cf << "EOF"
 allow_percent_hack = no
 always_add_missing_headers = yes
 biff = no
-compatibility_level = 2
+compatibility_level = 3.6
 disable_vrfy_command = yes
 dovecot_destination_recipient_limit = 1
 enable_long_queue_ids = yes
 home_mailbox = .maildir/
 inet_interfaces = all
 inet_protocols = all
-lmtp_tls_fingerprint_digest = sha1
+#lmtp_tls_fingerprint_digest = sha256
 local_header_rewrite_clients = permit_mynetworks permit_sasl_authenticated
 mail_spool_directory = /data/vmail
 mailbox_size_limit = 0
@@ -119,13 +119,15 @@ myorigin = $mydomain
 non_smtpd_milters = $smtpd_milters
 notify_classes = data protocol resource software
 openssl_path = /usr/local/bin/openssl
+policyd-spf_time_limit = 3600
 postscreen_access_list =
   permit_mynetworks
   cidr:${config_directory}/postscreen_whitelist.cidr
 postscreen_bare_newline_action = enforce
 postscreen_bare_newline_enable = yes
-postscreen_blacklist_action = enforce
+postscreen_denylist_action = enforce
 postscreen_dnsbl_action = enforce
+postscreen_dnsbl_allowlist_threshold = 0
 postscreen_dnsbl_sites =
   list.dnswl.org=127.0.[0..255].0*-2
   list.dnswl.org=127.0.[0..255].1*-4
@@ -159,7 +161,6 @@ postscreen_dnsbl_sites =
   tor.dan.me.uk*1
   safe.dnsbl.sorbs.net*1
 postscreen_dnsbl_threshold = 5
-postscreen_dnsbl_whitelist_threshold = 0
 postscreen_greet_action = enforce
 postscreen_non_smtp_command_enable = yes
 postscreen_pipelining_enable = yes
@@ -170,12 +171,12 @@ smtp_dns_support_level = enabled
 smtp_tls_CAfile = /usr/local/share/certs/ca-root-nss.crt
 smtp_tls_ciphers = medium
 smtp_tls_connection_reuse = yes
-smtp_tls_fingerprint_digest = sha1
+#smtp_tls_fingerprint_digest = sha256
 smtp_tls_loglevel = 1
 smtp_tls_mandatory_ciphers = medium
-smtp_tls_mandatory_protocols = !SSLv2 !SSLv3 !TLSv1 !TLSv1.1
+smtp_tls_mandatory_protocols = >=TLSv1.2
 smtp_tls_note_starttls_offer = yes
-smtp_tls_protocols = !SSLv2 !SSLv3 !TLSv1 !TLSv1.1
+smtp_tls_protocols = >=TLSv1.2
 smtp_tls_security_level = may
 smtp_tls_session_cache_database = btree:${data_directory}/smtp_scache
 smtpd_client_port_logging = yes
@@ -205,7 +206,6 @@ smtpd_recipient_restrictions =
   reject_unknown_recipient_domain
   check_recipient_access pcre:${config_directory}/recipient_checks.pcre
   check_policy_service unix:private/policyd-spf
-#  check_policy_service inet:127.0.0.1:8890
   permit
 smtpd_relay_restrictions =
   permit_mynetworks
@@ -222,14 +222,14 @@ smtpd_sender_restrictions =
   permit
 smtpd_tls_auth_only = yes
 smtpd_tls_chain_files =
-  /data/pki/private/mail.example.com.key
-  /data/pki/certs/mail.example.com.crt
+  /usr/local/etc/letsencrypt/live/mail.example.com/privkey.pem
+  /usr/local/etc/letsencrypt/live/mail.example.com/fullchain.pem
 smtpd_tls_ciphers = medium
-smtpd_tls_fingerprint_digest = sha1
+#smtpd_tls_fingerprint_digest = sha256
 smtpd_tls_loglevel = 1
 smtpd_tls_mandatory_ciphers = medium
-smtpd_tls_mandatory_protocols = !SSLv2 !SSLv3 !TLSv1 !TLSv1.1
-smtpd_tls_protocols = !SSLv2 !SSLv3 !TLSv1 !TLSv1.1
+smtpd_tls_mandatory_protocols = >=TLSv1.2
+smtpd_tls_protocols = >=TLSv1.2
 smtpd_tls_received_header = yes
 smtpd_tls_security_level = may
 smtpd_tls_session_cache_database = btree:${data_directory}/smtpd_scache
@@ -237,8 +237,8 @@ strict_rfc821_envelopes = yes
 swap_bangpath = no
 tls_daemon_random_bytes = 64
 tls_eecdh_auto_curves = X448 X25519 secp384r1 prime256v1 secp521r1
-tls_high_cipherlist = TLSv1.2 +CHACHA20 +AES +SHA !DH !AESCCM !CAMELLIA !PSK !RSA !SHA1 !SHA256 !SHA384 !kDHd !kDHr !kECDH !aDSS !aNULL
-tls_medium_cipherlist = TLSv1.2 +CHACHA20 +AES +SHA !DH !AESCCM !CAMELLIA !PSK !RSA !SHA1 !kDHd !kDHr !kECDH !aDSS !aNULL
+tls_high_cipherlist = TLSv1.2 +CHACHA20 +AES +SHA !DH !AESCCM !ARIA !CAMELLIA !IDEA !PSK !RSA !SHA1 !SHA256 !SHA384 !kDHd !kDHr !kECDH !aDSS !aNULL
+tls_medium_cipherlist = TLSv1.2 +CHACHA20 +AES +SHA !DH !AESCCM !ARIA !CAMELLIA !IDEA !PSK !RSA !SHA1 !kDHd !kDHr !kECDH !aDSS !aNULL
 tls_preempt_cipherlist = yes
 tls_random_bytes = 64
 tls_ssl_options = NO_COMPRESSION
@@ -470,17 +470,16 @@ chown vmail:vmail /data/vmail
 Wir installieren `mail/py-spf-engine` und dessen Abhängigkeiten.
 
 ``` bash
-mkdir -p /var/db/ports/dns_py-dnspython
-cat > /var/db/ports/dns_py-dnspython/options << "EOF"
-_OPTIONS_READ=py37-dnspython-1.16.0
-_FILE_COMPLETE_OPTIONS_LIST=EXAMPLES PYCRYPTODOME
-OPTIONS_FILE_SET+=EXAMPLES
-OPTIONS_FILE_UNSET+=PYCRYPTODOME
+mkdir -p /var/db/ports/mail_py-authres
+cat > /var/db/ports/mail_py-authres/options << "EOF"
+_OPTIONS_READ=py38-authres-1.2.0
+_FILE_COMPLETE_OPTIONS_LIST=DOCS
+OPTIONS_FILE_SET+=DOCS
 "EOF"
 
 mkdir -p /var/db/ports/mail_libmilter
 cat > /var/db/ports/mail_libmilter/options << "EOF"
-_OPTIONS_READ=libmilter-8.16.1
+_OPTIONS_READ=libmilter-8.17.1
 _FILE_COMPLETE_OPTIONS_LIST=IPV6 MILTER_SHARED MILTER_POOL DOCS
 OPTIONS_FILE_SET+=IPV6
 OPTIONS_FILE_SET+=MILTER_SHARED
@@ -488,9 +487,62 @@ OPTIONS_FILE_SET+=MILTER_POOL
 OPTIONS_FILE_SET+=DOCS
 "EOF"
 
+mkdir -p /var/db/ports/dns_py-dnspython
+cat > /var/db/ports/dns_py-dnspython/options << "EOF"
+_OPTIONS_READ=py38-dnspython-2.2.1
+_FILE_COMPLETE_OPTIONS_LIST=CURIO DNSSEC DOH EXAMPLES IDNA TRIO
+OPTIONS_FILE_UNSET+=CURIO
+OPTIONS_FILE_SET+=DNSSEC
+OPTIONS_FILE_SET+=DOH
+OPTIONS_FILE_SET+=EXAMPLES
+OPTIONS_FILE_SET+=IDNA
+OPTIONS_FILE_UNSET+=TRIO
+"EOF"
+
+mkdir -p /var/db/ports/devel_py-wheel
+cat > /var/db/ports/devel_py-wheel/options << "EOF"
+_OPTIONS_READ=py38-wheel-0.36.2
+_FILE_COMPLETE_OPTIONS_LIST=PIP SIGNATURE
+OPTIONS_FILE_UNSET+=PIP
+OPTIONS_FILE_UNSET+=SIGNATURE
+"EOF"
+
+mkdir -p /var/db/ports/www_py-httpx
+cat > /var/db/ports/www_py-httpx/options << "EOF"
+_OPTIONS_READ=py38-httpx-0.23.0
+_FILE_COMPLETE_OPTIONS_LIST=BROTLI CLI HTTP2 SOCKS
+OPTIONS_FILE_SET+=BROTLI
+OPTIONS_FILE_SET+=CLI
+OPTIONS_FILE_SET+=HTTP2
+OPTIONS_FILE_UNSET+=SOCKS
+"EOF"
+
+mkdir -p /var/db/ports/www_py-httpcore
+cat > /var/db/ports/www_py-httpcore/options << "EOF"
+_OPTIONS_READ=py38-httpcore-0.15.0
+_FILE_COMPLETE_OPTIONS_LIST=HTTP2 SOCKS
+OPTIONS_FILE_SET+=HTTP2
+OPTIONS_FILE_UNSET+=SOCKS
+"EOF"
+
+mkdir -p /var/db/ports/devel_py-anyio
+cat > /var/db/ports/devel_py-anyio/options << "EOF"
+_OPTIONS_READ=py38-anyio-3.6.1
+_FILE_COMPLETE_OPTIONS_LIST=TRIO
+OPTIONS_FILE_UNSET+=TRIO
+"EOF"
+
+mkdir -p /var/db/ports/mail_py-spf-engine
+cat > /var/db/ports/mail_py-spf-engine/options << "EOF"
+_OPTIONS_READ=py38-spf-engine-2.9.3
+_FILE_COMPLETE_OPTIONS_LIST=DOCS
+OPTIONS_FILE_SET+=DOCS
+"EOF"
+
 
 cd /usr/ports/mail/py-spf-engine
 make all install clean-depends clean
+
 
 echo 'pyspf_milter_enable="YES"' >> /etc/rc.conf
 ```
