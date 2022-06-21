@@ -2,7 +2,7 @@
 title: 'MySQL'
 description: 'In diesem HowTo wird step-by-step die Installation des MySQL Datenbanksystem für ein WebHosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2022-04-28'
+updated: '2022-06-21'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 contributors:
@@ -21,13 +21,13 @@ Zu den Voraussetzungen für dieses HowTo siehe bitte: [Voraussetzungen](/howtos/
 
 Unser WebHosting System wird um folgende Dienste erweitert.
 
-- MySQL 8.0.23 (InnoDB, GTID)
+- MySQL 8.0.29 (InnoDB, GTID)
 
 ## Installation
 
 MySQL unterstützt mehrere Engines, dieses HowTo beschränkt sich allerdings auf die am Häufigsten verwendete: InnoDB
 
-Wir installieren `databases/mysql80-server` und dessen Abhängigkeiten.
+Wir installieren `databases/mysql80-client` und dessen Abhängigkeiten.
 
 ``` bash
 cat >> /etc/make.conf << "EOF"
@@ -36,68 +36,53 @@ DEFAULT_VERSIONS+=mysql=8.0
 ```
 
 ``` bash
-mkdir -p /var/db/ports/devel_cmake
-cat > /var/db/ports/devel_cmake/options << "EOF"
-_OPTIONS_READ=cmake-3.19.5
-_FILE_COMPLETE_OPTIONS_LIST=CPACK DOCS MANPAGES
-OPTIONS_FILE_UNSET+=CPACK
-OPTIONS_FILE_SET+=DOCS
-OPTIONS_FILE_SET+=MANPAGES
-"EOF"
-
-mkdir -p /var/db/ports/devel_py-Jinja2
-cat > /var/db/ports/devel_py-Jinja2/options << "EOF"
-_OPTIONS_READ=py37-Jinja2-2.11.2
-_FILE_COMPLETE_OPTIONS_LIST=BABEL EXAMPLES
-OPTIONS_FILE_SET+=BABEL
-OPTIONS_FILE_SET+=EXAMPLES
-"EOF"
-
-mkdir -p /var/db/ports/textproc_py-docutils
-cat > /var/db/ports/textproc_py-docutils/options << "EOF"
-_OPTIONS_READ=py37-docutils-0.16
-_FILE_COMPLETE_OPTIONS_LIST=PYGMENTS
-OPTIONS_FILE_SET+=PYGMENTS
-"EOF"
-
-mkdir -p /var/db/ports/net_py-urllib3
-cat > /var/db/ports/net_py-urllib3/options << "EOF"
-_OPTIONS_READ=py37-urllib3-1.25.11
-_FILE_COMPLETE_OPTIONS_LIST=BROTLI SOCKS SSL
-OPTIONS_FILE_SET+=BROTLI
-OPTIONS_FILE_SET+=SOCKS
-OPTIONS_FILE_SET+=SSL
-"EOF"
-
-mkdir -p /var/db/ports/textproc_py-snowballstemmer
-cat > /var/db/ports/textproc_py-snowballstemmer/options << "EOF"
-_OPTIONS_READ=py37-snowballstemmer-1.2.1
-_FILE_COMPLETE_OPTIONS_LIST=PYSTEMMER
-OPTIONS_FILE_SET+=PYSTEMMER
-"EOF"
-
-mkdir -p /var/db/ports/archivers_libarchive
-cat > /var/db/ports/archivers_libarchive/options << "EOF"
-_OPTIONS_READ=libarchive-3.5.1
-_FILE_COMPLETE_OPTIONS_LIST=LZ4 LZO ZSTD OPENSSL MBEDTLS NETTLE
-OPTIONS_FILE_SET+=LZ4
-OPTIONS_FILE_SET+=LZO
-OPTIONS_FILE_SET+=ZSTD
+mkdir -p /var/db/ports/devel_libevent
+cat > /var/db/ports/devel_libevent/options << "EOF"
+_OPTIONS_READ=libevent-2.1.12
+_FILE_COMPLETE_OPTIONS_LIST=OPENSSL THREADS
 OPTIONS_FILE_SET+=OPENSSL
-OPTIONS_FILE_UNSET+=MBEDTLS
-OPTIONS_FILE_UNSET+=NETTLE
+OPTIONS_FILE_SET+=THREADS
+"EOF"
+
+mkdir -p /var/db/ports/security_libfido2
+cat > /var/db/ports/security_libfido2/options << "EOF"
+_OPTIONS_READ=libfido2-1.11.0
+_FILE_COMPLETE_OPTIONS_LIST=DOCS
+OPTIONS_FILE_SET+=DOCS
+"EOF"
+
+mkdir -p /var/db/ports/comms_hidapi
+cat > /var/db/ports/comms_hidapi/options << "EOF"
+_OPTIONS_READ=hidapi-0.12.0
+_FILE_COMPLETE_OPTIONS_LIST=DOCS
+OPTIONS_FILE_SET+=DOCS
+"EOF"
+
+mkdir -p /var/db/ports/print_gsfonts
+cat > /var/db/ports/print_gsfonts/options << "EOF"
+_OPTIONS_READ=gsfonts-8.11_8
+_FILE_COMPLETE_OPTIONS_LIST=DOCS
+OPTIONS_FILE_SET+=DOCS
 "EOF"
 
 mkdir -p /var/db/ports/databases_mysql80-client
 cat > /var/db/ports/databases_mysql80-client/options << "EOF"
-_OPTIONS_READ=mysql80-client-8.0.23
+_OPTIONS_READ=mysql80-client-8.0.29
 _FILE_COMPLETE_OPTIONS_LIST=SASLCLIENT
 OPTIONS_FILE_UNSET+=SASLCLIENT
 "EOF"
 
+
+cd /usr/ports/databases/mysql80-client
+make all install clean-depends clean
+```
+
+Wir installieren `databases/mysql80-server` und dessen Abhängigkeiten.
+
+``` bash
 mkdir -p /var/db/ports/databases_mysql80-server
 cat > /var/db/ports/databases_mysql80-server/options << "EOF"
-_OPTIONS_READ=mysql80-server-8.0.23
+_OPTIONS_READ=mysql80-server-8.0.29
 _FILE_COMPLETE_OPTIONS_LIST= ARCHIVE BLACKHOLE EXAMPLE FEDERATED INNOBASE PARTITION PERFSCHEMA PERFSCHM
 OPTIONS_FILE_UNSET+=ARCHIVE
 OPTIONS_FILE_UNSET+=BLACKHOLE
@@ -106,12 +91,9 @@ OPTIONS_FILE_UNSET+=FEDERATED
 OPTIONS_FILE_UNSET+=INNOBASE
 OPTIONS_FILE_UNSET+=PARTITION
 OPTIONS_FILE_UNSET+=PERFSCHEMA
-OPTIONS_FILE_SET+=PERFSCHM
+OPTIONS_FILE_UNSET+=PERFSCHM
 "EOF"
 
-
-cd /usr/ports/databases/mysql80-client
-make all install clean-depends clean
 
 cd /usr/ports/databases/mysql80-server
 make all install clean-depends clean

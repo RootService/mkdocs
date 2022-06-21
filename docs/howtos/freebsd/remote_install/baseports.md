@@ -2,7 +2,7 @@
 title: 'BasePorts'
 description: 'In diesem HowTo wird step-by-step die Installation einiger BasePorts für ein FreeBSD 64Bit BaseSystem auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2022-04-28'
+updated: '2022-06-20'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 contributors:
@@ -27,12 +27,10 @@ Unsere BasePorts werden am Ende folgende Dienste umfassen.
 - Perl 5.32.1
 - OpenSSL 1.1.1
 - LUA 5.2.4
-- TCL 8.6.11
-- SQLite 3.34.1
-- Python 3.7.10
-- Berkeley DB 5.3.28
-- Ruby 2.7.2
-- SUDO 1.9.5
+- TCL 8.6.12
+- Python 3.8.13
+- Ruby 3.0.4
+- Berkeley DB 18.1.40
 
 ## Einloggen und zu *root* werden
 
@@ -42,26 +40,6 @@ putty -ssh -P 2222 -i "${Env:USERPROFILE}\VirtualBox VMs\FreeBSD\ssh\id_rsa.ppk"
 
 ``` bash
 su - root
-```
-
-## Portstree einrichten
-
-Um unser Basissystem um sinnvolle Programme erweitern zu können, fehlt uns noch der sogenannte Portstree. Diesen laden wir uns nun mittels `portsnap` herunter (kann durchaus eine Stunde oder länger dauern).
-
-``` bash
-portsnap fetch extract
-```
-
-Damit ist der Portstree einsatzbereit. Um den Tree künftig zu aktualisieren genügt der folgende Befehl.
-
-``` bash
-portsnap fetch update
-```
-
-Wichtige Informationen zu neuen Paketversionen finden sich in `/usr/ports/UPDATING` und sollten dringend beachtet werden.
-
-``` bash
-less /usr/ports/UPDATING
 ```
 
 ## Software installieren
@@ -83,15 +61,21 @@ echo "FreeBSD: { enabled: no }" > /usr/local/etc/pkg/repos/FreeBSD.conf
 
 So ganz ohne komfortable Tools ist das Basis-System etwas mühselig zu administrieren. Deshalb werden wir aus den Ports nun ein paar etwas häufiger benötigte Anwendungen installiert.
 
-Die von uns jeweils gewünschten Build-Optionen der Ports legen wir dabei mittels der `options`-Files des neuen Portkonfigurationsframeworks `OptionsNG` fest.
+Die von uns jeweils gewünschten Build-Optionen der Ports legen wir dabei mittels der `options`-Files des Portkonfigurationsframeworks `OptionsNG` fest.
 
 Wir installieren `ports-mgmt/pkg` und dessen Abhängigkeiten.
 
 ``` bash
+mkdir -p /var/db/ports/ports-mgmt_pkg
+cat > /var/db/ports/ports-mgmt_pkg/options << "EOF"
+_OPTIONS_READ=pkg-1.17.5
+_FILE_COMPLETE_OPTIONS_LIST=DOCS
+OPTIONS_FILE_SET+=DOCS
+"EOF"
+
+
 cd /usr/ports/ports-mgmt/pkg
 make all install clean-depends clean
-
-pkg check -B -d -a
 ```
 
 Die `/etc/periodic.conf` wird um folgenden Inhalt erweitert.
@@ -110,55 +94,34 @@ Dieser Cronjob prüft täglich um 7:00 Uhr ob es Updates für die installierten 
 
 ``` bash
 cat >> /etc/crontab << "EOF"
-0       7       *       *       *       root    /usr/sbin/portsnap -I cron update && /usr/local/sbin/pkg version -vIL= && /usr/local/sbin/pkg audit -F
+0       7       *       *       *       root    /usr/local/bin/git -C /usr/ports pull --rebase --quiet && /usr/bin/make -C /usr/ports fetchindex && /usr/local/sbin/pkg version -vIL= && /usr/local/sbin/pkg audit -F
 "EOF"
 ```
 
 Wir installieren `sysutils/devcpu-data` und dessen Abhängigkeiten.
 
 ``` bash
+mkdir -p /var/db/ports/sysutils_devcpu-data
+cat > /var/db/ports/sysutils_devcpu-data/options << "EOF"
+_OPTIONS_READ=devcpu-data-20220510
+_FILE_COMPLETE_OPTIONS_LIST= AMD INTEL
+OPTIONS_FILE_SET+=AMD
+OPTIONS_FILE_SET+=INTEL
+"EOF"
+
+
 cd /usr/ports/sysutils/devcpu-data
 make LICENSES_ACCEPTED=EULA config-recursive all install clean-depends clean
 
-sed -e 's/^#\(cpu_microcode_\)/\1/g' -i '' /boot/loader.conf
 
+sed -e 's/^#\(cpu_microcode_\)/\1/g' -i '' /boot/loader.conf
 
 echo 'microcode_update_enable="YES"' >> /etc/rc.conf
 ```
 
-Wir installieren `devel/re2c` und dessen Abhängigkeiten.
+Wir installieren `lang/perl5.32` und dessen Abhängigkeiten.
 
 ``` bash
-cd /usr/ports/devel/re2c
-make all install clean-depends clean
-```
-
-Wir installieren `devel/pcre` und dessen Abhängigkeiten.
-
-``` bash
-mkdir -p /var/db/ports/devel_pcre
-cat > /var/db/ports/devel_pcre/options << "EOF"
-_OPTIONS_READ=pcre-8.44
-_FILE_COMPLETE_OPTIONS_LIST=DOCS MAN3 STACK_RECURSION LIBEDIT READLINE
-OPTIONS_FILE_SET+=DOCS
-OPTIONS_FILE_SET+=MAN3
-OPTIONS_FILE_SET+=STACK_RECURSION
-OPTIONS_FILE_SET+=LIBEDIT
-OPTIONS_FILE_UNSET+=READLINE
-"EOF"
-
-
-cd /usr/ports/devel/pcre
-make all install clean-depends clean
-```
-
-Wir installieren `lang/perl5.30` und dessen Abhängigkeiten.
-
-``` bash
-cat >> /etc/make.conf << "EOF"
-DEFAULT_VERSIONS+=perl5=5.32
-"EOF"
-
 mkdir -p /var/db/ports/lang_perl5.32
 cat > /var/db/ports/lang_perl5.32/options << "EOF"
 _OPTIONS_READ=perl5-5.32.1
@@ -189,7 +152,7 @@ DEFAULT_VERSIONS+=ssl=openssl
 
 mkdir -p /var/db/ports/security_openssl
 cat > /var/db/ports/security_openssl/options << "EOF"
-_OPTIONS_READ=openssl-1.1.1j
+_OPTIONS_READ=openssl-1.1.1
 _FILE_COMPLETE_OPTIONS_LIST=ASYNC CT MAN3 RFC3779 SHARED ZLIB ARIA DES GOST IDEA SM4 RC2 RC4 RC5 WEAK-SSL-CIPHERS MD2 MD4 MDC2 RMD160 SM2 SM3 ASM SSE2 THREADS EC NEXTPROTONEG SCTP SSL3 TLS1 TLS1_1 TLS1_2
 OPTIONS_FILE_SET+=ASYNC
 OPTIONS_FILE_SET+=CT
@@ -234,13 +197,122 @@ Wir installieren `security/ca_root_nss` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/security_ca_root_nss
 cat > /var/db/ports/security_ca_root_nss/options << "EOF"
-_OPTIONS_READ=ca_root_nss-3.61
+_OPTIONS_READ=ca_root_nss-3.78
 _FILE_COMPLETE_OPTIONS_LIST=ETCSYMLINK
 OPTIONS_FILE_SET+=ETCSYMLINK
 "EOF"
 
 
 cd /usr/ports/security/ca_root_nss
+make all install clean-depends clean
+```
+
+Wir installieren `devel/pcre2` und dessen Abhängigkeiten.
+
+``` bash
+mkdir -p /var/db/ports/devel_pkgconf
+cat > /var/db/ports/devel_pkgconf/options << "EOF"
+_OPTIONS_READ=pkgconf-1.8.0
+_FILE_COMPLETE_OPTIONS_LIST=DOCS
+OPTIONS_FILE_SET+=DOCS
+"EOF"
+
+mkdir -p /var/db/ports/devel_autoconf
+cat > /var/db/ports/devel_autoconf/options << "EOF"
+_OPTIONS_READ=autoconf-2.71
+_FILE_COMPLETE_OPTIONS_LIST=INFO
+OPTIONS_FILE_SET+=INFO
+"EOF"
+
+mkdir -p /var/db/ports/devel_m4
+cat > /var/db/ports/devel_m4/options << "EOF"
+_OPTIONS_READ=m4-1.4.19
+_FILE_COMPLETE_OPTIONS_LIST=EXAMPLES INFO LIBSIGSEGV NLS
+OPTIONS_FILE_SET+=EXAMPLES
+OPTIONS_FILE_SET+=INFO
+OPTIONS_FILE_UNSET+=LIBSIGSEGV
+OPTIONS_FILE_SET+=NLS
+"EOF"
+
+mkdir -p /var/db/ports/print_texinfo
+cat > /var/db/ports/print_texinfo/options << "EOF"
+_OPTIONS_READ=texinfo-6.8
+_FILE_COMPLETE_OPTIONS_LIST=NLS
+OPTIONS_FILE_SET+=NLS
+"EOF"
+
+mkdir -p /var/db/ports/misc_help2man
+cat > /var/db/ports/misc_help2man/options << "EOF"
+_OPTIONS_READ=help2man-1.49.2
+_FILE_COMPLETE_OPTIONS_LIST=NLS
+OPTIONS_FILE_SET+=NLS
+"EOF"
+
+mkdir -p /var/db/ports/devel_gettext-tools
+cat > /var/db/ports/devel_gettext-tools/options << "EOF"
+_OPTIONS_READ=gettext-tools-0.21
+_FILE_COMPLETE_OPTIONS_LIST=DOCS EXAMPLES THREADS
+OPTIONS_FILE_SET+=DOCS
+OPTIONS_FILE_SET+=EXAMPLES
+OPTIONS_FILE_SET+=THREADS
+"EOF"
+
+mkdir -p /var/db/ports/devel_libtextstyle
+cat > /var/db/ports/devel_libtextstyle/options << "EOF"
+_OPTIONS_READ=libtextstyle-0.21
+_FILE_COMPLETE_OPTIONS_LIST=DOCS
+OPTIONS_FILE_SET+=DOCS
+"EOF"
+
+mkdir -p /var/db/ports/devel_gettext-runtime
+cat > /var/db/ports/devel_gettext-runtime/options << "EOF"
+_OPTIONS_READ=gettext-runtime-0.21
+_FILE_COMPLETE_OPTIONS_LIST=DOCS
+OPTIONS_FILE_SET+=DOCS
+"EOF"
+
+mkdir -p /var/db/ports/devel_gmake
+cat > /var/db/ports/devel_gmake/options << "EOF"
+_OPTIONS_READ=gmake-4.3
+_FILE_COMPLETE_OPTIONS_LIST=NLS
+OPTIONS_FILE_SET+=NLS
+"EOF"
+
+mkdir -p /var/db/ports/devel_p5-Locale-libintl
+cat > /var/db/ports/devel_p5-Locale-libintl/options << "EOF"
+_OPTIONS_READ=p5-Locale-libintl-1.32
+_FILE_COMPLETE_OPTIONS_LIST=NLS
+OPTIONS_FILE_SET+=NLS
+"EOF"
+
+mkdir -p /var/db/ports/converters_libiconv
+cat > /var/db/ports/converters_libiconv/options << "EOF"
+_OPTIONS_READ=libiconv-1.16
+_FILE_COMPLETE_OPTIONS_LIST=DOCS ENCODINGS
+OPTIONS_FILE_SET+=DOCS
+OPTIONS_FILE_SET+=ENCODINGS
+"EOF"
+
+mkdir -p /var/db/ports/devel_automake
+cat > /var/db/ports/devel_automake/options << "EOF"
+_OPTIONS_READ=automake-1.16.5
+_FILE_COMPLETE_OPTIONS_LIST=DOCS
+OPTIONS_FILE_SET+=DOCS
+"EOF"
+
+mkdir -p /var/db/ports/devel_pcre2
+cat > /var/db/ports/devel_pcre2/options << "EOF"
+_OPTIONS_READ=pcre2-10.40
+_FILE_COMPLETE_OPTIONS_LIST=DOCS LIBBZ2 LIBZ LIBEDIT READLINE
+OPTIONS_FILE_SET+=DOCS
+OPTIONS_FILE_SET+=LIBBZ2
+OPTIONS_FILE_SET+=LIBZ
+OPTIONS_FILE_SET+=LIBEDIT
+OPTIONS_FILE_UNSET+=READLINE
+"EOF"
+
+
+cd /usr/ports/devel/pcre2
 make all install clean-depends clean
 ```
 
@@ -256,7 +328,7 @@ Wir installieren `lang/tcl86` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/lang_tcl86
 cat > /var/db/ports/lang_tcl86/options << "EOF"
-_OPTIONS_READ=tcl86-8.6.11
+_OPTIONS_READ=tcl86-8.6.12
 _FILE_COMPLETE_OPTIONS_LIST=DEBUG DTRACE TCLMAN THREADS TZDATA
 OPTIONS_FILE_UNSET+=DEBUG
 OPTIONS_FILE_UNSET+=DTRACE
@@ -270,68 +342,28 @@ cd /usr/ports/lang/tcl86
 make all install clean-depends clean
 ```
 
-Wir installieren `lang/python37` und dessen Abhängigkeiten.
+Wir installieren `lang/python38` und dessen Abhängigkeiten.
 
 ``` bash
-mkdir -p /var/db/ports/databases_sqlite3
-cat > /var/db/ports/databases_sqlite3/options << "EOF"
-_OPTIONS_READ=sqlite3-3.34.1
-_FILE_COMPLETE_OPTIONS_LIST=ARMOR DBPAGE DBSTAT DIRECT_READ DQS EXTENSION FTS3_TOKEN FTS4 FTS5 LIKENOTBLOB MEMMAN METADATA NORMALIZE NULL_TRIM RBU SECURE_DELETE SORT_REF STMT STSHELL THREADS TRUSTED_SCHEMA UNKNOWN_SQL UNLOCK_NOTIFY URI URI_AUTHORITY TS0 TS1 TS2 TS3 STAT3 STAT4 READLINE LIBEDIT JSON1 SESSION OFFSET SER1 SOUNDEX ICU UNICODE61 RTREE RTREE_INT GEOPOLY
-OPTIONS_FILE_SET+=ARMOR
-OPTIONS_FILE_SET+=DBPAGE
-OPTIONS_FILE_SET+=DBSTAT
-OPTIONS_FILE_SET+=DIRECT_READ
-OPTIONS_FILE_SET+=DQS
-OPTIONS_FILE_SET+=EXTENSION
-OPTIONS_FILE_SET+=FTS3_TOKEN
-OPTIONS_FILE_SET+=FTS4
-OPTIONS_FILE_SET+=FTS5
-OPTIONS_FILE_SET+=LIKENOTBLOB
-OPTIONS_FILE_SET+=MEMMAN
-OPTIONS_FILE_SET+=METADATA
-OPTIONS_FILE_SET+=NORMALIZE
-OPTIONS_FILE_SET+=NULL_TRIM
-OPTIONS_FILE_SET+=RBU
-OPTIONS_FILE_SET+=SECURE_DELETE
-OPTIONS_FILE_SET+=SORT_REF
-OPTIONS_FILE_SET+=STMT
-OPTIONS_FILE_SET+=STSHELL
-OPTIONS_FILE_SET+=THREADS
-OPTIONS_FILE_UNSET+=TRUSTED_SCHEMA
-OPTIONS_FILE_UNSET+=UNKNOWN_SQL
-OPTIONS_FILE_SET+=UNLOCK_NOTIFY
-OPTIONS_FILE_SET+=URI
-OPTIONS_FILE_SET+=URI_AUTHORITY
-OPTIONS_FILE_UNSET+=TS0
-OPTIONS_FILE_UNSET+=TS1
-OPTIONS_FILE_SET+=TS2
-OPTIONS_FILE_UNSET+=TS3
-OPTIONS_FILE_UNSET+=STAT3
-OPTIONS_FILE_SET+=STAT4
-OPTIONS_FILE_UNSET+=READLINE
-OPTIONS_FILE_SET+=LIBEDIT
-OPTIONS_FILE_SET+=JSON1
-OPTIONS_FILE_SET+=SESSION
-OPTIONS_FILE_SET+=OFFSET
-OPTIONS_FILE_SET+=SER1
-OPTIONS_FILE_SET+=SOUNDEX
-OPTIONS_FILE_SET+=ICU
-OPTIONS_FILE_UNSET+=UNICODE61
-OPTIONS_FILE_SET+=RTREE
-OPTIONS_FILE_UNSET+=RTREE_INT
-OPTIONS_FILE_UNSET+=GEOPOLY
+mkdir -p /var/db/ports/math_mpdecimal
+cat > /var/db/ports/math_mpdecimal/options << "EOF"
+_OPTIONS_READ=mpdecimal-2.5.1
+_FILE_COMPLETE_OPTIONS_LIST=DOCS
+OPTIONS_FILE_SET+=DOCS
 "EOF"
 
-mkdir -p /var/db/ports/lang_python37
-cat > /var/db/ports/lang_python37/options << "EOF"
-_OPTIONS_READ=python37-3.7.10
-_FILE_COMPLETE_OPTIONS_LIST=DEBUG IPV6 NLS PYMALLOC FNV SIPHASH
+mkdir -p /var/db/ports/lang_python38
+cat > /var/db/ports/lang_python38/options << "EOF"
+_OPTIONS_READ=python38-3.8.13
+_FILE_COMPLETE_OPTIONS_LIST=DEBUG IPV6 LIBMPDEC LTO NLS PYMALLOC FNV SIPHASH
 OPTIONS_FILE_UNSET+=DEBUG
 OPTIONS_FILE_SET+=IPV6
+OPTIONS_FILE_SET+=LIBMPDEC
+OPTIONS_FILE_UNSET+=LTO
 OPTIONS_FILE_SET+=NLS
 OPTIONS_FILE_SET+=PYMALLOC
 OPTIONS_FILE_UNSET+=FNV
-OPTIONS_FILE_SET+=SIPHASH
+OPTIONS_FILE_UNSET+=SIPHASH
 "EOF"
 
 
@@ -346,46 +378,9 @@ cd /usr/ports/lang/python
 make all install clean-depends clean
 ```
 
-Wir installieren `databases/py-bsddb3` und dessen Abhängigkeiten.
+Wir installieren `lang/ruby30` und dessen Abhängigkeiten.
 
 ``` bash
-mkdir -p /var/db/ports/databases_db5
-cat > /var/db/ports/databases_db5/options << "EOF"
-_OPTIONS_READ=db5-5.3.28
-_FILE_COMPLETE_OPTIONS_LIST=CRYPTO DEBUG DOCS JAVA L10N SQL TCL
-OPTIONS_FILE_SET+=CRYPTO
-OPTIONS_FILE_UNSET+=DEBUG
-OPTIONS_FILE_SET+=DOCS
-OPTIONS_FILE_UNSET+=JAVA
-OPTIONS_FILE_UNSET+=L10N
-OPTIONS_FILE_UNSET+=SQL
-OPTIONS_FILE_UNSET+=TCL
-"EOF"
-
-
-cd /usr/ports/databases/py-bsddb3
-make all install clean-depends clean
-```
-
-Wir installieren `lang/ruby27` und dessen Abhängigkeiten.
-
-``` bash
-mkdir -p /var/db/ports/devel_m4
-cat > /var/db/ports/devel_m4/options << "EOF"
-_OPTIONS_READ=m4-1.4.18
-_FILE_COMPLETE_OPTIONS_LIST=EXAMPLES LIBSIGSEGV
-OPTIONS_FILE_SET+=EXAMPLES
-OPTIONS_FILE_SET+=LIBSIGSEGV
-"EOF"
-
-mkdir -p /var/db/ports/converters_libiconv
-cat > /var/db/ports/converters_libiconv/options << "EOF"
-_OPTIONS_READ=libiconv-1.16
-_FILE_COMPLETE_OPTIONS_LIST=DOCS ENCODINGS
-OPTIONS_FILE_SET+=DOCS
-OPTIONS_FILE_SET+=ENCODINGS
-"EOF"
-
 mkdir -p /var/db/ports/math_gmp
 cat > /var/db/ports/math_gmp/options << "EOF"
 _OPTIONS_READ=gmp-6.2.1
@@ -393,9 +388,9 @@ _FILE_COMPLETE_OPTIONS_LIST=CPU_OPTS
 OPTIONS_FILE_UNSET+=CPU_OPTS
 "EOF"
 
-mkdir -p /var/db/ports/lang_ruby27
-cat > /var/db/ports/lang_ruby27/options << "EOF"
-_OPTIONS_READ=ruby-2.7.2
+mkdir -p /var/db/ports/lang_ruby30
+cat > /var/db/ports/lang_ruby30/options << "EOF"
+_OPTIONS_READ=ruby-3.0.4
 _FILE_COMPLETE_OPTIONS_LIST=CAPIDOCS DEBUG DOCS EXAMPLES GMP RDOC LIBEDIT READLINE
 OPTIONS_FILE_UNSET+=CAPIDOCS
 OPTIONS_FILE_UNSET+=DEBUG
@@ -408,68 +403,32 @@ OPTIONS_FILE_UNSET+=READLINE
 "EOF"
 
 
-cd /usr/ports/lang/ruby27
+cd /usr/ports/lang/ruby30
 make all install clean-depends clean
 ```
 
-Wir installieren `devel/ruby-gems` und dessen Abhängigkeiten.
+Wir installieren `databases/db18` und dessen Abhängigkeiten.
 
 ``` bash
-cd /usr/ports/devel/ruby-gems
-make all install clean-depends clean
-```
-
-Wir installieren `databases/ruby-bdb` und dessen Abhängigkeiten.
-
-``` bash
-cd /usr/ports/databases/ruby-bdb
-make all install clean-depends clean
-```
-
-Wir installieren `devel/pcre2` und dessen Abhängigkeiten.
-
-``` bash
-mkdir -p /var/db/ports/devel_pcre2
-cat > /var/db/ports/devel_pcre2/options << "EOF"
-_OPTIONS_READ=pcre2-10.36
-_FILE_COMPLETE_OPTIONS_LIST=DOCS LIBEDIT READLINE
-OPTIONS_FILE_SET+=DOCS
-OPTIONS_FILE_SET+=LIBEDIT
-OPTIONS_FILE_UNSET+=READLINE
+cat >> /etc/make.conf << "EOF"
+DEFAULT_VERSIONS+=bdb=18
 "EOF"
 
 
-cd /usr/ports/devel/pcre2
-make all install clean-depends clean
-```
-
-Wir installieren `security/sudo` und dessen Abhängigkeiten.
-
-``` bash
-mkdir -p /var/db/ports/security_sudo
-cat > /var/db/ports/security_sudo/options << "EOF"
-_OPTIONS_READ=sudo-1.9.5p2
-_FILE_COMPLETE_OPTIONS_LIST=AUDIT DISABLE_AUTH DISABLE_ROOT_SUDO DOCS EXAMPLES INSULTS LDAP NLS NOARGS_SHELL OPIE PAM PYTHON SSSD GSSAPI_BASE GSSAPI_HEIMDAL GSSAPI_MIT
-OPTIONS_FILE_SET+=AUDIT
-OPTIONS_FILE_UNSET+=DISABLE_AUTH
-OPTIONS_FILE_UNSET+=DISABLE_ROOT_SUDO
+mkdir -p /var/db/ports/databases_db18
+cat > /var/db/ports/databases_db18/options << "EOF"
+_OPTIONS_READ=db18-18.1.40
+_FILE_COMPLETE_OPTIONS_LIST=CRYPTO DEBUG DOCS JAVA L10N TCL
+OPTIONS_FILE_SET+=CRYPTO
+OPTIONS_FILE_UNSET+=DEBUG
 OPTIONS_FILE_SET+=DOCS
-OPTIONS_FILE_SET+=EXAMPLES
-OPTIONS_FILE_UNSET+=INSULTS
-OPTIONS_FILE_UNSET+=LDAP
-OPTIONS_FILE_SET+=NLS
-OPTIONS_FILE_UNSET+=NOARGS_SHELL
-OPTIONS_FILE_UNSET+=OPIE
-OPTIONS_FILE_UNSET+=PAM
-OPTIONS_FILE_UNSET+=PYTHON
-OPTIONS_FILE_UNSET+=SSSD
-OPTIONS_FILE_UNSET+=GSSAPI_BASE
-OPTIONS_FILE_UNSET+=GSSAPI_HEIMDAL
-OPTIONS_FILE_UNSET+=GSSAPI_MIT
+OPTIONS_FILE_UNSET+=JAVA
+OPTIONS_FILE_UNSET+=L10N
+OPTIONS_FILE_UNSET+=TCL
 "EOF"
 
 
-cd /usr/ports/security/sudo
+cd /usr/ports/databases/db18
 make all install clean-depends clean
 ```
 
