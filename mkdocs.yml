@@ -85,8 +85,8 @@ plugins:
 #        tags_file: tags.md
 #    - social:
 #    - privacy:
-#    - minify:
-#        minify_html: true
+    - minify:
+        minify_html: true
 
 markdown_extensions:
 # Python Markdown
