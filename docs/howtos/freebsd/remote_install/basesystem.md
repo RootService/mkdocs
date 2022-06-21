@@ -1023,7 +1023,8 @@ Zunächst müssen eventuell vorhandene Object-Dateien im Verzeichnis `/usr/obj` 
 ``` bash
 cd /usr/src
 
-make clean cleanworld
+make clean
+make cleanworld
 
 git -C /usr/src pull --rebase
 ```

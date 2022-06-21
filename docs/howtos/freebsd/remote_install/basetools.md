@@ -434,7 +434,7 @@ Die `/etc/periodic.conf` wird um folgenden Inhalt erweitert.
 ``` bash
 cat >> /etc/periodic.conf << "EOF"
 daily_status_smart_enable="YES"
-daily_status_smart_devices="/dev/nvd0 /dev/nvd1"
+daily_status_smart_devices="/dev/nvme0 /dev/nvme1"
 "EOF"
 ```
 

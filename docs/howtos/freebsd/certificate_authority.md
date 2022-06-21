@@ -2,7 +2,7 @@
 title: 'Certificate Authority'
 description: 'In diesem HowTo wird step-by-step die Installation einer Certificate Authority mit OpenSSL (PKI) auf Basis von FreeBSD 64Bit beschrieben.'
 date: '2013-11-15'
-updated: '2022-04-28'
+updated: '2020-04-28'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 contributors:
@@ -15,6 +15,12 @@ tags:
 # Certificate Authority
 
 ## Einleitung
+
+???+ warning
+
+    Dieses HowTo wird seit **2020-04-28** nicht mehr aktiv gepflegt und entspricht daher nicht mehr dem aktuellen Stand.
+
+    Die Verwendung dieses HowTo geschieht somit auf eigene Gefahr!
 
 Dieses HowTo setzt ein wie in [Remote Installation](/howtos/freebsd/remote_install/) beschriebenes, installiertes und konfiguriertes FreeBSD Basissystem und OpenSSL 1.0.2 (oder neuer) aus den FreeBSD Ports voraus.
 

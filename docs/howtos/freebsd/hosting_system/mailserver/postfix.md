@@ -556,7 +556,7 @@ cd /usr/ports/mail/py-spf-engine
 make all install clean-depends clean
 
 
-sysrc pyspf_milter_enable="YES"
+sysrc pyspf_milter_enable=YES
 ```
 
 `py-spf-engine` konfigurieren.
