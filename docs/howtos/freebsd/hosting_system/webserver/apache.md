@@ -171,9 +171,9 @@ cd /usr/ports/www/apache24
 make all install clean-depends clean
 
 
-echo 'apache24_enable="YES"' >> /etc/rc.conf
-echo 'apache24limits_enable="YES"' >> /etc/rc.conf
-echo 'apache24_http_accept_enable="YES"' >> /etc/rc.conf
+sysrc apache24_enable=YES
+sysrc apache24limits_enable=YES
+sysrc apache24_http_accept_enable=YES
 
 
 mkdir -p /usr/local/etc/newsyslog.conf.d

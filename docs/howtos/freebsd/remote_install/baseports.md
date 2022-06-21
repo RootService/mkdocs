@@ -116,7 +116,7 @@ make LICENSES_ACCEPTED=EULA config-recursive all install clean-depends clean
 
 sed -e 's/^#\(cpu_microcode_\)/\1/g' -i '' /boot/loader.conf
 
-echo 'microcode_update_enable="YES"' >> /etc/rc.conf
+sysrc microcode_update_enable=YES
 ```
 
 Wir installieren `lang/perl5.32` und dessen Abhängigkeiten.
@@ -359,7 +359,7 @@ _FILE_COMPLETE_OPTIONS_LIST=DEBUG IPV6 LIBMPDEC LTO NLS PYMALLOC FNV SIPHASH
 OPTIONS_FILE_UNSET+=DEBUG
 OPTIONS_FILE_SET+=IPV6
 OPTIONS_FILE_SET+=LIBMPDEC
-OPTIONS_FILE_UNSET+=LTO
+OPTIONS_FILE_SET+=LTO
 OPTIONS_FILE_SET+=NLS
 OPTIONS_FILE_SET+=PYMALLOC
 OPTIONS_FILE_UNSET+=FNV

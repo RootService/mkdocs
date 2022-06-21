@@ -36,14 +36,6 @@ DEFAULT_VERSIONS+=mysql=8.0
 ```
 
 ``` bash
-mkdir -p /var/db/ports/devel_libevent
-cat > /var/db/ports/devel_libevent/options << "EOF"
-_OPTIONS_READ=libevent-2.1.12
-_FILE_COMPLETE_OPTIONS_LIST=OPENSSL THREADS
-OPTIONS_FILE_SET+=OPENSSL
-OPTIONS_FILE_SET+=THREADS
-"EOF"
-
 mkdir -p /var/db/ports/security_libfido2
 cat > /var/db/ports/security_libfido2/options << "EOF"
 _OPTIONS_READ=libfido2-1.11.0
@@ -104,9 +96,9 @@ chmod 0750 /data/db/mysql{_secure,_tmpdir}
 chown mysql:mysql /data/db/mysql{,_secure,_tmpdir}
 
 
-echo 'mysql_enable="YES"' >> /etc/rc.conf
-echo 'mysql_dbdir="/data/db/mysql"' >> /etc/rc.conf
-echo 'mysql_optfile="/usr/local/etc/mysql/my.cnf"' >> /etc/rc.conf
+sysrc mysql_enable=YES
+sysrc mysql_dbdir="/data/db/mysql"
+sysrc mysql_optfile="/usr/local/etc/mysql/my.cnf"
 ```
 
 ## Konfiguration

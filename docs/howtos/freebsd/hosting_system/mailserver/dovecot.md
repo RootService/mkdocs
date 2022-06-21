@@ -85,7 +85,7 @@ cd /usr/ports/mail/dovecot
 make all install clean-depends clean
 
 
-echo 'dovecot_enable="YES"' >> /etc/rc.conf
+sysrc dovecot_enable=YES
 ```
 
 ## Konfiguration

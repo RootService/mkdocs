@@ -250,7 +250,7 @@ _FILE_COMPLETE_OPTIONS_LIST=DOCS ICU MEM_DEBUG READLINE THREAD_ALLOC
 OPTIONS_FILE_SET+=DOCS
 OPTIONS_FILE_SET+=ICU
 OPTIONS_FILE_UNSET+=MEM_DEBUG
-OPTIONS_FILE_SET+=READLINE
+OPTIONS_FILE_UNSET+=READLINE
 OPTIONS_FILE_UNSET+=THREAD_ALLOC
 "EOF"
 
@@ -295,7 +295,7 @@ OPTIONS_FILE_SET+=PROFILING
 OPTIONS_FILE_SET+=ROUNDTRIP
 OPTIONS_FILE_SET+=SLIDES
 OPTIONS_FILE_SET+=TEMPLATE
-OPTIONS_FILE_SET+=TESTS
+OPTIONS_FILE_UNSET+=TESTS
 OPTIONS_FILE_SET+=TOOLS
 OPTIONS_FILE_SET+=WEBSITE
 OPTIONS_FILE_SET+=XHTML11
@@ -422,10 +422,11 @@ Wir konfigurieren `smartmontools`.
 
 ``` bash
 sed 's/^DEVICESCAN/#DEVICESCAN/' /usr/local/etc/smartd.conf.sample > /usr/local/etc/smartd.conf
-echo '/dev/nvd0 -a -o on -S on -s (S/../.././02|L/../../6/03)' >> /usr/local/etc/smartd.conf
-echo '/dev/nvd1 -a -o on -S on -s (S/../.././02|L/../../6/03)' >> /usr/local/etc/smartd.conf
+echo '/dev/nvme0 -d nvme -a -o on -S on -s (S/../.././02|L/../../6/03)' >> /usr/local/etc/smartd.conf
+echo '/dev/nvme1 -d nvme -a -o on -S on -s (S/../.././02|L/../../6/03)' >> /usr/local/etc/smartd.conf
 
-echo 'smartd_enable="YES"' >> /etc/rc.conf
+
+sysrc smartd_enable=YES
 ```
 
 Die `/etc/periodic.conf` wird um folgenden Inhalt erweitert.

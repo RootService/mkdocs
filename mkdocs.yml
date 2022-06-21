@@ -177,6 +177,8 @@ nav:
                 - 'howtos/freebsd/hosting_system/index.md'
                 - Sicherheit:
                     - 'howtos/freebsd/hosting_system/security/certbot.md'
+                - Nameserver:
+                    - 'howtos/freebsd/hosting_system/nameserver/unbound.md'
                 - Datenbanken:
                     - 'howtos/freebsd/hosting_system/databases/mysql.md'
                 - Mailserver:

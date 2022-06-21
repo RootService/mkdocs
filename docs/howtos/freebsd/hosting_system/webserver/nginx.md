@@ -154,8 +154,8 @@ cd /usr/ports/www/nginx
 make all install clean-depends clean
 
 
-echo 'nginx_enable="YES"' >> /etc/rc.conf
-echo 'nginxlimits_enable="YES"' >> /etc/rc.conf
+sysrc nginx_enable=YES
+sysrc nginxlimits_enable=YES
 
 
 mkdir -p /usr/local/etc/newsyslog.conf.d

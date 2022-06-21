@@ -52,8 +52,8 @@ cd /usr/ports/mail/opendmarc
 make all install clean-depends clean
 
 
-echo 'opendmarc_socket="inet:8893@localhost"' >> /etc/rc.conf
-echo 'opendmarc_enable="YES"' >> /etc/rc.conf
+sysrc opendmarc_enable=YES
+sysrc opendmarc_socket="inet:8893@localhost"
 ```
 
 ``` bash

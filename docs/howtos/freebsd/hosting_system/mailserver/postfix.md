@@ -82,7 +82,7 @@ cd /usr/ports/mail/postfix
 make all install clean-depends clean
 
 
-echo 'postfix_enable="YES"' >> /etc/rc.conf
+sysrc postfix_enable=YES
 ```
 
 Wir wollen Postfix in der `/etc/mail/mailer.conf` aktivieren.
@@ -544,7 +544,7 @@ cd /usr/ports/mail/py-spf-engine
 make all install clean-depends clean
 
 
-echo 'pyspf_milter_enable="YES"' >> /etc/rc.conf
+sysrc pyspf_milter_enable="YES"
 ```
 
 `py-spf-engine` konfigurieren.

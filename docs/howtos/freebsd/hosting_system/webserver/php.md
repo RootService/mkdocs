@@ -53,7 +53,7 @@ cd /usr/ports/lang/php80
 make all install clean-depends clean
 
 
-echo 'php_fpm_enable="YES"' >> /etc/rc.conf
+sysrc php_fpm_enable=YES
 ```
 
 ## PHP-Extensions installieren
