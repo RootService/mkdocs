@@ -35,7 +35,7 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
         <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin="anonymous">
       {% if page.canonical_url %}
-        <link rel="canonical" href="{{ page.canonical_url | url }}">
+        <link rel="canonical" href="{{ page.canonical_url }}">
       {% endif %}
         <link rel="apple-touch-icon" sizes="180x180" href="{{ config.theme.favicon | url }}/apple-touch-icon.png">
         <link rel="icon" type="image/png" sizes="32x32" href="{{ config.theme.favicon | url }}/favicon-32x32.png">
@@ -96,7 +96,7 @@
     {
       "@context": "https://schema.org",
       "@type": "Article",
-      "@id": "{{ page.canonical_url | url }}",
+      "@id": "{{ page.canonical_url }}",
       "headline": "{{ page.title | d(config.site_name, true) }}",
       {% if page.meta.date %}
       "datePublished": "{{ page.meta.date }}T12:00:00+02:00",
@@ -146,6 +146,9 @@
     {% if not config.theme.palette is mapping %}
       {% include "partials/javascripts/palette.html" %}
     {% endif %}
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
     {% if page.toc | first is defined %}
     <div data-md-component="skip">
         {% set skip = page.toc | first %}
@@ -175,9 +178,6 @@
         </aside>
       </div>
     {% endif %}
-    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
-    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
-    <label class="md-overlay" for="__drawer"></label>
     {% block header %}
       {% include "partials/header.html" %}
     {% endblock %}
