@@ -530,6 +530,8 @@ keep-hot-count hosts 16384
 cat > /etc/resolvconf.conf << "EOF"
 resolvconf=NO
 "EOF"
+
+resolvconf -u
 ```
 
 Die `/etc/periodic.conf` legen wir mit folgendem Inhalt an.

@@ -130,7 +130,7 @@ server:
         private-address: fd00::/8
         private-address: fe80::/10
         private-address: ::ffff:0:0/96
-        private-domain: "rootservice.lan"
+        private-domain: "example.lan"
         unwanted-reply-threshold: 10000
         do-not-query-localhost: no
         minimal-responses: yes
@@ -138,21 +138,22 @@ server:
 
 forward-zone:
    name: "."
-   forward-addr: 1.0.0.1@53#one.one.one.one
-   forward-addr: 8.8.4.4@53#dns.google
-   forward-addr: 149.112.112.112@53#dns.quad9.net
-   forward-addr: 1.1.1.1@53#one.one.one.one
-   forward-addr: 8.8.8.8@53#dns.google
-   forward-addr: 9.9.9.9@53#dns.quad9.net
+   forward-tls-upstream: yes
+   forward-addr: 1.0.0.1@853#one.one.one.one
+   forward-addr: 8.8.4.4@853#dns.google
+   forward-addr: 149.112.112.112@853#dns.quad9.net
+   forward-addr: 1.1.1.1@853#one.one.one.one
+   forward-addr: 8.8.8.8@853#dns.google
+   forward-addr: 9.9.9.9@853#dns.quad9.net
 
 #forward-zone:
-#   forward-tls-upstream: yes
-#   forward-addr: 1.0.0.1@853#one.one.one.one
-#   forward-addr: 8.8.4.4@853#dns.google
-#   forward-addr: 149.112.112.112@853#dns.quad9.net
-#   forward-addr: 1.1.1.1@853#one.one.one.one
-#   forward-addr: 8.8.8.8@853#dns.google
-#   forward-addr: 9.9.9.9@853#dns.quad9.net
+#   name: "."
+#   forward-addr: 1.0.0.1@53#one.one.one.one
+#   forward-addr: 8.8.4.4@53#dns.google
+#   forward-addr: 149.112.112.112@53#dns.quad9.net
+#   forward-addr: 1.1.1.1@53#one.one.one.one
+#   forward-addr: 8.8.8.8@53#dns.google
+#   forward-addr: 9.9.9.9@53#dns.quad9.net
 "EOF"
 
 
@@ -171,6 +172,12 @@ cat > /etc/resolv.conf << "EOF"
 nameserver 127.0.0.1
 options edns0 ndots:1 timeout:0.3 attempts:1 rotate
 "EOF"
+
+cat > /etc/resolvconf.conf << "EOF"
+resolvconf=NO
+"EOF"
+
+resolvconf -u
 ```
 
 ## Abschluss

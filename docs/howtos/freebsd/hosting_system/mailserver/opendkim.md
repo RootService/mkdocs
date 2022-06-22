@@ -150,6 +150,7 @@ sed -e 's|^#[[:space:]]\(AuthservID\)[[:space:]].*$|\1 mail.example.com|g' \
     -e 's|^#[[:space:]]\(UMask\)[[:space:]].*$|\1 022|g' \
     -e 's|^#[[:space:]]\(UnboundConfigFile\)[[:space:]].*$|# \1 /var/unbound/unbound.conf|g' \
     -e 's|^#[[:space:]]\(UserID\)[[:space:]].*$|\1 mailnull:mailnull|g' \
+    -e 's|/var/unbound/|/usr/local/etc/unbound/|g' \
     /usr/local/etc/mail/opendkim.conf.sample > /usr/local/etc/mail/opendkim.conf
 ```
 
