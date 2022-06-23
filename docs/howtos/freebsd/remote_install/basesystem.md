@@ -498,6 +498,36 @@ P|Pc|Pc console:\
         :cl=\E[H\E[2J:
 ```
 
+Wir passen auch unsere Login-Begrüssung (motd) an.
+
+```
+cat > /etc/motd.template << "EOF"
+
+
+
+      ______                                 ,        ,
+     |  ____| __ ___  ___                   /(        )`
+     | |__ | '__/ _ \/ _ \                  \ \___   / |
+     |  __|| | |  __/  __/                  /- _  `-/  '
+     | |   | | |    |    |                 (/\/ \ \   /\
+     |_|   |_|  \___|\___|                 / /   | `    \
+      ____   _____ _____                   O O   ) /    |
+     |  _ \ / ____|  __ \                  `-^--'`<     '
+     | |_) | (___ | |  | |                (_.)  _  )   /
+     |  _ < \___ \| |  | |                 `.___/`    /
+     | |_) |____) | |__| |                   `-----' /
+     |     |      |      |      <----.     __ / __   \
+     |____/|_____/|_____/       <----|====O)))==) \) /====
+                                <----'    `--' `.__,' \
+                                             |        |
+     Welcome to our Server                    \       /       /\
+                                         ______( (_  / \______/
+                                       ,'  ,-----'   |
+                                       `--{__________)
+
+
+"EOF"
+```
 ## System konfigurieren
 
 Mail alias für `root` einrichten.
@@ -870,8 +900,6 @@ kernel="GENERIC"
 kernels="GENERIC"
 
 # Kernel modules
-ahci_load="YES"
-nvme_load="YES"
 geom_mirror_load="YES"
 opensolaris_load="YES"
 zfs_load="YES"
