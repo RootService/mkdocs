@@ -500,7 +500,7 @@ P|Pc|Pc console:\
 
 Wir passen auch unsere Login-Begrüssung (motd) an.
 
-```
+``` bash
 cat > /etc/motd.template << "EOF"
 
 
@@ -528,6 +528,7 @@ cat > /etc/motd.template << "EOF"
 
 "EOF"
 ```
+
 ## System konfigurieren
 
 Mail alias für `root` einrichten.

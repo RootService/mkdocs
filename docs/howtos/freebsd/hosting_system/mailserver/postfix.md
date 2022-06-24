@@ -563,6 +563,7 @@ sysrc pyspf_milter_enable=YES
 
 ``` bash
 sed -e 's|^\(TestOnly[[:space:]]=\)[[:space:]].*$|\1 0|g' \
+    -e 's|^\(HELO_reject[[:space:]]=\)[[:space:]].*$|\1 SPF_Not_Pass|g' \
     -e 's|^\(Authserv_Id[[:space:]]=\)[[:space:]].*$|\1 mail.example.com|g' \
     /usr/local/share/doc/spf-engine/policyd-spf.conf.commented \
     > /usr/local/etc/python-policyd-spf/policyd-spf.conf
