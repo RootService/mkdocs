@@ -28,7 +28,7 @@ Unsere BasePorts werden am Ende folgende Dienste umfassen.
 - OpenSSL 1.1.1
 - LUA 5.2.4
 - TCL 8.6.12
-- Python 3.8.13
+- Python 3.9.13
 - Ruby 3.0.4
 - Berkeley DB 18.1.40
 
@@ -68,7 +68,7 @@ Wir installieren `ports-mgmt/pkg` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/ports-mgmt_pkg
 cat > /var/db/ports/ports-mgmt_pkg/options << "EOF"
-_OPTIONS_READ=pkg-1.17.5
+_OPTIONS_READ=pkg-1.18.3
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
 "EOF"
@@ -352,14 +352,14 @@ _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
 "EOF"
 
-mkdir -p /var/db/ports/lang_python38
-cat > /var/db/ports/lang_python38/options << "EOF"
-_OPTIONS_READ=python38-3.8.13
+mkdir -p /var/db/ports/lang_python39
+cat > /var/db/ports/lang_python39/options << "EOF"
+_OPTIONS_READ=python39-3.9.13
 _FILE_COMPLETE_OPTIONS_LIST=DEBUG IPV6 LIBMPDEC LTO NLS PYMALLOC FNV SIPHASH
 OPTIONS_FILE_UNSET+=DEBUG
 OPTIONS_FILE_SET+=IPV6
 OPTIONS_FILE_SET+=LIBMPDEC
-OPTIONS_FILE_SET+=LTO
+OPTIONS_FILE_UNSET+=LTO
 OPTIONS_FILE_SET+=NLS
 OPTIONS_FILE_SET+=PYMALLOC
 OPTIONS_FILE_UNSET+=FNV

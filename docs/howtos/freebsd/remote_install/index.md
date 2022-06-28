@@ -29,7 +29,7 @@ Unsere BasePorts werden am Ende folgende Dienste umfassen.
 - OpenSSL 1.1.1
 - LUA 5.2.4
 - TCL 8.6.12
-- Python 3.8.13
+- Python 3.9.13
 - Ruby 3.0.4
 - Berkeley DB 18.1.40
 

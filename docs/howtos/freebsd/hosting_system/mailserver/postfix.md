@@ -484,7 +484,7 @@ Wir installieren `mail/py-spf-engine` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/mail_py-authres
 cat > /var/db/ports/mail_py-authres/options << "EOF"
-_OPTIONS_READ=py38-authres-1.2.0
+_OPTIONS_READ=py39-authres-1.2.0
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
 "EOF"
@@ -501,7 +501,7 @@ OPTIONS_FILE_SET+=DOCS
 
 mkdir -p /var/db/ports/dns_py-dnspython
 cat > /var/db/ports/dns_py-dnspython/options << "EOF"
-_OPTIONS_READ=py38-dnspython-2.2.1
+_OPTIONS_READ=py39-dnspython-2.2.1
 _FILE_COMPLETE_OPTIONS_LIST=CURIO DNSSEC DOH EXAMPLES IDNA TRIO
 OPTIONS_FILE_UNSET+=CURIO
 OPTIONS_FILE_SET+=DNSSEC
@@ -513,7 +513,7 @@ OPTIONS_FILE_UNSET+=TRIO
 
 mkdir -p /var/db/ports/devel_py-wheel
 cat > /var/db/ports/devel_py-wheel/options << "EOF"
-_OPTIONS_READ=py38-wheel-0.36.2
+_OPTIONS_READ=py39-wheel-0.36.2
 _FILE_COMPLETE_OPTIONS_LIST=PIP SIGNATURE
 OPTIONS_FILE_UNSET+=PIP
 OPTIONS_FILE_UNSET+=SIGNATURE
@@ -521,7 +521,7 @@ OPTIONS_FILE_UNSET+=SIGNATURE
 
 mkdir -p /var/db/ports/www_py-httpx
 cat > /var/db/ports/www_py-httpx/options << "EOF"
-_OPTIONS_READ=py38-httpx-0.23.0
+_OPTIONS_READ=py39-httpx-0.23.0
 _FILE_COMPLETE_OPTIONS_LIST=BROTLI CLI HTTP2 SOCKS
 OPTIONS_FILE_SET+=BROTLI
 OPTIONS_FILE_SET+=CLI
@@ -531,7 +531,7 @@ OPTIONS_FILE_UNSET+=SOCKS
 
 mkdir -p /var/db/ports/www_py-httpcore
 cat > /var/db/ports/www_py-httpcore/options << "EOF"
-_OPTIONS_READ=py38-httpcore-0.15.0
+_OPTIONS_READ=py39-httpcore-0.15.0
 _FILE_COMPLETE_OPTIONS_LIST=HTTP2 SOCKS
 OPTIONS_FILE_SET+=HTTP2
 OPTIONS_FILE_UNSET+=SOCKS
@@ -539,14 +539,14 @@ OPTIONS_FILE_UNSET+=SOCKS
 
 mkdir -p /var/db/ports/devel_py-anyio
 cat > /var/db/ports/devel_py-anyio/options << "EOF"
-_OPTIONS_READ=py38-anyio-3.6.1
+_OPTIONS_READ=py39-anyio-3.6.1
 _FILE_COMPLETE_OPTIONS_LIST=TRIO
 OPTIONS_FILE_UNSET+=TRIO
 "EOF"
 
 mkdir -p /var/db/ports/mail_py-spf-engine
 cat > /var/db/ports/mail_py-spf-engine/options << "EOF"
-_OPTIONS_READ=py38-spf-engine-2.9.3
+_OPTIONS_READ=py39-spf-engine-2.9.3
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
 "EOF"

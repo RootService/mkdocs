@@ -594,7 +594,7 @@ OPTIONS_FILE_SET+=MANPAGES
 
 mkdir -p /var/db/ports/devel_py-Jinja2
 cat > /var/db/ports/devel_py-Jinja2/options << "EOF"
-_OPTIONS_READ=py38-Jinja2-3.0.1
+_OPTIONS_READ=py39-Jinja2-3.0.1
 _FILE_COMPLETE_OPTIONS_LIST=BABEL EXAMPLES
 OPTIONS_FILE_SET+=BABEL
 OPTIONS_FILE_SET+=EXAMPLES
@@ -602,35 +602,35 @@ OPTIONS_FILE_SET+=EXAMPLES
 
 mkdir -p /var/db/ports/devel_py-babel
 cat > /var/db/ports/devel_py-babel/options << "EOF"
-_OPTIONS_READ=py38-Babel-2.10.2
+_OPTIONS_READ=py39-Babel-2.10.2
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
 "EOF"
 
 mkdir -p /var/db/ports/textproc_py-docutils
 cat > /var/db/ports/textproc_py-docutils/options << "EOF"
-_OPTIONS_READ=py38-docutils-0.17.1
+_OPTIONS_READ=py39-docutils-0.17.1
 _FILE_COMPLETE_OPTIONS_LIST=PYGMENTS
 OPTIONS_FILE_SET+=PYGMENTS
 "EOF"
 
 mkdir -p /var/db/ports/textproc_py-snowballstemmer
 cat > /var/db/ports/textproc_py-snowballstemmer/options << "EOF"
-_OPTIONS_READ=py38-snowballstemmer-2.2.0
+_OPTIONS_READ=py39-snowballstemmer-2.2.0
 _FILE_COMPLETE_OPTIONS_LIST=PYSTEMMER
 OPTIONS_FILE_SET+=PYSTEMMER
 "EOF"
 
 mkdir -p /var/db/ports/www_py-requests
 cat > /var/db/ports/www_py-requests/options << "EOF"
-_OPTIONS_READ=py38-requests-2.28.0
+_OPTIONS_READ=py39-requests-2.28.0
 _FILE_COMPLETE_OPTIONS_LIST=SOCKS
 OPTIONS_FILE_SET+=SOCKS
 "EOF"
 
 mkdir -p /var/db/ports/net_py-urllib3
 cat > /var/db/ports/net_py-urllib3/options << "EOF"
-_OPTIONS_READ=py38-urllib3-1.26.9
+_OPTIONS_READ=py39-urllib3-1.26.9
 _FILE_COMPLETE_OPTIONS_LIST=BROTLI SOCKS SSL
 OPTIONS_FILE_SET+=BROTLI
 OPTIONS_FILE_SET+=SOCKS
@@ -639,7 +639,7 @@ OPTIONS_FILE_SET+=SSL
 
 mkdir -p /var/db/ports/devel_py-pyparsing
 cat > /var/db/ports/devel_py-pyparsing/options << "EOF"
-_OPTIONS_READ=py38-pyparsing-3.0.9
+_OPTIONS_READ=py39-pyparsing-3.0.9
 _FILE_COMPLETE_OPTIONS_LIST=DIAGRAMS
 OPTIONS_FILE_UNSET+=DIAGRAMS
 "EOF"
