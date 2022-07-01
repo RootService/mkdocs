@@ -42,10 +42,27 @@
         <link rel="icon" type="image/png" sizes="16x16" href="{{ config.theme.favicon | url }}/favicon-16x16.png">
         <link rel="icon" type="image/svg+xml" href="{{ config.theme.favicon | url }}/favicon.svg">
     {% endblock %}
+    {% block fonts %}
+      {% if config.theme.font != false %}
+        {% set text = config.theme.font.text | d("Roboto Flex", true) %}
+        {% set code = config.theme.font.code | d("Roboto Mono", true) %}
+        <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?{{
+          'family=' + text | replace(' ', '+') + ':opsz@8..144&' +
+          'family=' + code | replace(' ', '+') + ':wght@400&'
+        }}display=swap" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?{{
+            'family=' + text | replace(' ', '+') + ':opsz@8..144&' +
+            'family=' + code | replace(' ', '+') + ':wght@400&'
+          }}display=swap" crossorigin="anonymous">
+        <style>:root{--md-text-font:"{{ text }}";--md-code-font:"{{ code }}"}</style>
+      {% endif %}
+    {% endblock %}
     {% block styles %}
-      <link rel="stylesheet" href="{{ 'assets/stylesheets/main.4a0965b7.min.css' | url }}">
+    <link rel="preload" as="style" href="{{ 'assets/stylesheets/main.4a0965b7.min.css' | url }}">
+    <link rel="stylesheet" href="{{ 'assets/stylesheets/main.4a0965b7.min.css' | url }}">
       {% if config.theme.palette %}
         {% set palette = config.theme.palette %}
+        <link rel="preload" as="style" href="{{ 'assets/stylesheets/palette.cbb835fc.min.css' | url }}">
         <link rel="stylesheet" href="{{ 'assets/stylesheets/palette.cbb835fc.min.css' | url }}">
         {% if palette.primary %}
           {% import "partials/palette.html" as map %}
@@ -57,19 +74,9 @@
       {% endif %}
       {% include "partials/icons.html" %}
     {% endblock %}
-    {% block fonts %}
-      {% if config.theme.font != false %}
-        {% set text = config.theme.font.text | d("Roboto Flex", true) %}
-        {% set code = config.theme.font.code | d("Roboto Mono", true) %}
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?{{
-            'family=' + text | replace(' ', '+') + ':opsz@8..144&' +
-            'family=' + code | replace(' ', '+') + ':wght@400&'
-          }}display=swap" crossorigin="anonymous">
-        <style>:root{--md-text-font:"{{ text }}";--md-code-font:"{{ code }}"}</style>
-      {% endif %}
-    {% endblock %}
     {% for path in config["extra_css"] %}
-      <link rel="stylesheet" href="{{ path | url }}">
+    <link rel="preload" as="style" href="{{ path | url }}">
+    <link rel="stylesheet" href="{{ path | url }}">
     {% endfor %}
     {% block libs %}{% endblock %}
     {% include "partials/javascripts/base.html" %}
@@ -275,9 +282,9 @@
       </script>
     {% endblock %}
     {% block scripts %}
-      <script async src="{{ 'assets/javascripts/bundle.431f3d41.min.js' | url }}"></script>
+      <script defer src="{{ 'assets/javascripts/bundle.431f3d41.min.js' | url }}"></script>
       {% for path in config["extra_javascript"] %}
-        <script async src="{{ path | url }}"></script>
+        <script defer src="{{ path | url }}"></script>
       {% endfor %}
     {% endblock %}
   </body>
