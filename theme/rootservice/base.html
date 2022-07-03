@@ -35,13 +35,43 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
         <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin="anonymous">
         <link rel="preconnect" href="https://api.github.com" crossorigin="anonymous">
+		<meta name="twitter:card" content="summary" />
+		<meta name="twitter:site" content="@rootservice" />
+		<meta property="og:type" content="website" />
+		<meta property="og:image" content="{{ config.site_url + 'assets/favicons/open-graph.png' }}" />
+		<meta property="og:image:width" content="800px" />
+		<meta property="og:image:height" content="800px" />
+		<meta property="og:image:type" content="image/png" />
+		<meta property="og:locale" content="de_DE" />
+		<meta property="og:site_name" content="{{ config.site_name }}" />
+      {% if page.meta and page.meta.title %}
+		<meta property="og:title" content="{{ page.meta.title }}" />
+      {% elif page.title and not page.is_homepage %}
+		<meta property="og:title" content="{{ page.title | striptags }}" />
+      {% else %}
+		<meta property="og:title" content="{{ config.site_name }}" />
+      {% endif %}
+      {% if page.meta and page.meta.description %}
+        <meta property="og:description" content="{{ page.meta.description }}">
+      {% elif config.site_description %}
+        <meta property="og:description" content="{{ config.site_description }}">
+      {% endif %}
       {% if page.canonical_url %}
+		<meta property="og:url" content="{{ page.canonical_url }}" />
         <link rel="canonical" href="{{ page.canonical_url }}">
       {% endif %}
-        <link rel="apple-touch-icon" sizes="180x180" href="{{ config.theme.favicon | url }}/apple-touch-icon.png">
-        <link rel="icon" type="image/png" sizes="32x32" href="{{ config.theme.favicon | url }}/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="{{ config.theme.favicon | url }}/favicon-16x16.png">
-        <link rel="icon" type="image/vnd.microsoft.icon" href="{{ config.theme.favicon | url }}/favicon.ico" />
+		<link rel="apple-touch-icon" sizes="180x180" href="/assets/favicons/apple-touch-icon.png" />
+		<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicons/favicon-32x32.png" />
+		<link rel="icon" type="image/png" sizes="16x16" href="/assets/favicons/favicon-16x16.png" />
+		<link rel="icon" type="image/vnd.microsoft.icon" href="/assets/favicons/favicon.ico" />
+		<link rel="mask-icon" href="/assets/favicons/safari-pinned-tab.svg" color="#5bbad5" />
+		<link rel="manifest" href="/assets/favicons/manifest.json" />
+		<meta name="apple-mobile-web-app-title" content="RootService" />
+		<meta name="application-name" content="RootService" />
+		<meta name="msapplication-TileColor" content="#2b5797" />
+		<meta name="msapplication-TileImage" content="/assets/favicons/mstile-144x144.png" />
+		<meta name="msapplication-config" content="/assets/favicons/browserconfig.xml" />
+		<meta name="theme-color" content="#ffffff" />
     {% endblock %}
     {% block fonts %}
       {% if config.theme.font != false %}
