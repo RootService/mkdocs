@@ -5,7 +5,7 @@
 {% import "partials/language.html" as lang with context %}
 <html lang="{{ lang.t('language') }}" class="no-js">
   <head>
-      <meta charset="utf-8">
+      <meta charset="utf-8" />
     {% block htmltitle %}
       {% if page.meta and page.meta.title %}
         <title>{{ page.meta.title }} - {{ config.site_name }}</title>
@@ -17,24 +17,27 @@
     {% endblock %}
     {% block site_meta %}
       {% if page.meta and page.meta.description %}
-        <meta name="description" content="{{ page.meta.description }}">
+        <meta name="description" content="{{ page.meta.description }}" />
       {% elif config.site_description %}
-        <meta name="description" content="{{ config.site_description }}">
+        <meta name="description" content="{{ config.site_description }}" />
       {% endif %}
-        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes">
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes" />
       {% if page and page.meta and page.meta.robots %}
-        <meta name="robots" content="noarchive, max-snippet:-1, max-image-preview:standard, {{ page.meta.robots }}">
+        <meta name="robots" content="noarchive, max-snippet:-1, max-image-preview:standard, {{ page.meta.robots }}" />
       {% else %}
-        <meta name="robots" content="noarchive, max-snippet:-1, max-image-preview:standard">
+        <meta name="robots" content="noarchive, max-snippet:-1, max-image-preview:standard" />
       {% endif %}
+        <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+        <link rel="dns-prefetch" href="https://api.github.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin="anonymous" />
+        <link rel="preconnect" href="https://api.github.com" crossorigin="anonymous" />
       {% if page.meta and page.meta.author %}
-        <meta name="author" content="{{ page.meta.author }}">
+        <meta name="author" content="{{ page.meta.author }}" />
       {% elif config.site_author %}
-        <meta name="author" content="{{ config.site_author }}">
+        <meta name="author" content="{{ config.site_author }}" />
       {% endif %}
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
-        <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin="anonymous">
-        <link rel="preconnect" href="https://api.github.com" crossorigin="anonymous">
 		<meta name="twitter:card" content="summary" />
 		<meta name="twitter:site" content="@rootservice" />
 		<meta property="og:type" content="website" />
@@ -52,20 +55,20 @@
 		<meta property="og:title" content="{{ config.site_name }}" />
       {% endif %}
       {% if page.meta and page.meta.description %}
-        <meta property="og:description" content="{{ page.meta.description }}">
+        <meta property="og:description" content="{{ page.meta.description }}" />
       {% elif config.site_description %}
-        <meta property="og:description" content="{{ config.site_description }}">
+        <meta property="og:description" content="{{ config.site_description }}" />
       {% endif %}
       {% if page.canonical_url %}
 		<meta property="og:url" content="{{ page.canonical_url }}" />
-        <link rel="canonical" href="{{ page.canonical_url }}">
+        <link rel="canonical" href="{{ page.canonical_url }}" />
       {% endif %}
 		<link rel="apple-touch-icon" sizes="180x180" href="/assets/favicons/apple-touch-icon.png" />
 		<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicons/favicon-32x32.png" />
 		<link rel="icon" type="image/png" sizes="16x16" href="/assets/favicons/favicon-16x16.png" />
 		<link rel="icon" type="image/vnd.microsoft.icon" href="/assets/favicons/favicon.ico" />
 		<link rel="mask-icon" href="/assets/favicons/safari-pinned-tab.svg" color="#5bbad5" />
-		<link rel="manifest" href="/assets/favicons/manifest.json" />
+		<link rel="manifest" type="application/json" href="/assets/favicons/manifest.json" />
 		<meta name="apple-mobile-web-app-title" content="RootService" />
 		<meta name="application-name" content="RootService" />
 		<meta name="msapplication-TileColor" content="#2b5797" />
@@ -80,27 +83,27 @@
         <link rel="preload stylesheet" as="style" href="https://fonts.googleapis.com/css2?{{
           'family=' + text | replace(' ', '+') + ':opsz,wght@8..144,300;8..144,400;8..144,500;8..144,600;8..144,700&' +
           'family=' + code | replace(' ', '+') + ':ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&'
-        }}display=swap" crossorigin="anonymous">
+        }}display=swap" crossorigin="anonymous" />
         <style>:root{--md-text-font:"{{ text }}";--md-code-font:"{{ code }}"}</style>
       {% endif %}
     {% endblock %}
     {% block styles %}
-    <link rel="preload stylesheet" as="style" href="{{ 'assets/stylesheets/main.4a0965b7.min.css' | url }}">
+    <link rel="preload stylesheet" as="style" href="{{ 'assets/stylesheets/main.4a0965b7.min.css' | url }}" />
       {% if config.theme.palette %}
         {% set palette = config.theme.palette %}
-        <link rel="preload stylesheet" as="style" href="{{ 'assets/stylesheets/palette.cbb835fc.min.css' | url }}">
+        <link rel="preload stylesheet" as="style" href="{{ 'assets/stylesheets/palette.cbb835fc.min.css' | url }}" />
         {% if palette.primary %}
           {% import "partials/palette.html" as map %}
           {% set primary = map.primary(
             palette.primary | replace(" ", "-") | lower
           ) %}
-          <meta name="theme-color" content="{{ primary }}">
+          <meta name="theme-color" content="{{ primary }}" />
         {% endif %}
       {% endif %}
       {% include "partials/icons.html" %}
     {% endblock %}
     {% for path in config["extra_css"] %}
-    <link rel="preload stylesheet" as="style" href="{{ path | url }}">
+    <link rel="preload stylesheet" as="style" href="{{ path | url }}" />
     {% endfor %}
     {% block libs %}{% endblock %}
     {% include "partials/javascripts/base.html" %}
