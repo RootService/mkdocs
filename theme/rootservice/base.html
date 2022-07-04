@@ -88,7 +88,7 @@
       {% endif %}
     {% endblock %}
     {% block styles %}
-    <link rel="preload stylesheet" as="style" href="{{ 'assets/stylesheets/main.4a0965b7.min.css' | url }}" />
+    <link rel="preload stylesheet" as="style" href="{{ 'assets/stylesheets/main.1d29e8d0.min.css' | url }}" />
       {% if config.theme.palette %}
         {% set palette = config.theme.palette %}
         <link rel="preload stylesheet" as="style" href="{{ 'assets/stylesheets/palette.cbb835fc.min.css' | url }}" />
@@ -280,7 +280,7 @@
         "base": base_url,
         "features": features,
         "translations": {},
-        "search": "assets/javascripts/workers/search.85cb4492.min.js" | url
+        "search": "assets/javascripts/workers/search.b97dbffb.min.js" | url
       } -%}
       {%- if config.extra.version -%}
         {%- set _ = app.update({ "version": config.extra.version }) -%}
@@ -309,7 +309,7 @@
       </script>
     {% endblock %}
     {% block scripts %}
-      <script defer="defer" type="application/javascript" src="{{ 'assets/javascripts/bundle.431f3d41.min.js' | url }}"></script>
+      <script defer="defer" type="application/javascript" src="{{ 'assets/javascripts/bundle.6c7ad80a.min.js' | url }}"></script>
       {% for path in config["extra_javascript"] %}
         <script defer="defer" type="application/javascript" src="{{ path | url }}"></script>
       {% endfor %}
