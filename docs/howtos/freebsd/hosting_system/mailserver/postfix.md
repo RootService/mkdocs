@@ -83,9 +83,11 @@ make all install clean-depends clean
 
 
 sysrc postfix_enable=YES
-```
 
-Wir wollen Postfix in der `/etc/mail/mailer.conf` aktivieren.
+
+install -d /usr/local/etc/mail
+install -m 0644 /usr/local/share/postfix/mailer.conf.postfix /usr/local/etc/mail/mailer.conf
+```
 
 ## Konfiguration
 
