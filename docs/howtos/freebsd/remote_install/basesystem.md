@@ -810,8 +810,6 @@ exit
 
 ``` bash
 cat > /etc/make.conf << "EOF"
-KERNCONF?=GENERIC
-#MAKE_JOBS_NUMBER=4
 PRINTERDEVICE=ascii
 LICENSES_ACCEPTED+=EULA
 DISABLE_VULNERABILITIES=yes
@@ -897,10 +895,11 @@ verbose_loading="YES"
 #cpu_microcode_name="/boot/firmware/intel-ucode.bin"
 
 # Kernel selection
-kernel="GENERIC"
-kernels="GENERIC"
+#kernel="kernel"
+#kernels="kernel"
 
 # Kernel modules
+coretemp_load="YES"
 geom_mirror_load="YES"
 opensolaris_load="YES"
 zfs_load="YES"
@@ -998,12 +997,16 @@ Zunächst wird hierzu das aktuelle Quellenverzeichnis von FreeBSD benötigt, wes
 # Neues Quellenverzeichnis anlegen (clone)
 rm -r /usr/src
 git clone -o freebsd -b releng/`/bin/freebsd-version -u | cut -d- -f1` https://git.FreeBSD.org/src.git /usr/src
+etcupdate extract
+
 
 # Vorhandenes Quellenverzeichnis aktualisieren (pull)
 git -C /usr/src pull --rebase
 
+
 # Vorhandenes Quellenverzeichnis zu FreeBSD 13-STABLE wechseln (checkout)
 git -C /usr/src checkout stable/13
+etcupdate extract
 ```
 
 ### Portstree auschecken
@@ -1060,12 +1063,6 @@ make cleanworld
 git -C /usr/src pull --rebase
 ```
 
-Ausserdem sollte [mergemaster](https://www.freebsd.org/cgi/man.cgi?query=mergemaster&sektion=8&format=html){: target="_blank" rel="noopener"} im Pre-Build-Mode angeworfen werden, damit es während der Aktualisierung nicht zu Fehlern kommt, weil z. B. bestimmte User oder Gruppen noch nicht vorhanden sind.
-
-``` bash
-/usr/src/usr.sbin/mergemaster/mergemaster.sh -p
-```
-
 ### Basissystem rekompilieren
 
 Das Kompilieren des Basissystems kann durchaus eine Stunde oder länger dauern.
@@ -1079,8 +1076,7 @@ make -j2 buildworld
 Wenn die eigene Kernel-Konfiguration wie bei uns bereits in der `/etc/make.conf` eingetragen ist, wird sie automatisch verwendet, andernfalls wird die Konfiguration des generischen FreeBSD-Kernels verwendet. Das Kompilieren des Kernels kann durchaus eine Stunde oder länger dauern.
 
 ``` bash
-make -j2 KERNCONF=GENERIC buildkernel
-make KERNCONF=GENERIC INSTALLKERNEL=GENERIC INSTKERNNAME=GENERIC installkernel
+make -j2 kernel
 sed -e 's/^#fdesc/fdesc/' -i '' /etc/fstab
 ```
 
@@ -1106,8 +1102,12 @@ su - root
 
 Wir installieren das neue Basissystem.
 
+Ausserdem sollte [etcupdate](https://www.freebsd.org/cgi/man.cgi?query=etcupdate&sektion=8&format=html){: target="_blank" rel="noopener"} im Pre-Build-Mode angeworfen werden, damit es während der Aktualisierung nicht zu Fehlern kommt, weil z. B. bestimmte User oder Gruppen noch nicht vorhanden sind.
+
 ``` bash
 cd /usr/src
+
+etcupdate -p
 
 make installworld
 ```
@@ -1120,10 +1120,10 @@ sed -e '/[a-z]*_compat/d' \
     -i '' /etc/nsswitch.conf
 ```
 
-Als letzten Schritt müssen nun noch die Neuerungen in den Konfigurationsdateien gemerged werden. Dabei unterstützt uns das Tool `mergemaster`. Wir müssen selbstverständlich darauf achten, dass wir hierbei nicht versehentlich unsere zuvor gemachten Anpassungen an den diversen Konfigurationsdateien wieder rückgängig machen.
+Als letzten Schritt müssen nun noch die Neuerungen in den Konfigurationsdateien gemerged werden. Dabei unterstützt uns das Tool `etcupdate`. Wir müssen selbstverständlich darauf achten, dass wir hierbei nicht versehentlich unsere zuvor gemachten Anpassungen an den diversen Konfigurationsdateien wieder rückgängig machen.
 
 ``` bash
-/usr/sbin/mergemaster -iFU --run-updates=always
+etcupdate -B
 ```
 
 Wir entsorgen nun noch eventuell vorhandene veraltete und überflüssige Dateien.
