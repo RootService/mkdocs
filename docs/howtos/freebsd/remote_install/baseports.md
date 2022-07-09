@@ -24,7 +24,7 @@ Zu den Voraussetzungen für dieses HowTo siehe bitte: [Voraussetzungen](/howtos/
 
 Unsere BasePorts werden am Ende folgende Dienste umfassen.
 
-- Perl 5.32.1
+- Perl 5.36.0
 - OpenSSL 1.1.1
 - LUA 5.3.6
 - TCL 8.6.12
@@ -119,12 +119,17 @@ sed -e 's/^#\(cpu_microcode_\)/\1/g' -i '' /boot/loader.conf
 sysrc microcode_update_enable=YES
 ```
 
-Wir installieren `lang/perl5.32` und dessen Abhängigkeiten.
+Wir installieren `lang/perl5.36` und dessen Abhängigkeiten.
 
 ``` bash
-mkdir -p /var/db/ports/lang_perl5.32
-cat > /var/db/ports/lang_perl5.32/options << "EOF"
-_OPTIONS_READ=perl5-5.32.1
+cat >> /etc/make.conf << "EOF"
+DEFAULT_VERSIONS+=perl5=5.36
+"EOF"
+
+
+mkdir -p /var/db/ports/lang_perl5.36
+cat > /var/db/ports/lang_perl5.36/options << "EOF"
+_OPTIONS_READ=perl5-5.36.0
 _FILE_COMPLETE_OPTIONS_LIST=DEBUG DOT_INC DTRACE GDBM MULTIPLICITY PERL_64BITINT PERL_MALLOC SITECUSTOMIZE THREADS
 OPTIONS_FILE_UNSET+=DEBUG
 OPTIONS_FILE_UNSET+=DOT_INC
@@ -138,7 +143,7 @@ OPTIONS_FILE_SET+=THREADS
 "EOF"
 
 
-cd /usr/ports/lang/perl5.32
+cd /usr/ports/lang/perl5.36
 make all install clean-depends clean
 ```
 
@@ -345,6 +350,11 @@ make all install clean-depends clean
 Wir installieren `lang/tcl86` und dessen Abhängigkeiten.
 
 ``` bash
+cat >> /etc/make.conf << "EOF"
+DEFAULT_VERSIONS+=tcltk=8.6
+"EOF"
+
+
 mkdir -p /var/db/ports/lang_tcl86
 cat > /var/db/ports/lang_tcl86/options << "EOF"
 _OPTIONS_READ=tcl86-8.6.12
@@ -364,6 +374,12 @@ make all install clean-depends clean
 Wir installieren `lang/python39` und dessen Abhängigkeiten.
 
 ``` bash
+cat >> /etc/make.conf << "EOF"
+DEFAULT_VERSIONS+=python=3.9
+DEFAULT_VERSIONS+=python3=3.9
+"EOF"
+
+
 mkdir -p /var/db/ports/math_mpdecimal
 cat > /var/db/ports/math_mpdecimal/options << "EOF"
 _OPTIONS_READ=mpdecimal-2.5.1
@@ -388,11 +404,7 @@ OPTIONS_FILE_UNSET+=SIPHASH
 
 cd /usr/ports/lang/python3
 make all install clean-depends clean
-```
 
-Wir installieren `lang/python` und dessen Abhängigkeiten.
-
-``` bash
 cd /usr/ports/lang/python
 make all install clean-depends clean
 ```
@@ -400,6 +412,11 @@ make all install clean-depends clean
 Wir installieren `lang/ruby30` und dessen Abhängigkeiten.
 
 ``` bash
+cat >> /etc/make.conf << "EOF"
+DEFAULT_VERSIONS+=ruby=3.0
+"EOF"
+
+
 mkdir -p /var/db/ports/math_gmp
 cat > /var/db/ports/math_gmp/options << "EOF"
 _OPTIONS_READ=gmp-6.2.1

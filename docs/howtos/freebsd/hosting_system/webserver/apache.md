@@ -27,6 +27,11 @@ Unser WebHosting System wird um folgende Dienste erweitert.
 Wir installieren `www/apache24` und dessen Abhängigkeiten.
 
 ``` bash
+cat >> /etc/make.conf << "EOF"
+DEFAULT_VERSIONS+=apache=2.4
+"EOF"
+
+
 mkdir -p /var/db/ports/www_apache24
 cat > /var/db/ports/www_apache24/options << "EOF"
 _OPTIONS_READ=apache24-2.4.54

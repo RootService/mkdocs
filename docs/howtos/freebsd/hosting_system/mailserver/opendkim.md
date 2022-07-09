@@ -25,16 +25,6 @@ Unser WebHosting System wird um folgende Dienste erweitert.
 Wir installieren `mail/opendkim` und dessen Abhängigkeiten.
 
 ``` bash
-mkdir -p /var/db/ports/textproc_libtre
-cat > /var/db/ports/textproc_libtre/options << "EOF"
-_OPTIONS_READ=libtre-0.8.0
-_FILE_COMPLETE_OPTIONS_LIST=DOCS NLS OPTIMIZED_CFLAGS PGO
-OPTIONS_FILE_SET+=DOCS
-OPTIONS_FILE_SET+=NLS
-OPTIONS_FILE_UNSET+=OPTIMIZED_CFLAGS
-OPTIONS_FILE_UNSET+=PGO
-"EOF"
-
 mkdir -p /var/db/ports/dns_ldns
 cat > /var/db/ports/dns_ldns/options << "EOF"
 _OPTIONS_READ=ldns-1.8.1

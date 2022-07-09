@@ -25,7 +25,7 @@ Unser BaseSystem wird am Ende folgende Dienste umfassen.
 
 Unsere BasePorts werden am Ende folgende Dienste umfassen.
 
-- Perl 5.32.1
+- Perl 5.36.0
 - OpenSSL 1.1.1
 - LUA 5.3.6
 - TCL 8.6.12

@@ -133,7 +133,7 @@ OPTIONS_FILE_SET+=DOCS
 
 mkdir -p /var/db/ports/graphics_jbigkit
 cat > /var/db/ports/graphics_jbigkit/options << "EOF"
-_OPTIONS_READ=jbigkit-2.1_1
+_OPTIONS_READ=jbigkit-2.1
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
 "EOF"

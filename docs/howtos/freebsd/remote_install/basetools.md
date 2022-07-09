@@ -623,7 +623,7 @@ OPTIONS_FILE_SET+=PYSTEMMER
 
 mkdir -p /var/db/ports/www_py-requests
 cat > /var/db/ports/www_py-requests/options << "EOF"
-_OPTIONS_READ=py39-requests-2.28.0
+_OPTIONS_READ=py39-requests-2.28.1
 _FILE_COMPLETE_OPTIONS_LIST=SOCKS
 OPTIONS_FILE_SET+=SOCKS
 "EOF"
@@ -666,7 +666,7 @@ OPTIONS_FILE_UNSET+=NETTLE
 
 mkdir -p /var/db/ports/archivers_lzo2
 cat > /var/db/ports/archivers_lzo2/options << "EOF"
-_OPTIONS_READ=lzo2-2.10_1
+_OPTIONS_READ=lzo2-2.10
 _FILE_COMPLETE_OPTIONS_LIST=DOCS EXAMPLES
 OPTIONS_FILE_SET+=DOCS
 OPTIONS_FILE_SET+=EXAMPLES

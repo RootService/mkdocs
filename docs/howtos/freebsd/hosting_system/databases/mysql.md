@@ -52,7 +52,7 @@ OPTIONS_FILE_SET+=DOCS
 
 mkdir -p /var/db/ports/print_gsfonts
 cat > /var/db/ports/print_gsfonts/options << "EOF"
-_OPTIONS_READ=gsfonts-8.11_8
+_OPTIONS_READ=gsfonts-8.11
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
 "EOF"
