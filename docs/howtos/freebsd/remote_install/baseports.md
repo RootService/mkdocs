@@ -2,7 +2,7 @@
 title: 'BasePorts'
 description: 'In diesem HowTo wird step-by-step die Installation einiger BasePorts für ein FreeBSD 64Bit BaseSystem auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2022-06-20'
+updated: '2022-07-01'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 contributors:
@@ -26,7 +26,7 @@ Unsere BasePorts werden am Ende folgende Dienste umfassen.
 
 - Perl 5.32.1
 - OpenSSL 1.1.1
-- LUA 5.2.4
+- LUA 5.3.6
 - TCL 8.6.12
 - Python 3.9.13
 - Ruby 3.0.4
@@ -316,10 +316,29 @@ cd /usr/ports/devel/pcre2
 make all install clean-depends clean
 ```
 
-Wir installieren `lang/lua52` und dessen Abhängigkeiten.
+Wir installieren `lang/lua53` und dessen Abhängigkeiten.
 
 ``` bash
-cd /usr/ports/lang/lua52
+cat >> /etc/make.conf << "EOF"
+DEFAULT_VERSIONS+=lua=5.3
+"EOF"
+
+
+mkdir -p /var/db/ports/lang_lua53
+cat > /var/db/ports/lang_lua53/options << "EOF"
+_OPTIONS_READ=lua53-5.3.6
+_FILE_COMPLETE_OPTIONS_LIST= EDITNONE LIBEDIT_DL LIBEDIT READLINE DOCS ASSERT APICHECK
+OPTIONS_FILE_UNSET+=EDITNONE
+OPTIONS_FILE_SET+=LIBEDIT_DL
+OPTIONS_FILE_UNSET+=LIBEDIT
+OPTIONS_FILE_UNSET+=READLINE
+OPTIONS_FILE_SET+=DOCS
+OPTIONS_FILE_UNSET+=ASSERT
+OPTIONS_FILE_UNSET+=APICHECK
+"EOF"
+
+
+cd /usr/ports/lang/lua53
 make all install clean-depends clean
 ```
 
@@ -342,7 +361,7 @@ cd /usr/ports/lang/tcl86
 make all install clean-depends clean
 ```
 
-Wir installieren `lang/python38` und dessen Abhängigkeiten.
+Wir installieren `lang/python39` und dessen Abhängigkeiten.
 
 ``` bash
 mkdir -p /var/db/ports/math_mpdecimal

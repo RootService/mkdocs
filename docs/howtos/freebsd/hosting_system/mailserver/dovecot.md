@@ -2,7 +2,7 @@
 title: 'Dovecot'
 description: 'In diesem HowTo wird step-by-step die Installation des Dovecot Mailservers für ein WebHosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2022-06-21'
+updated: '2022-07-01'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 contributors:
@@ -39,19 +39,6 @@ cat > /var/db/ports/textproc_libexttextcat/options << "EOF"
 _OPTIONS_READ=libexttextcat-3.4.6
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
-"EOF"
-
-mkdir -p /var/db/ports/lang_lua53
-cat > /var/db/ports/lang_lua53/options << "EOF"
-_OPTIONS_READ=lua53-5.3.6
-_FILE_COMPLETE_OPTIONS_LIST= EDITNONE LIBEDIT_DL LIBEDIT READLINE DOCS ASSERT APICHECK
-OPTIONS_FILE_UNSET+=EDITNONE
-OPTIONS_FILE_SET+=LIBEDIT_DL
-OPTIONS_FILE_UNSET+=LIBEDIT
-OPTIONS_FILE_UNSET+=READLINE
-OPTIONS_FILE_SET+=DOCS
-OPTIONS_FILE_UNSET+=ASSERT
-OPTIONS_FILE_UNSET+=APICHECK
 "EOF"
 
 mkdir -p /var/db/ports/mail_dovecot

@@ -2,7 +2,7 @@
 title: 'Voraussetzungen'
 description: 'In diesem HowTo werden step-by-step die Voraussetzungen für die Remote Installation des FreeBSD 64Bit BaseSystem auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2022-06-20'
+updated: '2022-07-01'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 tags:
@@ -27,7 +27,7 @@ Unsere BasePorts werden am Ende folgende Dienste umfassen.
 
 - Perl 5.32.1
 - OpenSSL 1.1.1
-- LUA 5.2.4
+- LUA 5.3.6
 - TCL 8.6.12
 - Python 3.9.13
 - Ruby 3.0.4
@@ -36,9 +36,9 @@ Unsere BasePorts werden am Ende folgende Dienste umfassen.
 Unsere BaseTools werden am Ende folgende Dienste umfassen.
 
 - Sudo 1.9.11
-- cURL 7.83.1
-- GIT 2.36.1
-- Portmaster 3.23
+- cURL 7.84.0
+- GIT 2.37.0
+- Portmaster 3.22
 - SMARTmontools 7.3
 - Bash 5.1.16
 - Nano 6.2

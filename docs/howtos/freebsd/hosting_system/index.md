@@ -2,7 +2,7 @@
 title: 'Voraussetzungen'
 description: 'In diesem HowTo werden step-by-step die Voraussetzungen für ein WebHosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2022-06-21'
+updated: '2022-07-01'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 tags:
@@ -28,7 +28,7 @@ Unser WebHosting System wird am Ende folgende Dienste umfassen.
 - OpenDMARC 1.4.2 (SPF2, FailureReports)
 - Apache 2.4.54 (MPM-Event, HTTP/2, mod_brotli)
 - NGinx 1.22.0 (HTTP/2, mod_brotli)
-- PHP 8.0.20 (PHP-FPM, Composer, PEAR)
+- PHP 8.1.8 (PHP-FPM, Composer, PEAR)
 
 Folgende Punkte sind in allen folgenden HowTos zu beachten.
 

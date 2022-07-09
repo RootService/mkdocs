@@ -2,7 +2,7 @@
 title: 'BaseTools'
 description: 'In diesem HowTo wird step-by-step die Installation einiger BaseTools für ein FreeBSD 64Bit BaseSystem auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2022-06-20'
+updated: '2022-07-01'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 contributors:
@@ -25,9 +25,9 @@ Zu den Voraussetzungen für dieses HowTo siehe bitte: [Voraussetzungen](/howtos/
 Unsere BaseTools werden am Ende folgende Dienste umfassen.
 
 - Sudo 1.9.11
-- cURL 7.83.1
-- GIT 2.36.1
-- Portmaster 3.23
+- cURL 7.84.0
+- GIT 2.37.0
+- Portmaster 3.22
 - SMARTmontools 7.3
 - Bash 5.1.16
 - Nano 6.2
@@ -141,7 +141,7 @@ OPTIONS_FILE_UNSET+=TEST
 
 mkdir -p /var/db/ports/ftp_curl
 cat > /var/db/ports/ftp_curl/options << "EOF"
-_OPTIONS_READ=curl-7.83.1
+_OPTIONS_READ=curl-7.84.0
 _FILE_COMPLETE_OPTIONS_LIST=ALTSVC BROTLI CA_BUNDLE COOKIES CURL_DEBUG DEBUG DOCS EXAMPLES IDN IPV6 NTLM PROXY PSL STATIC TLS_SRP ZSTD GSSAPI_BASE GSSAPI_HEIMDAL GSSAPI_MIT GSSAPI_NONE CARES THREADED_RESOLVER GNUTLS OPENSSL WOLFSSL DICT FTP GOPHER HTTP HTTP2 IMAP LDAP LDAPS LIBSSH2 MQTT POP3 RTMP RTSP SMB SMTP TELNET TFTP
 OPTIONS_FILE_SET+=ALTSVC
 OPTIONS_FILE_SET+=BROTLI
@@ -197,7 +197,7 @@ Wir installieren `devel/git` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/devel_ruby-gems
 cat > /var/db/ports/devel_ruby-gems/options << "EOF"
-_OPTIONS_READ=ruby30-gems-3.3.16
+_OPTIONS_READ=ruby30-gems-3.3.17
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
 "EOF"
@@ -368,7 +368,7 @@ OPTIONS_FILE_SET+=EXAMPLES
 
 mkdir -p /var/db/ports/devel_git
 cat > /var/db/ports/devel_git/options << "EOF"
-_OPTIONS_READ=git-2.36.1
+_OPTIONS_READ=git-2.37.0
 _FILE_COMPLETE_OPTIONS_LIST=CONTRIB CURL GITWEB HTMLDOCS ICONV NLS PCRE2 PERL SEND_EMAIL SUBTREE
 OPTIONS_FILE_SET+=CONTRIB
 OPTIONS_FILE_SET+=CURL
@@ -392,7 +392,7 @@ Wir installieren `ports-mgmt/portmaster` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/ports-mgmt_portmaster
 cat > /var/db/ports/ports-mgmt_portmaster/options << "EOF"
-_OPTIONS_READ=portmaster-3.21
+_OPTIONS_READ=portmaster-3.22
 _FILE_COMPLETE_OPTIONS_LIST=BASH ZSH
 OPTIONS_FILE_UNSET+=BASH
 OPTIONS_FILE_UNSET+=ZSH
@@ -460,7 +460,7 @@ Wir installieren `security/gnupg` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/databases_sqlite3
 cat > /var/db/ports/databases_sqlite3/options << "EOF"
-_OPTIONS_READ=sqlite3-3.38.5
+_OPTIONS_READ=sqlite3-3.39.0
 _FILE_COMPLETE_OPTIONS_LIST=ARMOR DBPAGE DBSTAT DIRECT_READ DQS EXAMPLES EXTENSION FTS3_TOKEN FTS4 FTS5 LIKENOTBLOB MEMMAN METADATA NORMALIZE NULL_TRIM RBU SECURE_DELETE SORT_REF STATIC STMT STRIP TCL THREADS TRUSTED_SCHEMA UNKNOWN_SQL UNLOCK_NOTIFY UPDATE_LIMIT URI URI_AUTHORITY TS0 TS1 TS2 TS3 STAT3 STAT4 LIBEDIT READLINE SESSION OFFSET SOUNDEX GEOPOLY RTREE RTREE_INT ICU UNICODE61
 OPTIONS_FILE_UNSET+=ARMOR
 OPTIONS_FILE_SET+=DBPAGE

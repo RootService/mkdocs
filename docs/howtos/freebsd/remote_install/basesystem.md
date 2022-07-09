@@ -2,7 +2,7 @@
 title: 'BaseSystem'
 description: 'In diesem HowTo wird step-by-step die Remote Installation des FreeBSD 64Bit BaseSystem auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2022-06-20'
+updated: '2022-07-01'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 contributors:
@@ -603,7 +603,9 @@ cat > /etc/rc.conf << "EOF"
 ##############################################################
 #kern_securelevel_enable="YES"
 #kern_securelevel="1"
+kld_list="accf_data accf_http accf_dns cc_htcp"
 fsck_y_enable="YES"
+dmesg_enable="YES"
 dumpdev="AUTO"
 
 ##############################################################
@@ -645,6 +647,7 @@ ifconfig_IFACE="inet IPADDR4 netmask NETMASK4"
 ###  System console options  #################################
 ##############################################################
 keymap="de.kbd"
+font16x32="vgarom-16x32.fnt"
 font8x16="vgarom-8x16.fnt"
 font8x14="vgarom-8x14.fnt"
 font8x8="vgarom-8x8.fnt"
@@ -664,6 +667,7 @@ sendmail_msp_queue_enable="NO"
 syslogd_flags="-ss"
 clear_tmp_enable="YES"
 cron_flags="$cron_flags -j 0 -J 0 -m root"
+update_motd="YES"
 nscd_enable="YES"
 ntpd_enable="YES"
 ntpd_sync_on_start="YES"
@@ -903,10 +907,6 @@ coretemp_load="YES"
 geom_mirror_load="YES"
 opensolaris_load="YES"
 zfs_load="YES"
-accf_data_load="YES"
-accf_http_load="YES"
-accf_dns_load="YES"
-cc_htcp_load="YES"
 
 # Kernel parameters
 debug.acpi.disabled="thermal"
