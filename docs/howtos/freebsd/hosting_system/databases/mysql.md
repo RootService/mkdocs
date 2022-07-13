@@ -2,7 +2,7 @@
 title: 'MySQL'
 description: 'In diesem HowTo wird step-by-step die Installation des MySQL Datenbanksystem für ein WebHosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2022-07-01'
+updated: '2022-07-13'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 contributors:
@@ -113,49 +113,35 @@ cat > /usr/local/etc/mysql/my.cnf << "EOF"
 port                            = 3306
 socket                          = /tmp/mysql.sock
 
-[mysql]
-prompt                          = \u@\h [\d]>\_
-no_auto_rehash
-
 [mysqld]
 user                            = mysql
 port                            = 3306
 socket                          = /tmp/mysql.sock
-#bind-address                    = ::
+bind_address                    = 127.0.0.1,::1
 basedir                         = /usr/local
 datadir                         = /data/db/mysql
 tmpdir                          = /data/db/mysql_tmpdir
-slave-load-tmpdir               = /data/db/mysql_tmpdir
-secure-file-priv                = /data/db/mysql_secure
-log-bin                         = /data/db/mysql/mysql-bin
-log-output                      = TABLE,FILE
-relay-log-recovery              = 1
-general-log                     = 0
-general-log-file                = /data/db/mysql/general.log
-slow-query-log                  = 0
-slow-query-log-file             = /data/db/mysql/slow-query.log
-default_authentication_plugin   = caching_sha2_password
-default_password_lifetime       = 0
-server-id                       = 1
+secure_file_priv                = /data/db/mysql_secure
+log_bin                         = mysql-bin
+log_output                      = TABLE,FILE
+relay_log_recovery              = ON
+slow_query_log                  = OFF
+slow_query_log_file             = slow-query.log
+server_id                       = 1
 sync_binlog                     = 1
 sync_relay_log                  = 1
 binlog_cache_size               = 256K
 binlog_stmt_cache_size          = 256K
-enforce-gtid-consistency        = 1
-gtid-mode                       = ON
+enforce_gtid_consistency        = ON
+gtid_mode                       = ON
 max_connections                 = 501
-safe-user-create                = 1
+safe_user_create                = ON
 lower_case_table_names          = 1
-explicit_defaults_for_timestamp = 1
-myisam-recover-options          = FORCE,BACKUP
+myisam_recover_options          = FORCE,BACKUP
 net_retry_count                 = 16384
 open_files_limit                = 32768
 table_open_cache                = 8192
 table_definition_cache          = 4096
-max_allowed_packet              = 64M
-key_buffer_size                 = 256M
-myisam_sort_buffer_size         = 16M
-bulk_insert_buffer_size         = 64M
 join_buffer_size                = 512K
 sort_buffer_size                = 2048K
 read_buffer_size                = 256K
@@ -165,31 +151,21 @@ tmp_table_size                  = 256M
 long_query_time                 = 0.05
 innodb_thread_concurrency       = 8
 innodb_buffer_pool_size         = 2G
-innodb_buffer_pool_dump_pct     = 100
+innodb_buffer_pool_instances    = 2
 innodb_data_home_dir            = /data/db/mysql
 innodb_log_group_home_dir       = /data/db/mysql
 innodb_data_file_path           = ibdata1:1G;ibdata2:1G;ibdata3:128M:autoextend
 innodb_temp_data_file_path      = ibtmp1:128M:autoextend
 innodb_flush_method             = O_DIRECT
 innodb_log_file_size            = 256M
-innodb_log_buffer_size          = 16M
-innodb_flush_log_at_timeout     = 2
-innodb_flush_log_at_trx_commit  = 2
-innodb_disable_sort_file_cache  = 1
-innodb_write_io_threads         = 4
-innodb_read_io_threads          = 8
-innodb_autoinc_lock_mode        = 2
-innodb_max_dirty_pages_pct      = 0
 innodb_sort_buffer_size         = 2048K
-#innodb_stats_on_metadata        = 1
-#innodb_force_recovery           = 1
-#log-queries-not-using-indexes
-skip-name-resolve
+#log_queries_not_using_indexes   = ON
+skip_name_resolve               = ON
 
-[mysqldump]
-max_allowed_packet              = 256M
-quote_names
-quick
+mysqlx                          = OFF
+mysqlx_port                     = 33060
+mysqlx_socket                   = /tmp/mysqlx.sock
+mysqlx_bind_address             = 127.0.0.1,::1
 "EOF"
 ```
 

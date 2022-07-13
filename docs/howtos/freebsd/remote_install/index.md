@@ -2,7 +2,7 @@
 title: 'Voraussetzungen'
 description: 'In diesem HowTo werden step-by-step die Voraussetzungen für die Remote Installation des FreeBSD 64Bit BaseSystem auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2022-07-01'
+updated: '2022-07-13'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 tags:

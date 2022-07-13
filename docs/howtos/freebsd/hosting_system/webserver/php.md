@@ -2,7 +2,7 @@
 title: 'PHP-FPM'
 description: 'In diesem HowTo wird step-by-step die Installation von PHP-FPM für ein WebHosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2022-07-01'
+updated: '2022-07-13'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 tags:
@@ -324,6 +324,7 @@ date.default_latitude = "53.5500"
 date.default_longitude = "10.0000"
 date.timezone = "Europe/Berlin"
 display_errors = "0"
+display_startup_errors = "0"
 enable_dl = "0"
 error_log = "/var/log/php_error.log"
 error_reporting = "E_ALL & ~E_DEPRECATED & ~E_STRICT"
@@ -343,13 +344,11 @@ mail.log = "/var/log/php_sendmail.log"
 max_execution_time = "60"
 max_input_time = "60"
 mbstring.detect_order = "auto"
-mbstring.internal_encoding = "UTF-8"
 mbstring.strict_detection = "1"
 memory_limit = "512M"
 opcache.enable_cli = "1"
 opcache.enable_file_override = "1"
 opcache.error_log = "/var/log/php_opcache.log"
-opcache.fast_shutdown = "1"
 opcache.interned_strings_buffer = "16"
 opcache.log_verbosity_level = "2"
 opcache.max_accelerated_files = "32768"
@@ -374,7 +373,6 @@ session.use_strict_mode = "1"
 short_open_tag = "0"
 soap.wsdl_cache_dir = "/data/www/tmp"
 sys_temp_dir = "/data/www/tmp"
-;track_errors = "1"
 upload_max_filesize = "511M"
 upload_tmp_dir = "/data/www/tmp"
 url_rewriter.tags = "a=href,area=href,frame=src,form=fakeentry,input=src"

@@ -2,7 +2,7 @@
 title: 'Voraussetzungen'
 description: 'In diesem HowTo werden step-by-step die Voraussetzungen für ein WebHosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2022-07-01'
+updated: '2022-07-13'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 tags:

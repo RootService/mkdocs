@@ -2,7 +2,7 @@
 title: 'BasePorts'
 description: 'In diesem HowTo wird step-by-step die Installation einiger BasePorts für ein FreeBSD 64Bit BaseSystem auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2022-07-01'
+updated: '2022-07-13'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 contributors:

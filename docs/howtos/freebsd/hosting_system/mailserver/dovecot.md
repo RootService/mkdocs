@@ -2,7 +2,7 @@
 title: 'Dovecot'
 description: 'In diesem HowTo wird step-by-step die Installation des Dovecot Mailservers für ein WebHosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2022-07-01'
+updated: '2022-07-13'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 contributors:
@@ -86,22 +86,20 @@ auth_verbose = yes
 first_valid_gid = 5000
 first_valid_uid = 5000
 hostname = mail.example.com
-imap_client_workarounds = delay-newmail tb-extra-mailbox-sep tb-lsub-flags
+imap_client_workarounds = tb-extra-mailbox-sep tb-lsub-flags
 last_valid_gid = 5000
 last_valid_uid = 5000
 lda_mailbox_autocreate = yes
 lda_mailbox_autosubscribe = yes
 lda_original_recipient_header = X-Original-To
 listen = * [::]
-login_log_format_elements = user=<%u> method=%m rip=%r lip=%l mpid=%e %c %k session=<%{session}>
 lmtp_client_workarounds = whitespace-before-path mailbox-for-path
+login_log_format_elements = user=<%u> method=%m rip=%r lip=%l mpid=%e %c %k session=<%{session}>
 mail_attribute_dict = file:%h/dovecot-attributes
 mail_home = /data/vmail/%d/%n
 mail_location = maildir:~/Maildir
 mail_plugins = quota
-mail_vsize_bg_after_count = 100
-mailbox_list_index = yes
-maildir_very_dirty_syncs = yes
+#maildir_very_dirty_syncs = yes
 namespace inbox {
   inbox = yes
   mailbox Sent {
@@ -141,13 +139,16 @@ plugin {
   quota_status_success = DUNNO
   quota_vsizes = yes
 }
-pop3_client_workarounds = outlook-no-nuls oe-ns-eoh
+pop3_client_workarounds = outlook-no-nuls
 postmaster_address = postmaster@example.com
+protocols = imap lmtp
+protocol !indexer-worker {
+  mail_vsize_bg_after_count = 100
+}
 protocol imap {
   imap_metadata = yes
   mail_plugins = quota imap_quota
 }
-protocols = imap lmtp
 quota_full_tempfail = yes
 service auth {
   unix_listener /var/spool/postfix/private/auth {
@@ -193,7 +194,6 @@ ssl_cipher_list = TLSv1.2 +CHACHA20 +AES +SHA !DH !AESCCM !ARIA !CAMELLIA !IDEA 
 ssl_dh = </usr/local/etc/dovecot/dh.pem
 ssl_key = </usr/local/etc/letsencrypt/live/mail.example.com/privkey.pem
 ssl_min_protocol = TLSv1.2
-ssl_options = NO_COMPRESSION
 ssl_prefer_server_ciphers = yes
 userdb {
   args = username_format=%u /usr/local/etc/dovecot/passwd
