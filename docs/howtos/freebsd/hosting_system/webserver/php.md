@@ -387,9 +387,7 @@ zend.script_encoding = "UTF-8"
 `php-fpm.conf` einrichten.
 
 ``` bash
-sed -e 's|^;[[:space:]]*\(process.max =\).*$|\1 64|' \
-    -e 's|^;[[:space:]]*\(process.priority =\).*$|\1 -9|' \
-    -e 's|^;[[:space:]]*\(events.mechanism =\).*$|;\1 kqueue|' \
+sed -e 's|^;[[:space:]]*\(events.mechanism =\).*$|;\1 kqueue|' \
     /usr/local/etc/php-fpm.conf.default > /usr/local/etc/php-fpm.conf
 ```
 
@@ -400,12 +398,11 @@ sed -e 's|^\(listen =\).*$|\1 /var/run/fpm_www.sock|' \
     -e 's|^;\(listen.owner =\).*$|\1 www|' \
     -e 's|^;\(listen.group =\).*$|\1 www|' \
     -e 's|^;\(listen.mode =\).*$|\1 0660|' \
-    -e 's|^\(pm.max_children =\).*$|\1 256|' \
-    -e 's|^\(pm.start_servers =\).*$|\1 32|' \
-    -e 's|^\(pm.min_spare_servers =\).*$|\1 8|' \
-    -e 's|^\(pm.max_spare_servers =\).*$|\1 32|' \
+    -e 's|^\(pm.max_children =\).*$|\1 128|' \
+    -e 's|^\(pm.start_servers =\).*$|\1 16|' \
+    -e 's|^\(pm.min_spare_servers =\).*$|\1 4|' \
+    -e 's|^\(pm.max_spare_servers =\).*$|\1 16|' \
     -e 's|^;\(pm.max_requests =\).*$|\1 500|' \
-    -e 's|^;\(security.limit_extensions =.*\)$|\1 .phps .phtml|' \
     /usr/local/etc/php-fpm.d/www.conf.default > /usr/local/etc/php-fpm.d/www.conf
 ```
 

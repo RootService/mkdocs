@@ -374,18 +374,14 @@ HttpProtocolOptions Strict LenientMethods Require1.0
 <IfModule http2_module>
     Protocols h2 h2c http/1.1
     ProtocolsHonorOrder On
-    H2MinWorkers 64
-    H2MaxWorkers 128
     H2Padding 2
     H2EarlyHints On
-    H2PushDiarySize 1024
     H2PushPriority * After 16
-    H2PushPriority text/css Before
     H2PushPriority image/vnd.microsoft.icon Before
+    H2PushPriority application/manifest+json Before
     H2PushPriority application/javascript Interleaved
     H2PushPriority text/javascript Interleaved
-    H2StreamMaxMemSize 262144
-    H2WindowSize 262144
+    H2PushPriority text/css Interleaved
 </IfModule>
 <IfModule log_config_module>
     <IfModule logio_module>
@@ -690,16 +686,6 @@ sandbox allow-forms allow-modals allow-pointer-lock allow-popups allow-popups-to
     Header set X-XSS-Protection "1; mode=block"
 </IfModule>
 IncludeOptional "etc/apache24/modules.d/[0-9][0-9][0-9]_*.conf"
-ServerName localhost
-ServerAdmin webmaster@example.com
-CustomLog "/data/www/vhosts/_localhost_/logs/apache_access_log" combined
-ErrorLog "/data/www/vhosts/_localhost_/logs/apache_error_log"
-DocumentRoot "/data/www/vhosts/_localhost_/data"
-<Directory "/data/www/vhosts/_localhost_/data">
-    Options None +FollowSymLinks
-    AllowOverride None
-    Require all granted
-</Directory>
 Include "etc/apache24/vhosts.conf"
 <IfModule ssl_module>
     SSLRandomSeed startup "file:/dev/urandom" 65536
@@ -772,6 +758,19 @@ Include "etc/apache24/vhosts.conf"
 
 ``` bash
 cat > /usr/local/etc/apache24/vhosts.conf << "EOF"
+<VirtualHost 127.0.0.1:80>
+    ServerName localhost
+    ServerAdmin webmaster@rootservice.org
+    CustomLog "/data/www/vhosts/_localhost_/logs/apache_access_log" combined
+    ErrorLog "/data/www/vhosts/_localhost_/logs/apache_error_log"
+    DocumentRoot "/data/www/vhosts/_localhost_/data"
+    <Directory "/data/www/vhosts/_localhost_/data">
+        Options None +FollowSymLinks
+        AllowOverride None
+        Require all granted
+    </Directory>
+</VirtualHost>
+
 <VirtualHost *:80>
     ServerName devnull.example.com
     ServerAdmin webmaster@example.com

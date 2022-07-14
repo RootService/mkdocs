@@ -18,7 +18,7 @@ Zu den Voraussetzungen für dieses HowTo siehe bitte: [Voraussetzungen](/howtos/
 
 Unser WebHosting System wird folgende Dienste umfassen.
 
-- Unbound 1.16.0 (DNScrypt, DNS over HTTPS)
+- Unbound 1.16.1 (DNScrypt, DNS over HTTPS)
 
 ## Installation
 
@@ -35,7 +35,7 @@ OPTIONS_FILE_SET+=THREADS
 
 mkdir -p /var/db/ports/dns_unbound
 cat > /var/db/ports/dns_unbound/options << "EOF"
-_OPTIONS_READ=unbound-1.16.0
+_OPTIONS_READ=unbound-1.16.1
 _FILE_COMPLETE_OPTIONS_LIST=DEP-RSA1024 DNSCRYPT DNSTAP DOCS DOH ECDSA EVAPI FILTER_AAAA GOST HIREDIS LIBEVENT MUNIN_PLUGIN PYTHON SUBNET TFOCL TFOSE THREADS
 OPTIONS_FILE_UNSET+=DEP-RSA1024
 OPTIONS_FILE_SET+=DNSCRYPT

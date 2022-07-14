@@ -26,7 +26,7 @@ Unsere BaseTools werden am Ende folgende Dienste umfassen.
 
 - Sudo 1.9.11
 - cURL 7.84.0
-- GIT 2.37.0
+- GIT 2.37.1
 - Portmaster 3.22
 - SMARTmontools 7.3
 - Bash 5.1.16
@@ -368,7 +368,7 @@ OPTIONS_FILE_SET+=EXAMPLES
 
 mkdir -p /var/db/ports/devel_git
 cat > /var/db/ports/devel_git/options << "EOF"
-_OPTIONS_READ=git-2.37.0
+_OPTIONS_READ=git-2.37.1
 _FILE_COMPLETE_OPTIONS_LIST=CONTRIB CURL GITWEB HTMLDOCS ICONV NLS PCRE2 PERL SEND_EMAIL SUBTREE
 OPTIONS_FILE_SET+=CONTRIB
 OPTIONS_FILE_SET+=CURL
