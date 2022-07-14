@@ -2,7 +2,7 @@
 title: 'Apache'
 description: 'In diesem HowTo wird step-by-step die Installation des Apache Webservers für ein WebHosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2022-07-13'
+updated: '2022-07-14'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 contributors:
@@ -379,7 +379,6 @@ HttpProtocolOptions Strict LenientMethods Require1.0
     H2PushPriority * After 16
     H2PushPriority image/vnd.microsoft.icon Before
     H2PushPriority application/manifest+json Before
-    H2PushPriority application/javascript Interleaved
     H2PushPriority text/javascript Interleaved
     H2PushPriority text/css Interleaved
 </IfModule>
@@ -465,16 +464,13 @@ FileETag None
 </IfModule>
 <IfModule mime_module>
     TypesConfig "etc/apache24/mime.types"
-    AddType application/pkcs8                           key
-    AddType application/pkcs10                          csr
-    AddType application/x-pkcs7-crl                     crl
-    AddType application/x-pem-file                      pem
-    AddType application/x-gzip                          gz tgz
-    AddType application/json                            map
+    AddType application/gzip                            gz tgz
     AddType application/ld+json                         jsonld
     AddType application/manifest+json                   manifest
-    AddType text/markdown                               md
     AddType text/html                                   shtml
+    AddType text/javascript                             js
+    AddType text/ecmascript                             ecma
+    AddType text/markdown                               md
     <FilesMatch "favicon\.ico$">
         AddType image/vnd.microsoft.icon                ico
     </FilesMatch>
@@ -511,8 +507,10 @@ FileETag None
     ExpiresByType text/html                             "access plus 0 seconds"
     ExpiresByType application/xhtml+xml                 "access plus 0 seconds"
     ExpiresByType text/css                              "access plus 1 week"
-    ExpiresByType application/javascript                "access plus 1 week"
     ExpiresByType text/javascript                       "access plus 1 week"
+    ExpiresByType text/ecmascript                       "access plus 1 week"
+    ExpiresByType application/javascript                "access plus 1 week"
+    ExpiresByType application/ecmascript                "access plus 1 week"
     ExpiresByType text/markdown                         "access plus 0 seconds"
     ExpiresByType application/xml                       "access plus 0 seconds"
     ExpiresByType text/xml                              "access plus 0 seconds"
@@ -523,10 +521,8 @@ FileETag None
     ExpiresByType application/json                      "access plus 0 seconds"
     ExpiresByType application/ld+json                   "access plus 0 seconds"
     ExpiresByType application/schema+json               "access plus 0 seconds"
-    ExpiresByType image/vnd.microsoft.icon              "access plus 1 week"
-    ExpiresByType image/x-icon                          "access plus 1 week"
     ExpiresByType application/manifest+json             "access plus 1 week"
-    ExpiresByType text/x-cross-domain-policy            "access plus 1 week"
+    ExpiresByType image/vnd.microsoft.icon              "access plus 1 week"
 </IfModule>
 <IfModule filter_module>
     <IfModule brotli_module>
@@ -536,21 +532,19 @@ FileETag None
         FilterProvider COMPRESS_BR BROTLI_COMPRESS "%{Content_Type} =~ m#^text/xml\b#"
         FilterProvider COMPRESS_BR BROTLI_COMPRESS "%{Content_Type} =~ m#^text/css\b#"
         FilterProvider COMPRESS_BR BROTLI_COMPRESS "%{Content_Type} =~ m#^text/javascript\b#"
-        FilterProvider COMPRESS_BR BROTLI_COMPRESS "%{Content_Type} =~ m#^text/x-component\b#"
-        FilterProvider COMPRESS_BR BROTLI_COMPRESS "%{Content_Type} =~ m#^application/javascript\b#"
-        FilterProvider COMPRESS_BR BROTLI_COMPRESS "%{Content_Type} =~ m#^application/x-javascript\b#"
+        FilterProvider COMPRESS_BR BROTLI_COMPRESS "%{Content_Type} =~ m#^text/ecmascript\b#"
         FilterProvider COMPRESS_BR BROTLI_COMPRESS "%{Content_Type} =~ m#^application/json\b#"
+        FilterProvider COMPRESS_BR BROTLI_COMPRESS "%{Content_Type} =~ m#^application/ld+json\b#"
+        FilterProvider COMPRESS_BR BROTLI_COMPRESS "%{Content_Type} =~ m#^application/schema+json\b#"
+        FilterProvider COMPRESS_BR BROTLI_COMPRESS "%{Content_Type} =~ m#^application/manifest+json\b#"
+        FilterProvider COMPRESS_BR BROTLI_COMPRESS "%{Content_Type} =~ m#^application/javascript\b#"
+        FilterProvider COMPRESS_BR BROTLI_COMPRESS "%{Content_Type} =~ m#^application/ecmascript\b#"
         FilterProvider COMPRESS_BR BROTLI_COMPRESS "%{Content_Type} =~ m#^application/xml\b#"
         FilterProvider COMPRESS_BR BROTLI_COMPRESS "%{Content_Type} =~ m#^application/xhtml\+xml\b#"
         FilterProvider COMPRESS_BR BROTLI_COMPRESS "%{Content_Type} =~ m#^application/rss\+xml\b#"
         FilterProvider COMPRESS_BR BROTLI_COMPRESS "%{Content_Type} =~ m#^application/atom\+xml\b#"
         FilterProvider COMPRESS_BR BROTLI_COMPRESS "%{Content_Type} =~ m#^image/svg\+xml\b#"
-        FilterProvider COMPRESS_BR BROTLI_COMPRESS "%{Content_Type} =~ m#^image/x-icon\b#"
         FilterProvider COMPRESS_BR BROTLI_COMPRESS "%{Content_Type} =~ m#^image/vnd\.microsoft\.icon\b#"
-        FilterProvider COMPRESS_BR BROTLI_COMPRESS "%{Content_Type} =~ m#^application/x-font-ttf\b#"
-        FilterProvider COMPRESS_BR BROTLI_COMPRESS "%{Content_Type} =~ m#^application/font-sfnt\b#"
-        FilterProvider COMPRESS_BR BROTLI_COMPRESS "%{Content_Type} =~ m#^application/vnd\.ms-fontobject\b#"
-        FilterProvider COMPRESS_BR BROTLI_COMPRESS "%{Content_Type} =~ m#^font/opentype\b#"
         FilterProtocol COMPRESS_BR BROTLI_COMPRESS change=yes;byteranges=no
     </IfModule>
     <IfModule deflate_module>
@@ -560,21 +554,19 @@ FileETag None
         FilterProvider COMPRESS_GZ DEFLATE "%{Content_Type} =~ m#^text/xml\b#"
         FilterProvider COMPRESS_GZ DEFLATE "%{Content_Type} =~ m#^text/css\b#"
         FilterProvider COMPRESS_GZ DEFLATE "%{Content_Type} =~ m#^text/javascript\b#"
-        FilterProvider COMPRESS_GZ DEFLATE "%{Content_Type} =~ m#^text/x-component\b#"
-        FilterProvider COMPRESS_GZ DEFLATE "%{Content_Type} =~ m#^application/javascript\b#"
-        FilterProvider COMPRESS_GZ DEFLATE "%{Content_Type} =~ m#^application/x-javascript\b#"
+        FilterProvider COMPRESS_GZ DEFLATE "%{Content_Type} =~ m#^text/ecmascript\b#"
         FilterProvider COMPRESS_GZ DEFLATE "%{Content_Type} =~ m#^application/json\b#"
+        FilterProvider COMPRESS_GZ DEFLATE "%{Content_Type} =~ m#^application/ld+json\b#"
+        FilterProvider COMPRESS_GZ DEFLATE "%{Content_Type} =~ m#^application/schema+json\b#"
+        FilterProvider COMPRESS_GZ DEFLATE "%{Content_Type} =~ m#^application/manifest+json\b#"
+        FilterProvider COMPRESS_GZ DEFLATE "%{Content_Type} =~ m#^application/jvascript\b#"
+        FilterProvider COMPRESS_GZ DEFLATE "%{Content_Type} =~ m#^application/ecmascript\b#"
         FilterProvider COMPRESS_GZ DEFLATE "%{Content_Type} =~ m#^application/xml\b#"
         FilterProvider COMPRESS_GZ DEFLATE "%{Content_Type} =~ m#^application/xhtml\+xml\b#"
         FilterProvider COMPRESS_GZ DEFLATE "%{Content_Type} =~ m#^application/rss\+xml\b#"
         FilterProvider COMPRESS_GZ DEFLATE "%{Content_Type} =~ m#^application/atom\+xml\b#"
         FilterProvider COMPRESS_GZ DEFLATE "%{Content_Type} =~ m#^image/svg\+xml\b#"
-        FilterProvider COMPRESS_GZ DEFLATE "%{Content_Type} =~ m#^image/x-icon\b#"
         FilterProvider COMPRESS_GZ DEFLATE "%{Content_Type} =~ m#^image/vnd\.microsoft\.icon\b#"
-        FilterProvider COMPRESS_GZ DEFLATE "%{Content_Type} =~ m#^application/x-font-ttf\b#"
-        FilterProvider COMPRESS_GZ DEFLATE "%{Content_Type} =~ m#^application/font-sfnt\b#"
-        FilterProvider COMPRESS_GZ DEFLATE "%{Content_Type} =~ m#^application/vnd\.ms-fontobject\b#"
-        FilterProvider COMPRESS_GZ DEFLATE "%{Content_Type} =~ m#^font/opentype\b#"
         FilterProtocol COMPRESS_GZ DEFLATE change=yes;byteranges=no
     </IfModule>
     <If "%{HTTP:Accept-Encoding} =~ /\bbr\b/i">
@@ -635,7 +627,7 @@ FileETag None
     </Directory>
 </IfModule>
 <IfModule info_module>
-    <Location "/.well-known/server-info">
+    <Location "/server-info">
         SetHandler server-info
         <RequireAny>
             Require host localhost
@@ -643,14 +635,14 @@ FileETag None
     </Location>
 </IfModule>
 <IfModule status_module>
-    <Location "/.well-known/server-status">
+    <Location "/server-status">
         SetHandler server-status
         <RequireAny>
             Require host localhost
         </RequireAny>
     </Location>
     <IfModule http2_module>
-        <Location "/.well-known/server-status2">
+        <Location "/server-status2">
             SetHandler http2-status
             <RequireAny>
                 Require host localhost
