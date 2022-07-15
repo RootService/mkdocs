@@ -31,7 +31,6 @@ Unsere BasePorts werden am Ende folgende Dienste umfassen.
 - TCL 8.6.12
 - Python 3.9.13
 - Ruby 3.0.4
-- Berkeley DB 18.1.40
 
 Unsere BaseTools werden am Ende folgende Dienste umfassen.
 
@@ -44,7 +43,6 @@ Unsere BaseTools werden am Ende folgende Dienste umfassen.
 - Nano 6.2
 - w3m 0.5.3
 - GnuPG 2.3.3
-- GDBM 1.23
 - SVN 1.14.2
 
 Folgende Punkte sind in allen folgenden HowTos zu beachten.
