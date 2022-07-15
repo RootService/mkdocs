@@ -290,7 +290,7 @@ LoadModule version_module libexec/apache24/mod_version.so
 LoadModule proxy_module libexec/apache24/mod_proxy.so
 #LoadModule proxy_connect_module libexec/apache24/mod_proxy_connect.so
 #LoadModule proxy_ftp_module libexec/apache24/mod_proxy_ftp.so
-#LoadModule proxy_http_module libexec/apache24/mod_proxy_http.so
+LoadModule proxy_http_module libexec/apache24/mod_proxy_http.so
 LoadModule proxy_fcgi_module libexec/apache24/mod_proxy_fcgi.so
 #LoadModule proxy_scgi_module libexec/apache24/mod_proxy_scgi.so
 #LoadModule proxy_uwsgi_module libexec/apache24/mod_proxy_uwsgi.so
@@ -308,7 +308,7 @@ LoadModule proxy_fcgi_module libexec/apache24/mod_proxy_fcgi.so
 #LoadModule slotmem_plain_module libexec/apache24/mod_slotmem_plain.so
 LoadModule ssl_module libexec/apache24/mod_ssl.so
 LoadModule http2_module libexec/apache24/mod_http2.so
-#LoadModule proxy_http2_module libexec/apache24/mod_proxy_http2.so
+LoadModule proxy_http2_module libexec/apache24/mod_proxy_http2.so
 #LoadModule md_module libexec/apache24/mod_md.so
 #LoadModule lbmethod_byrequests_module libexec/apache24/mod_lbmethod_byrequests.so
 #LoadModule lbmethod_bytraffic_module libexec/apache24/mod_lbmethod_bytraffic.so
@@ -437,7 +437,7 @@ AliasMatch "^/?\.well-known/acme-challenge(.*)" "/data/www/acme/.well-known/acme
     Require all granted
 </Directory>
 <IfModule reqtimeout_module>
-    RequestReadTimeout header=20-40,MinRate=500 body=20,MinRate=500
+    RequestReadTimeout handshake=0 header=20-40,MinRate=500 body=20,MinRate=500
 </IfModule>
 FileETag None
 <IfModule headers_module>

@@ -19,7 +19,7 @@ Diese HowTos setzen ein wie in [Remote Installation](/howtos/freebsd/remote_inst
 Unser WebHosting System wird am Ende folgende Dienste umfassen.
 
 - CertBot 1.27.0 (LetsEncrypt ACME API 2.0)
-- Unbound 1.16.1 (DNScrypt, DNS over HTTPS)
+- Unbound 1.16.1 (DNScrypt, DNS over TLS)
 - MySQL 8.0.29 (InnoDB, GTID)
 - Dovecot 2.3.19 (IMAP only, 1GB Quota)
 - Postfix 3.7.2 (Dovecot-SASL, postscreen)

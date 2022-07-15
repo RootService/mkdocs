@@ -18,7 +18,7 @@ Zu den Voraussetzungen für dieses HowTo siehe bitte: [Voraussetzungen](/howtos/
 
 Unser WebHosting System wird folgende Dienste umfassen.
 
-- Unbound 1.16.1 (DNScrypt, DNS over HTTPS)
+- Unbound 1.16.1 (DNScrypt, DNS over TLS)
 
 ## Installation
 
