@@ -33,7 +33,6 @@ Unsere BaseTools werden am Ende folgende Dienste umfassen.
 - Nano 6.2
 - w3m 0.5.3
 - GnuPG 2.3.3
-- GDBM 1.23
 - SVN 1.14.2
 
 ## Einloggen und zu root werden
@@ -551,14 +550,6 @@ make all install clean-depends clean
 Wir installieren `devel/subversion` und dessen Abhängigkeiten.
 
 ``` bash
-mkdir -p /var/db/ports/databases_gdbm
-cat > /var/db/ports/databases_gdbm/options << "EOF"
-_OPTIONS_READ=gdbm-1.23
-_FILE_COMPLETE_OPTIONS_LIST=COMPAT NLS
-OPTIONS_FILE_SET+=COMPAT
-OPTIONS_FILE_SET+=NLS
-"EOF"
-
 mkdir -p /var/db/ports/devel_apr1
 cat > /var/db/ports/devel_apr1/options << "EOF"
 _OPTIONS_READ=apr-1.7.0.1.6.1
@@ -566,11 +557,11 @@ _FILE_COMPLETE_OPTIONS_LIST=IPV6 SSL NSS BDB GDBM LDAP MYSQL NDBM ODBC PGSQL SQL
 OPTIONS_FILE_SET+=IPV6
 OPTIONS_FILE_SET+=SSL
 OPTIONS_FILE_UNSET+=NSS
-OPTIONS_FILE_SET+=BDB
-OPTIONS_FILE_SET+=GDBM
+OPTIONS_FILE_UNSET+=BDB
+OPTIONS_FILE_UNSET+=GDBM
 OPTIONS_FILE_UNSET+=LDAP
 OPTIONS_FILE_UNSET+=MYSQL
-OPTIONS_FILE_UNSET+=NDBM
+OPTIONS_FILE_SET+=NDBM
 OPTIONS_FILE_UNSET+=ODBC
 OPTIONS_FILE_UNSET+=PGSQL
 OPTIONS_FILE_UNSET+=SQLITE

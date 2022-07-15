@@ -30,7 +30,6 @@ Unsere BasePorts werden am Ende folgende Dienste umfassen.
 - TCL 8.6.12
 - Python 3.9.13
 - Ruby 3.0.4
-- Berkeley DB 18.1.40
 
 ## Einloggen und zu *root* werden
 
@@ -440,31 +439,6 @@ OPTIONS_FILE_UNSET+=READLINE
 
 
 cd /usr/ports/lang/ruby30
-make all install clean-depends clean
-```
-
-Wir installieren `databases/db18` und dessen Abhängigkeiten.
-
-``` bash
-cat >> /etc/make.conf << "EOF"
-DEFAULT_VERSIONS+=bdb=18
-"EOF"
-
-
-mkdir -p /var/db/ports/databases_db18
-cat > /var/db/ports/databases_db18/options << "EOF"
-_OPTIONS_READ=db18-18.1.40
-_FILE_COMPLETE_OPTIONS_LIST=CRYPTO DEBUG DOCS JAVA L10N TCL
-OPTIONS_FILE_SET+=CRYPTO
-OPTIONS_FILE_UNSET+=DEBUG
-OPTIONS_FILE_SET+=DOCS
-OPTIONS_FILE_UNSET+=JAVA
-OPTIONS_FILE_UNSET+=L10N
-OPTIONS_FILE_UNSET+=TCL
-"EOF"
-
-
-cd /usr/ports/databases/db18
 make all install clean-depends clean
 ```
 
