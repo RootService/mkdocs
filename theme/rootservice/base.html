@@ -309,9 +309,9 @@
       </script>
     {% endblock %}
     {% block scripts %}
-      <script defer="defer" type="application/javascript" src="{{ 'assets/javascripts/bundle.6c7ad80a.min.js' | url }}"></script>
+      <script defer="defer" type="text/javascript" src="{{ 'assets/javascripts/bundle.6c7ad80a.min.js' | url }}"></script>
       {% for path in config["extra_javascript"] %}
-        <script defer="defer" type="application/javascript" src="{{ path | url }}"></script>
+        <script defer="defer" type="text/javascript" src="{{ path | url }}"></script>
       {% endfor %}
     {% endblock %}
   </body>
