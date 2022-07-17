@@ -27,11 +27,6 @@
       {% elif config.site_author %}
         <p><strong>Author:</strong> {{ config.site_author }}</p>
       {% endif %}
-      {% if page.meta.date %}
-        <p><strong>Published:</strong> <time datetime="{{ page.meta.date }}T12:00:00+02:00">{{ page.meta.date }}</time></p>
-      {% else %}
-        <p><strong>Published:</strong> <time datetime="{{ build_date_utc.date() }}T12:00:00+02:00">{{ build_date_utc.date() }}</time></p>
-      {% endif %}
       {% if page.meta.updated %}
         <p><strong>Last updated:</strong> <time datetime="{{ page.meta.updated }}T12:00:00+02:00">{{ page.meta.updated }}</time></p>
       {% else %}
