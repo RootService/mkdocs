@@ -38,21 +38,21 @@
       {% elif config.site_author %}
         <meta name="author" content="{{ config.site_author }}" />
       {% endif %}
-		<meta name="twitter:card" content="summary" />
-		<meta name="twitter:site" content="@rootservice" />
-		<meta property="og:type" content="website" />
-		<meta property="og:image" content="{{ config.site_url + 'assets/favicons/open-graph.png' }}" />
-		<meta property="og:image:width" content="800px" />
-		<meta property="og:image:height" content="800px" />
-		<meta property="og:image:type" content="image/png" />
-		<meta property="og:locale" content="de_DE" />
-		<meta property="og:site_name" content="{{ config.site_name }}" />
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:site" content="@rootservice" />
+        <meta property="og:type" content="website" />
+        <meta property="og:image" content="{{ config.site_url + 'assets/favicons/open-graph.png' }}" />
+        <meta property="og:image:width" content="800px" />
+        <meta property="og:image:height" content="800px" />
+        <meta property="og:image:type" content="image/png" />
+        <meta property="og:locale" content="de_DE" />
+        <meta property="og:site_name" content="{{ config.site_name }}" />
       {% if page.meta and page.meta.title %}
-		<meta property="og:title" content="{{ page.meta.title }}" />
+        <meta property="og:title" content="{{ page.meta.title }}" />
       {% elif page.title and not page.is_homepage %}
-		<meta property="og:title" content="{{ page.title | striptags }}" />
+        <meta property="og:title" content="{{ page.title | striptags }}" />
       {% else %}
-		<meta property="og:title" content="{{ config.site_name }}" />
+        <meta property="og:title" content="{{ config.site_name }}" />
       {% endif %}
       {% if page.meta and page.meta.description %}
         <meta property="og:description" content="{{ page.meta.description }}" />
@@ -60,21 +60,21 @@
         <meta property="og:description" content="{{ config.site_description }}" />
       {% endif %}
       {% if page.canonical_url %}
-		<meta property="og:url" content="{{ page.canonical_url }}" />
+        <meta property="og:url" content="{{ page.canonical_url }}" />
         <link rel="canonical" href="{{ page.canonical_url }}" />
       {% endif %}
-		<link rel="apple-touch-icon" sizes="180x180" href="/assets/favicons/apple-touch-icon.png" />
-		<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicons/favicon-32x32.png" />
-		<link rel="icon" type="image/png" sizes="16x16" href="/assets/favicons/favicon-16x16.png" />
-		<link rel="icon" type="image/vnd.microsoft.icon" href="/assets/favicons/favicon.ico" />
-		<link rel="mask-icon" href="/assets/favicons/safari-pinned-tab.svg" color="#5bbad5" />
-		<link rel="manifest" type="application/json" href="/assets/favicons/manifest.json" />
-		<meta name="apple-mobile-web-app-title" content="RootService" />
-		<meta name="application-name" content="RootService" />
-		<meta name="msapplication-TileColor" content="#2b5797" />
-		<meta name="msapplication-TileImage" content="/assets/favicons/mstile-144x144.png" />
-		<meta name="msapplication-config" content="/assets/favicons/browserconfig.xml" />
-		<meta name="theme-color" content="#ffffff" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicons/apple-touch-icon.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicons/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicons/favicon-16x16.png" />
+        <link rel="icon" type="image/vnd.microsoft.icon" href="/assets/favicons/favicon.ico" />
+        <link rel="mask-icon" href="/assets/favicons/safari-pinned-tab.svg" color="#5bbad5" />
+        <link rel="manifest" type="application/json" href="/assets/favicons/manifest.json" />
+        <meta name="apple-mobile-web-app-title" content="RootService" />
+        <meta name="application-name" content="RootService" />
+        <meta name="msapplication-TileColor" content="#2b5797" />
+        <meta name="msapplication-TileImage" content="/assets/favicons/mstile-144x144.png" />
+        <meta name="msapplication-config" content="/assets/favicons/browserconfig.xml" />
+        <meta name="theme-color" content="#ffffff" />
     {% endblock %}
     {% block fonts %}
       {% if config.theme.font != false %}
@@ -88,7 +88,7 @@
       {% endif %}
     {% endblock %}
     {% block styles %}
-    <link rel="preload stylesheet" as="style" href="{{ 'assets/stylesheets/main.1d29e8d0.min.css' | url }}" />
+    <link rel="preload stylesheet" as="style" href="{{ 'assets/stylesheets/main.476df7d4.min.css' | url }}" />
       {% if config.theme.palette %}
         {% set palette = config.theme.palette %}
         <link rel="preload stylesheet" as="style" href="{{ 'assets/stylesheets/palette.cbb835fc.min.css' | url }}" />
@@ -103,10 +103,10 @@
       {% include "partials/icons.html" %}
     {% endblock %}
     {% for path in config["extra_css"] %}
-    <link rel="preload stylesheet" as="style" href="{{ path | url }}" />
+      <link rel="preload stylesheet" as="style" href="{{ path | url }}" />
     {% endfor %}
     {% block libs %}{% endblock %}
-    {% include "partials/javascripts/base.html" %}
+      {% include "partials/javascripts/base.html" %}
     {% block analytics %}
       {% include "partials/integrations/analytics.html" %}
     {% endblock %}
@@ -184,32 +184,40 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" for="__drawer"></label>
     {% if page.toc | first is defined %}
-    <div data-md-component="skip">
+      <div data-md-component="skip">
         {% set skip = page.toc | first %}
         <a href="{{ skip.url | url }}" class="md-skip">
           {{ lang.t('skip.link.title') }}
         </a>
-    </div>
+      </div>
     {% endif %}
     {% if self.announce() %}
-    <div data-md-component="announce">
+      <div data-md-component="announce">
         <aside class="md-banner">
           <div class="md-banner__inner md-grid md-typeset">
+            {% if "announce.dismiss" in features %}
+              <button class="md-banner__button md-icon" aria-label="{{ lang.t('announce.dismiss') }}">
+                {% include ".icons/material/close.svg" %}
+              </button>
+            {% endif %}
             {% block announce %}{% endblock %}
           </div>
+          {% if "announce.dismiss" in features %}
+            {% include "partials/javascripts/announce.html" %}
+          {% endif %}
         </aside>
-    </div>
+      </div>
     {% endif %}
     {% if config.extra.version %}
       <div data-md-component="outdated" hidden>
-        <aside class="md-banner md-banner--warning">
-          {% if self.outdated() %}
+        {% if self.outdated() %}
+          <aside class="md-banner md-banner--warning">
             <div class="md-banner__inner md-grid md-typeset">
               {% block outdated %}{% endblock %}
             </div>
             {% include "partials/javascripts/outdated.html" %}
-          {% endif %}
-        </aside>
+          </aside>
+        {% endif %}
       </div>
     {% endif %}
     {% block header %}
@@ -275,6 +283,17 @@
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
+    {% if config.extra.consent %}
+      <div class="md-consent" data-md-component="consent" id="__consent" hidden>
+        <div class="md-consent__overlay"></div>
+        <aside class="md-consent__inner">
+          <form class="md-consent__form md-grid md-typeset" name="consent">
+            {% include "partials/consent.html" %}
+          </form>
+        </aside>
+      </div>
+      {% include "partials/javascripts/consent.html" %}
+    {% endif %}
     {% block config %}
       {%- set app = {
         "base": base_url,
@@ -309,10 +328,11 @@
       </script>
     {% endblock %}
     {% block scripts %}
-      <script defer="defer" type="text/javascript" src="{{ 'assets/javascripts/bundle.6c7ad80a.min.js' | url }}"></script>
+      <script defer="defer" src="{{ 'assets/javascripts/bundle.0bc13b87.min.js' | url }}"></script>
       {% for path in config["extra_javascript"] %}
-        <script defer="defer" type="text/javascript" src="{{ path | url }}"></script>
+        <script defer="defer" src="{{ path | url }}"></script>
       {% endfor %}
     {% endblock %}
   </body>
+<!-- {{ build_date_utc }} -->
 </html>

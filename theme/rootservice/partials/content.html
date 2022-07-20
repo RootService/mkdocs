@@ -18,10 +18,10 @@
   <h1>{{ page.title | d(config.site_name, true)}}</h1>
 {% endif %}
 {{ page.content }}
-    {% if page.meta and ( page.meta.hide is not defined or "docinfo" not in page.meta.hide ) %}
-        <hr />
-<div class="md-source-file">
-  <small>
+  {% if page.meta and ( page.meta.hide is not defined or "docinfo" not in page.meta.hide ) %}
+  <hr />
+  <div class="md-source-file">
+    <small>
       {% if page.meta.author %}
         <p><strong>Author:</strong> {{ page.meta.author }}</p>
       {% elif config.site_author %}
@@ -37,12 +37,13 @@
       {% elif config.extra.site_license_url and config.extra.site_license_shortname %}
         <p><strong>License:</strong> <a href="{{ config.extra.site_license_url }}" target="_blank" rel="license noopener">{{ config.extra.site_license_shortname }}</a></p>
       {% endif %}
-  </small>
-</div>
-    {% endif %}
+    </small>
+  </div>
+  {% endif %}
 {% if page.meta and (
   page.meta.git_revision_date_localized or
   page.meta.revision_date
 ) %}
   {% include "partials/source-file.html" %}
 {% endif %}
+{% include "partials/feedback.html" %}

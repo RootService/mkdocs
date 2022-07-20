@@ -13,6 +13,7 @@ theme:
     locale: de
     language: de
     custom_dir: theme/rootservice
+#    custom_dir: theme/material
     static_templates:
         - 404.html
     include_search_page: false
