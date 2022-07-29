@@ -2,14 +2,11 @@
 title: 'Apache'
 description: 'In diesem HowTo wird step-by-step die Installation des Apache Webservers für ein WebHosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2022-07-14'
+updated: '2022-07-27'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 contributors:
     - 'Jesco Freund'
-tags:
-    - FreeBSD
-    - Apache
 ---
 
 # Apache
@@ -269,8 +266,8 @@ LoadModule filter_module libexec/apache24/mod_filter.so
 #LoadModule substitute_module libexec/apache24/mod_substitute.so
 #LoadModule sed_module libexec/apache24/mod_sed.so
 LoadModule deflate_module libexec/apache24/mod_deflate.so
-#LoadModule xml2enc_module libexec/apache24/mod_xml2enc.so
-#LoadModule proxy_html_module libexec/apache24/mod_proxy_html.so
+LoadModule xml2enc_module libexec/apache24/mod_xml2enc.so
+LoadModule proxy_html_module libexec/apache24/mod_proxy_html.so
 LoadModule brotli_module libexec/apache24/mod_brotli.so
 LoadModule mime_module libexec/apache24/mod_mime.so
 LoadModule log_config_module libexec/apache24/mod_log_config.so
@@ -839,11 +836,8 @@ cat > /usr/local/etc/apache24/vhosts-ssl.conf << "EOF"
         Require all granted
     </Directory>
     <FilesMatch "(.+\.php.?)(/.*)?$">
-        ProxyFCGIBackendType GENERIC
         SetHandler "proxy:unix:/var/run/fpm_www.sock|fcgi://localhost"
     </FilesMatch>
-    <Proxy "fcgi://localhost" enablereuse=on max=10>
-    </Proxy>
     SSLEngine on
     SSLCertificateFile "/usr/local/etc/letsencrypt/live/devnull.example.com/fullchain.pem"
     SSLCertificateKeyFile "/usr/local/etc/letsencrypt/live/devnull.example.com/privkey.pem"
@@ -861,11 +855,8 @@ cat > /usr/local/etc/apache24/vhosts-ssl.conf << "EOF"
         Require all granted
     </Directory>
     <FilesMatch "(.+\.php.?)(/.*)?$">
-        ProxyFCGIBackendType GENERIC
         SetHandler "proxy:unix:/var/run/fpm_www.sock|fcgi://localhost"
     </FilesMatch>
-    <Proxy "fcgi://localhost" enablereuse=on max=10>
-    </Proxy>
     SSLEngine on
     SSLCertificateFile "/usr/local/etc/letsencrypt/live/mail.example.com/fullchain.pem"
     SSLCertificateKeyFile "/usr/local/etc/letsencrypt/live/mail.example.com/privkey.pem"
@@ -890,11 +881,8 @@ cat > /usr/local/etc/apache24/vhosts-ssl.conf << "EOF"
         RewriteRule "^/?(.*)" "https://www.example.com/$1" [L,QSA,R=308]
     </IfModule>
     <FilesMatch "(.+\.php.?)(/.*)?$">
-        ProxyFCGIBackendType GENERIC
         SetHandler "proxy:unix:/var/run/fpm_www.sock|fcgi://localhost"
     </FilesMatch>
-    <Proxy "fcgi://localhost" enablereuse=on max=10>
-    </Proxy>
     SSLEngine on
     SSLCertificateFile "/usr/local/etc/letsencrypt/live/www.example.com/fullchain.pem"
     SSLCertificateKeyFile "/usr/local/etc/letsencrypt/live/www.example.com/privkey.pem"

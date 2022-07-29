@@ -7,9 +7,6 @@ author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 contributors:
     - 'Stefan H. Holek'
-tags:
-    - Gentoo
-    - Certificate Authority
 ---
 
 # Certificate Authority

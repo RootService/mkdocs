@@ -5,9 +5,6 @@ date: '2003-02-18'
 updated: '2020-02-18'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
-tags:
-    - Server gehackt
-    - Sicherheit
 ---
 
 # Vorgehensweise bei gehacktem Server

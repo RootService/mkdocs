@@ -78,14 +78,12 @@ extra:
 #          lang: en
 
 plugins:
+#    - social:
+#    - privacy:
     - search:
         lang:
             - de
 #            - en
-#    - tags:
-#        tags_file: tags.md
-#    - social:
-#    - privacy:
     - minify:
         minify_html: true
 

@@ -5,9 +5,6 @@ date: '2002-12-15'
 updated: '2020-12-15'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
-tags:
-    - Entscheidungshilfe
-    - FAQ
 ---
 
 # Pro und Contra dedizierter Server

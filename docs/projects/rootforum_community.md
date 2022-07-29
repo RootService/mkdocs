@@ -5,8 +5,6 @@ date: '2002-04-22'
 updated: '2022-04-28'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
-tags:
-    - RootForum Community
 ---
 
 # RootForum Community

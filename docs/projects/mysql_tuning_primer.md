@@ -5,8 +5,6 @@ date: '2015-09-03'
 updated: '2022-04-28'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
-tags:
-    - MySQL Tuning Primer
 ---
 
 # MySQL Tuning Primer

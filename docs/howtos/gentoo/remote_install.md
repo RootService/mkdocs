@@ -7,9 +7,6 @@ author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 contributors:
     - 'Jesco Freund'
-tags:
-    - Gentoo
-    - Remote Installation
 ---
 
 # Remote Installation

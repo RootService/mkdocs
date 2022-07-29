@@ -2,15 +2,12 @@
 title: 'MySQL'
 description: 'In diesem HowTo wird step-by-step die Installation des MySQL Datenbanksystem für ein WebHosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2022-07-14'
+updated: '2022-07-27'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 contributors:
     - 'Jesco Freund'
     - 'Matthias Weiss'
-tags:
-    - FreeBSD
-    - MySQL
 ---
 
 # MySQL
@@ -21,7 +18,7 @@ Zu den Voraussetzungen für dieses HowTo siehe bitte: [Voraussetzungen](/howtos/
 
 Unser WebHosting System wird um folgende Dienste erweitert.
 
-- MySQL 8.0.29 (InnoDB, GTID)
+- MySQL 8.0.30 (InnoDB, GTID)
 
 ## Installation
 
@@ -59,7 +56,7 @@ OPTIONS_FILE_SET+=DOCS
 
 mkdir -p /var/db/ports/databases_mysql80-client
 cat > /var/db/ports/databases_mysql80-client/options << "EOF"
-_OPTIONS_READ=mysql80-client-8.0.29
+_OPTIONS_READ=mysql80-client-8.0.30
 _FILE_COMPLETE_OPTIONS_LIST=SASLCLIENT
 OPTIONS_FILE_UNSET+=SASLCLIENT
 "EOF"
@@ -74,7 +71,7 @@ Wir installieren `databases/mysql80-server` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/databases_mysql80-server
 cat > /var/db/ports/databases_mysql80-server/options << "EOF"
-_OPTIONS_READ=mysql80-server-8.0.29
+_OPTIONS_READ=mysql80-server-8.0.30
 _FILE_COMPLETE_OPTIONS_LIST= ARCHIVE BLACKHOLE EXAMPLE FEDERATED INNOBASE PARTITION PERFSCHEMA PERFSCHM
 OPTIONS_FILE_UNSET+=ARCHIVE
 OPTIONS_FILE_UNSET+=BLACKHOLE
@@ -157,7 +154,6 @@ innodb_log_group_home_dir       = /data/db/mysql
 innodb_data_file_path           = ibdata1:1G;ibdata2:1G;ibdata3:128M:autoextend
 innodb_temp_data_file_path      = ibtmp1:128M:autoextend
 innodb_flush_method             = O_DIRECT
-innodb_log_file_size            = 256M
 innodb_sort_buffer_size         = 2048K
 #log_queries_not_using_indexes   = ON
 skip_name_resolve               = ON

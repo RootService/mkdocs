@@ -2,12 +2,9 @@
 title: 'CertBot'
 description: 'In diesem HowTo wird step-by-step die Installation von CertBot für ein WebHosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2022-07-14'
+updated: '2022-07-27'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
-tags:
-    - FreeBSD
-    - CertBot
 ---
 
 # CertBot
@@ -18,7 +15,7 @@ Zu den Voraussetzungen für dieses HowTo siehe bitte: [Voraussetzungen](/howtos/
 
 Unser WebHosting System wird folgende Dienste umfassen.
 
-- CertBot 1.27.0 (LetsEncrypt ACME API 2.0)
+- CertBot 1.29.0 (LetsEncrypt ACME API 2.0)
 
 ## Installation
 
@@ -27,7 +24,7 @@ Wir installieren `security/py-certbot` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/security_py-certbot
 cat > /var/db/ports/security_py-certbot/options << "EOF"
-_OPTIONS_READ=py37-certbot-1.27.0
+_OPTIONS_READ=py37-certbot-1.29.0
 _FILE_COMPLETE_OPTIONS_LIST=MANPAGES
 OPTIONS_FILE_SET+=MANPAGES
 "EOF"

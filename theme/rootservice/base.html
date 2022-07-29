@@ -131,7 +131,13 @@
       "@context": "https://schema.org",
       "@type": "Article",
       "@id": "{{ page.canonical_url }}",
-      "headline": "{{ page.title | d(config.site_name, true) }}",
+      {% if page.meta.title %}
+      "headline": "{{ page.meta.title }}",
+      {% elif page.title and not page.is_homepage %}
+      "headline": "{{ page.title | striptags }}",
+      {% else %}
+      "headline": "{{ config.site_name }}",
+      {% endif %}
       {% if page.meta.date %}
       "datePublished": "{{ page.meta.date }}T12:00:00+02:00",
       {% else %}

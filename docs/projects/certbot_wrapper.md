@@ -5,8 +5,6 @@ date: '2016-10-20'
 updated: '2022-04-28'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
-tags:
-    - CertBot Wrapper
 ---
 
 # CertBot Wrapper

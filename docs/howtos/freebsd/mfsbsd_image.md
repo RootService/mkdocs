@@ -2,14 +2,11 @@
 title: 'mfsBSD Image'
 description: 'In diesem HowTo wird step-by-step die Erstellung eines mfsBSD Images zur Remote Installation von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2022-07-14'
+updated: '2022-07-27'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 contributors:
     - 'Jesco Freund'
-tags:
-    - FreeBSD
-    - mfsBSD
 ---
 
 # mfsBSD Image

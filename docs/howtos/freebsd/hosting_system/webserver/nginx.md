@@ -2,14 +2,11 @@
 title: 'NGinx'
 description: 'In diesem HowTo wird step-by-step die Installation des NGinx Webservers für ein WebHosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2022-07-14'
+updated: '2022-07-27'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 contributors:
     - 'Olaf Uecker'
-tags:
-    - FreeBSD
-    - NGinx
 ---
 
 # NGinx
@@ -33,7 +30,7 @@ Wir installieren `www/nginx` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/www_nginx
 cat > /var/db/ports/www_nginx/options << "EOF"
-_OPTIONS_READ=nginx-1.22.0_5,2
+_OPTIONS_READ=nginx-1.22.0
 _FILE_COMPLETE_OPTIONS_LIST=DEBUG DEBUGLOG DSO FILE_AIO IPV6 NJS THREADS WWW PCRE_ONE PCRE_TWO MAIL MAIL_IMAP MAIL_POP3 MAIL_SMTP MAIL_SSL GOOGLE_PERFTOOLS HTTP HTTP_ADDITION HTTP_AUTH_REQ  HTTP_CACHE HTTP_DAV HTTP_FLV HTTP_GUNZIP_FILTER HTTP_GZIP_STATIC  HTTP_IMAGE_FILTER HTTP_MP4 HTTP_PERL HTTP_RANDOM_INDEX HTTP_REALIP  HTTP_SECURE_LINK HTTP_SLICE HTTP_SLICE_AHEAD  HTTP_SSL HTTP_STATUS HTTP_SUB HTTP_XSLT HTTPV2 HTTPV2_AUTOTUNE  STREAM STREAM_SSL STREAM_SSL_PREREAD AJP AWS_AUTH BROTLI CACHE_PURGE CLOJURE CT DEVEL_KIT  ARRAYVAR DRIZZLE DYNAMIC_TLS DYNAMIC_HC DYNAMIC_UPSTREAM ECHO ENCRYPTSESSION  FORMINPUT GRIDFS HEADERS_MORE HTTP_ACCEPT_LANGUAGE  HTTP_AUTH_DIGEST HTTP_AUTH_JWT HTTP_AUTH_KRB5 HTTP_AUTH_LDAP  HTTP_AUTH_PAM HTTP_DAV_EXT HTTP_EVAL HTTP_FANCYINDEX HTTP_FOOTER  HTTP_GEOIP2 HTTP_IP2LOCATION HTTP_IP2PROXY HTTP_JSON_STATUS HTTP_MOGILEFS  HTTP_MP4_H264 HTTP_NOTICE HTTP_PUSH HTTP_PUSH_STREAM HTTP_REDIS  HTTP_RESPONSE HTTP_SUBS_FILTER HTTP_TARANTOOL HTTP_UPLOAD  HTTP_UPLOAD_PROGRESS HTTP_UPSTREAM_CHECK HTTP_UPSTREAM_FAIR  HTTP_UPSTREAM_STICKY HTTP_VIDEO_THUMBEXTRACTOR HTTP_ZIP ICONV LET LINK LUA  MEMC MODSECURITY3 NAXSI OPENTRACING PASSENGER POSTGRES RDS_CSV  RDS_JSON REDIS2 RTMP SET_MISC SFLOW SHIBBOLETH SLOWFS_CACHE  SMALL_LIGHT SRCACHE VOD VTS XSS WEBSOCKIFY
 OPTIONS_FILE_UNSET+=DEBUG
 OPTIONS_FILE_UNSET+=DEBUGLOG
@@ -239,34 +236,11 @@ http {
         application/xml                       0;
         text/xml                              0;
         image/vnd.microsoft.icon              7d;
-        image/x-icon                          7d;
         text/html                             0;
         text/markdown                         0;
         application/javascript                7d;
-        application/x-javascript              7d;
         text/javascript                       7d;
         application/manifest+json             7d;
-        application/x-web-app-manifest+json   0;
-        text/cache-manifest                   0;
-        audio/ogg                             30d;
-        image/bmp                             30d;
-        image/gif                             30d;
-        image/jpeg                            30d;
-        image/png                             30d;
-        image/svg+xml                         30d;
-        image/webp                            30d;
-        video/mp4                             30d;
-        video/ogg                             30d;
-        video/webm                            30d;
-        application/vnd.ms-fontobject         30d;
-        font/eot                              30d;
-        font/opentype                         30d;
-        application/x-font-ttf                30d;
-        application/font-woff                 30d;
-        application/x-font-woff               30d;
-        font/woff                             30d;
-        application/font-woff2                30d;
-        text/x-cross-domain-policy            7d;
     }
     expires  $expires;
     include  vhosts.conf;
@@ -287,7 +261,7 @@ http {
 ``` bash
 cat > /usr/local/etc/nginx/vhosts.conf << "EOF"
     server {
-        listen  8080 default_server;
+        listen  8080;
         server_name  localhost "";
         error_log  /data/www/vhosts/_localhost_/logs/nginx_error_log;
         access_log  /data/www/vhosts/_localhost_/logs/nginx_access_log  combined;
@@ -309,7 +283,7 @@ cat > /usr/local/etc/nginx/vhosts.conf << "EOF"
         }
     }
     server {
-        listen  8080;
+        listen  8080 default_server;
         server_name  devnull.example.com;
         error_log  /data/www/vhosts/_default_/logs/nginx_error_log;
         access_log  /data/www/vhosts/_default_/logs/nginx_access_log  combined;
@@ -383,33 +357,6 @@ cat > /usr/local/etc/nginx/vhosts.conf << "EOF"
 cat > /usr/local/etc/nginx/vhosts-ssl.conf << "EOF"
     server {
         listen  8443 default_server ssl http2;
-        server_name  localhost "";
-        error_log  /data/www/vhosts/_localhost_/logs/nginx_ssl_error_log;
-        access_log  /data/www/vhosts/_localhost_/logs/nginx_ssl_access_log  combined;
-        ssl_certificate  /usr/local/etc/letsencrypt/live/devnull.example.com/fullchain.pem;
-        ssl_certificate_key  /usr/local/etc/letsencrypt/live/devnull.example.com/privkey.pem;
-        root  /data/www/vhosts/_localhost_/data;
-        index  index.html index.htm index.php;
-        include  headers.conf;
-        add_header  Public-Key-Pins "max-age=0; includeSubdomains"
-        add_header  Strict-Transport-Security "max-age=15768000; includeSubdomains; preload"
-        add_header  Expect-CT "max-age=0"
-        location / {
-            allow  all;
-        }
-        include  defaults.conf;
-        location ~ ^(.+\.phps?)(/.*)?$ {
-            fastcgi_pass  unix:/var/run/fpm_www.sock;
-            fastcgi_index  index.php;
-            fastcgi_split_path_info  ^(.+\.phps?)(/.*)?$;
-            fastcgi_param  SCRIPT_FILENAME  /data/www/vhosts/_localhost_/data$fastcgi_script_name;
-            fastcgi_param  PATH_INFO  $fastcgi_path_info;
-            include  fastcgi_params;
-            allow  all;
-        }
-    }
-    server {
-        listen  8443 ssl http2;
         server_name  devnull.example.com;
         error_log  /data/www/vhosts/_default_/logs/nginx_ssl_error_log;
         access_log  /data/www/vhosts/_default_/logs/nginx_ssl_access_log  combined;
