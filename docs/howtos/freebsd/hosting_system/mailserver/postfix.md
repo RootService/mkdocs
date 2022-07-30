@@ -25,31 +25,6 @@ Unser WebHosting System wird um folgende Dienste erweitert.
 Wir installieren `mail/postfix` und dessen Abhängigkeiten.
 
 ``` bash
-mkdir -p /var/db/ports/security_cyrus-sasl2
-cat > /var/db/ports/security_cyrus-sasl2/options << "EOF"
-_OPTIONS_READ=cyrus-sasl-2.1.28
-_FILE_COMPLETE_OPTIONS_LIST=ALWAYSTRUE AUTHDAEMOND DOCS KEEP_DB_OPEN  OBSOLETE_CRAM_ATTR OBSOLETE_DIGEST_ATTR  SASLDB_IN_VAR BDB1 BDB GDBM LMDB ANONYMOUS CRAM DIGEST LOGIN NTLM OTP PLAIN SCRAM
-OPTIONS_FILE_UNSET+=ALWAYSTRUE
-OPTIONS_FILE_UNSET+=AUTHDAEMOND
-OPTIONS_FILE_SET+=DOCS
-OPTIONS_FILE_UNSET+=KEEP_DB_OPEN
-OPTIONS_FILE_UNSET+=OBSOLETE_CRAM_ATTR
-OPTIONS_FILE_UNSET+=OBSOLETE_DIGEST_ATTR
-OPTIONS_FILE_SET+=SASLDB_IN_VAR
-OPTIONS_FILE_UNSET+=BDB1
-OPTIONS_FILE_UNSET+=BDB
-OPTIONS_FILE_UNSET+=GDBM
-OPTIONS_FILE_SET+=LMDB
-OPTIONS_FILE_SET+=ANONYMOUS
-OPTIONS_FILE_SET+=CRAM
-OPTIONS_FILE_SET+=DIGEST
-OPTIONS_FILE_SET+=LOGIN
-OPTIONS_FILE_SET+=NTLM
-OPTIONS_FILE_SET+=OTP
-OPTIONS_FILE_SET+=PLAIN
-OPTIONS_FILE_SET+=SCRAM
-"EOF"
-
 mkdir -p /var/db/ports/mail_postfix
 cat > /var/db/ports/mail_postfix/options << "EOF"
 _OPTIONS_READ=postfix-3.7.2
@@ -66,8 +41,8 @@ OPTIONS_FILE_UNSET+=MYSQL
 OPTIONS_FILE_UNSET+=NIS
 OPTIONS_FILE_SET+=PCRE2
 OPTIONS_FILE_UNSET+=PGSQL
-OPTIONS_FILE_SET+=SASL
-OPTIONS_FILE_SET+=SQLITE
+OPTIONS_FILE_UNSET+=SASL
+OPTIONS_FILE_UNSET+=SQLITE
 OPTIONS_FILE_UNSET+=TEST
 OPTIONS_FILE_SET+=TLS
 OPTIONS_FILE_UNSET+=SASLKMIT
@@ -92,17 +67,20 @@ install -m 0644 /usr/local/share/postfix/mailer.conf.postfix /usr/local/etc/mail
 
 ``` bash
 cat > /usr/local/etc/postfix/main.cf << "EOF"
+address_verify_map = lmdb:${data_directory}/verify_cache
+alias_database = lmdb:/etc/aliases
+alias_maps = lmdb:/etc/aliases
 allow_percent_hack = no
 always_add_missing_headers = yes
 biff = no
 compatibility_level = 3.6
+default_database_type = lmdb
 disable_vrfy_command = yes
 dovecot_destination_recipient_limit = 1
 enable_long_queue_ids = yes
 home_mailbox = .maildir/
 inet_interfaces = all
 inet_protocols = all
-#lmtp_tls_fingerprint_digest = sha256
 local_header_rewrite_clients = permit_mynetworks permit_sasl_authenticated
 mail_spool_directory = /data/vmail
 mailbox_size_limit = 0
@@ -124,6 +102,7 @@ postscreen_access_list =
   cidr:${config_directory}/postscreen_whitelist.cidr
 postscreen_bare_newline_action = enforce
 postscreen_bare_newline_enable = yes
+postscreen_cache_map = lmdb:${data_directory}/postscreen_cache
 postscreen_denylist_action = enforce
 postscreen_dnsbl_action = enforce
 postscreen_dnsbl_allowlist_threshold = 0
@@ -170,14 +149,13 @@ smtp_dns_support_level = enabled
 smtp_tls_CAfile = /usr/local/share/certs/ca-root-nss.crt
 smtp_tls_ciphers = medium
 smtp_tls_connection_reuse = yes
-#smtp_tls_fingerprint_digest = sha256
 smtp_tls_loglevel = 1
 smtp_tls_mandatory_ciphers = medium
 smtp_tls_mandatory_protocols = >=TLSv1.2
 smtp_tls_note_starttls_offer = yes
 smtp_tls_protocols = >=TLSv1.2
 smtp_tls_security_level = may
-smtp_tls_session_cache_database = btree:${data_directory}/smtp_scache
+smtp_tls_session_cache_database = lmdb:${data_directory}/smtp_scache
 smtpd_client_port_logging = yes
 smtpd_client_restrictions =
   sleep 1
@@ -224,14 +202,13 @@ smtpd_tls_chain_files =
   /usr/local/etc/letsencrypt/live/mail.example.com/privkey.pem
   /usr/local/etc/letsencrypt/live/mail.example.com/fullchain.pem
 smtpd_tls_ciphers = medium
-#smtpd_tls_fingerprint_digest = sha256
 smtpd_tls_loglevel = 1
 smtpd_tls_mandatory_ciphers = medium
 smtpd_tls_mandatory_protocols = >=TLSv1.2
 smtpd_tls_protocols = >=TLSv1.2
 smtpd_tls_received_header = yes
 smtpd_tls_security_level = may
-smtpd_tls_session_cache_database = btree:${data_directory}/smtpd_scache
+smtpd_tls_session_cache_database = lmdb:${data_directory}/smtpd_scache
 strict_rfc821_envelopes = yes
 swap_bangpath = no
 tls_daemon_random_bytes = 64
@@ -241,13 +218,13 @@ tls_medium_cipherlist = TLSv1.2 +CHACHA20 +AES +SHA !DH !AESCCM !ARIA !CAMELLIA 
 tls_preempt_cipherlist = yes
 tls_random_bytes = 64
 tls_ssl_options = NO_COMPRESSION
-virtual_alias_domains = hash:${config_directory}/virtual_alias_domains
-virtual_alias_maps = hash:${config_directory}/virtual_alias_maps
+virtual_alias_domains = lmdb:${config_directory}/virtual_alias_domains
+virtual_alias_maps = lmdb:${config_directory}/virtual_alias_maps
 virtual_gid_maps = static:5000
 virtual_mailbox_base = /data/vmail
-virtual_mailbox_domains = hash:${config_directory}/virtual_mailbox_domains
+virtual_mailbox_domains = lmdb:${config_directory}/virtual_mailbox_domains
 virtual_mailbox_limit = 0
-virtual_mailbox_maps = hash:${config_directory}/virtual_mailbox_maps
+virtual_mailbox_maps = lmdb:${config_directory}/virtual_mailbox_maps
 virtual_minimum_uid = 5000
 virtual_transport = dovecot
 virtual_uid_maps = static:5000
@@ -436,10 +413,10 @@ cat > /usr/local/etc/postfix/virtual_mailbox_maps << "EOF"
 admin@example.com         example.com/admin/
 "EOF"
 
-postmap /usr/local/etc/postfix/virtual_alias_domains
-postmap /usr/local/etc/postfix/virtual_alias_maps
-postmap /usr/local/etc/postfix/virtual_mailbox_domains
-postmap /usr/local/etc/postfix/virtual_mailbox_maps
+postmap lmdb:/usr/local/etc/postfix/virtual_alias_domains
+postmap lmdb:/usr/local/etc/postfix/virtual_alias_maps
+postmap lmdb:/usr/local/etc/postfix/virtual_mailbox_domains
+postmap lmdb:/usr/local/etc/postfix/virtual_mailbox_maps
 ```
 
 Transport map einrichten.
@@ -448,7 +425,7 @@ Transport map einrichten.
 cat >> /usr/local/etc/postfix/transport << "EOF"
 "EOF"
 
-postmap /usr/local/etc/postfix/transport
+postmap lmdb:/usr/local/etc/postfix/transport
 ```
 
 Restriktionen einrichten.
@@ -468,6 +445,8 @@ cat > /usr/local/etc/postfix/recipient_checks.pcre << "EOF"
 Abschliessende Arbeiten.
 
 ``` bash
+newliases
+
 pw groupadd -n vmail -g 5000
 pw useradd -n vmail -u 5000 -g vmail -c 'Virtual Mailuser' -d /nonexistent -s /usr/sbin/nologin
 
