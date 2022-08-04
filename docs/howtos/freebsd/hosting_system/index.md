@@ -1,5 +1,5 @@
 ---
-title: 'Voraussetzungen'
+title: 'Hosting System'
 description: 'In diesem HowTo werden step-by-step die Voraussetzungen für ein WebHosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
 updated: '2022-07-27'
@@ -7,11 +7,13 @@ author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
 
-# Voraussetzungen
+# Hosting System
 
-## Einleitung
+## Voraussetzungen
 
 Diese HowTos setzen ein wie in [Remote Installation](/howtos/freebsd/remote_install/) beschriebenes, installiertes und konfiguriertes FreeBSD Basissystem voraus.
+
+## Einleitung
 
 Unser WebHosting System wird am Ende folgende Dienste umfassen.
 

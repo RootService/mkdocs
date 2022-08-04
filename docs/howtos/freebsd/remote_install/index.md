@@ -1,5 +1,5 @@
 ---
-title: 'Voraussetzungen'
+title: 'Remote Installation'
 description: 'In diesem HowTo werden step-by-step die Voraussetzungen für die Remote Installation des FreeBSD 64Bit BaseSystem auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
 updated: '2022-07-27'
@@ -7,11 +7,13 @@ author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
 
-# Voraussetzungen
+# Remote Installation
 
-## Einleitung
+## Voraussetzungen
 
 Die Installation des FreeBSD BaseSystem setzt ein wie in [mfsBSD Image](/howtos/freebsd/mfsbsd_image/) beschriebenes, bereits fertig erstelltes mfsBSD Image voraus.
+
+## Einleitung
 
 Unser BaseSystem wird am Ende folgende Dienste umfassen.
 
