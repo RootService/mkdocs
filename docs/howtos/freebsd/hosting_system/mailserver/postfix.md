@@ -1,8 +1,8 @@
 ---
 title: 'Postfix'
-description: 'In diesem HowTo wird step-by-step die Installation des Postfix Mailservers für ein WebHosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
+description: 'In diesem HowTo wird step-by-step die Installation des Postfix Mailservers für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2022-07-27'
+updated: '2022-08-05'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 contributors:
@@ -11,11 +11,13 @@ contributors:
 
 # Postfix
 
+## Voraussetzungen
+
+Zu den Voraussetzungen für dieses HowTo siehe bitte: [Hosting System](/howtos/freebsd/hosting_system/)
+
 ## Einleitung
 
-Zu den Voraussetzungen für dieses HowTo siehe bitte: [Voraussetzungen](/howtos/freebsd/hosting_system/)
-
-Unser WebHosting System wird um folgende Dienste erweitert.
+Unser Hosting System wird um folgende Dienste erweitert.
 
 - Postfix 3.7.2 (Dovecot-SASL, postscreen)
 - Python-SPF-Engine 2.9.3 (SPF2)

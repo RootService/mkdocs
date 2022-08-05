@@ -32,7 +32,7 @@ Folgende Punkte sind in diesem HowTo zu beachten:
 - Die IP-Adresse des Servers wird als `10.0.2.15` dargestellt und ist selbstständig durch die eigene IP-Adresse zu ersetzen.
 - Postfix und Dovecot teilen sich sowohl den Hostnamen `mail.example.com` als auch das SSL-Zertifikat.
 
-Unser WebHosting System wird folgende Dienste umfassen:
+Unser Hosting System wird folgende Dienste umfassen:
 
 - MySQL
 - Postfix

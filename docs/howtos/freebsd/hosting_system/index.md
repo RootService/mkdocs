@@ -1,8 +1,8 @@
 ---
 title: 'Hosting System'
-description: 'In diesem HowTo werden step-by-step die Voraussetzungen für ein WebHosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
+description: 'In diesem HowTo werden step-by-step die Voraussetzungen für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2022-07-27'
+updated: '2022-08-05'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -15,7 +15,7 @@ Diese HowTos setzen ein wie in [Remote Installation](/howtos/freebsd/remote_inst
 
 ## Einleitung
 
-Unser WebHosting System wird am Ende folgende Dienste umfassen.
+Unser Hosting System wird am Ende folgende Dienste umfassen.
 
 - CertBot 1.29.0 (LetsEncrypt ACME API 2.0)
 - Unbound 1.16.1 (DNScrypt, DNS over TLS)

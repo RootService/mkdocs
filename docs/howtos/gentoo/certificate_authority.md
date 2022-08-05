@@ -1856,4 +1856,4 @@ openssl ca \
 
 ## Wie geht es weiter?
 
-Natürlich mit dem [WebHosting System](/howtos/gentoo/hosting_system/).
+Natürlich mit dem [Hosting System](/howtos/gentoo/hosting_system/).
