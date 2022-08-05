@@ -13,10 +13,6 @@ contributors:
 
 # BaseSystem
 
-## Voraussetzungen
-
-Zu den Voraussetzungen für dieses HowTo siehe bitte: [Remote Installation](/howtos/freebsd/remote_install/)
-
 ## Einleitung
 
 In diesem HowTo beschreibe ich step-by-step die Remote Installation des [FreeBSD](https://www.freebsd.org/){: target="_blank" rel="noopener"} 64Bit BaseSystem mittels [mfsBSD](https://mfsbsd.vx.sk/){: target="_blank" rel="noopener"} auf einem dedizierten Server. Um eine weitere Republikation der offiziellen [FreeBSD Dokumentation](https://docs.freebsd.org/en/books/handbook/){: target="_blank" rel="noopener"} zu vermeiden, werde ich in diesem HowTo nicht alle Punkte bis ins Detail erläutern.
@@ -27,6 +23,10 @@ Unser BaseSystem wird folgende Dienste umfassen.
 - OpenSSL 1.1.1
 - OpenSSH 8.8
 - Unbound 1.13.1
+
+## Voraussetzungen
+
+Zu den Voraussetzungen für dieses HowTo siehe bitte: [Remote Installation](/howtos/freebsd/remote_install/)
 
 ## RescueSystem booten
 

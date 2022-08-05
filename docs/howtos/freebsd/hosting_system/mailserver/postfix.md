@@ -11,16 +11,16 @@ contributors:
 
 # Postfix
 
-## Voraussetzungen
-
-Zu den Voraussetzungen für dieses HowTo siehe bitte: [Hosting System](/howtos/freebsd/hosting_system/)
-
 ## Einleitung
 
 Unser Hosting System wird um folgende Dienste erweitert.
 
 - Postfix 3.7.2 (Dovecot-SASL, postscreen)
 - Python-SPF-Engine 2.9.3 (SPF2)
+
+## Voraussetzungen
+
+Zu den Voraussetzungen für dieses HowTo siehe bitte: [Hosting System](/howtos/freebsd/hosting_system/)
 
 ## Installation
 

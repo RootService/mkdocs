@@ -13,10 +13,6 @@ contributors:
 
 # BasePorts
 
-## Voraussetzungen
-
-Zu den Voraussetzungen für dieses HowTo siehe bitte: [Remote Installation](/howtos/freebsd/remote_install/)
-
 ## Einleitung
 
 In diesem HowTo beschreibe ich step-by-step die Installation einiger Ports (Packages / Pakete) welche auf keinem [FreeBSD](https://www.freebsd.org/){: target="_blank" rel="noopener"} 64Bit BaseSystem auf einem dedizierten Server fehlen sollten.
@@ -29,6 +25,10 @@ Unsere BasePorts werden am Ende folgende Dienste umfassen.
 - TCL 8.6.12
 - Python 3.9.13
 - Ruby 3.0.4
+
+## Voraussetzungen
+
+Zu den Voraussetzungen für dieses HowTo siehe bitte: [Remote Installation](/howtos/freebsd/remote_install/)
 
 ## Einloggen und zu *root* werden
 

@@ -12,15 +12,15 @@ contributors:
 
 # MySQL
 
-## Voraussetzungen
-
-Zu den Voraussetzungen für dieses HowTo siehe bitte: [Hosting System](/howtos/freebsd/hosting_system/)
-
 ## Einleitung
 
 Unser Hosting System wird um folgende Dienste erweitert.
 
 - MySQL 8.0.30 (InnoDB, GTID)
+
+## Voraussetzungen
+
+Zu den Voraussetzungen für dieses HowTo siehe bitte: [Hosting System](/howtos/freebsd/hosting_system/)
 
 ## Installation
 

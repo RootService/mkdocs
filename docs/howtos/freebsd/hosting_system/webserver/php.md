@@ -9,15 +9,15 @@ author_url: https://github.com/JoeUser78
 
 # PHP-FPM
 
-## Voraussetzungen
-
-Zu den Voraussetzungen für dieses HowTo siehe bitte: [Hosting System](/howtos/freebsd/hosting_system/)
-
 ## Einleitung
 
 Unser Hosting System wird folgende Dienste umfassen.
 
 - PHP 8.1.8 (PHP-FPM, Composer, PEAR)
+
+## Voraussetzungen
+
+Zu den Voraussetzungen für dieses HowTo siehe bitte: [Hosting System](/howtos/freebsd/hosting_system/)
 
 ## Installation
 

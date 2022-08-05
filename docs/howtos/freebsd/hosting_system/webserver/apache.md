@@ -11,15 +11,15 @@ contributors:
 
 # Apache
 
-## Voraussetzungen
-
-Zu den Voraussetzungen für dieses HowTo siehe bitte: [Hosting System](/howtos/freebsd/hosting_system/)
-
 ## Einleitung
 
 Unser Hosting System wird um folgende Dienste erweitert.
 
 - Apache 2.4.54 (MPM-Event, HTTP/2, mod_brotli)
+
+## Voraussetzungen
+
+Zu den Voraussetzungen für dieses HowTo siehe bitte: [Hosting System](/howtos/freebsd/hosting_system/)
 
 ## Installation
 

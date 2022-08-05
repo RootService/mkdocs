@@ -9,15 +9,15 @@ author_url: https://github.com/JoeUser78
 
 # OpenDMARC
 
-## Voraussetzungen
-
-Zu den Voraussetzungen für dieses HowTo siehe bitte: [Hosting System](/howtos/freebsd/hosting_system/)
-
 ## Einleitung
 
 Unser Hosting System wird um folgende Dienste erweitert.
 
 - OpenDMARC 1.4.2 (SPF2, FailureReports)
+
+## Voraussetzungen
+
+Zu den Voraussetzungen für dieses HowTo siehe bitte: [Hosting System](/howtos/freebsd/hosting_system/)
 
 ## Installation
 

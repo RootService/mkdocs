@@ -9,10 +9,6 @@ author_url: https://github.com/JoeUser78
 
 # Hosting System
 
-## Voraussetzungen
-
-Diese HowTos setzen ein wie in [Remote Installation](/howtos/freebsd/remote_install/) beschriebenes, installiertes und konfiguriertes FreeBSD Basissystem voraus.
-
 ## Einleitung
 
 Unser Hosting System wird am Ende folgende Dienste umfassen.
@@ -43,7 +39,9 @@ Folgende Punkte sind in allen folgenden HowTos zu beachten.
 - Die primäre IPv6 Adresse des Systems wird als `__IPV6ADDR__` dargestellt und ist selbsttändig zu ersetzen.
 - Postfix und Dovecot teilen sich sowohl den FQDN `mail.example.com` als auch das SSL-Zertifikat.
 
-## Vorbereitungen
+## Voraussetzungen
+
+Diese HowTos setzen ein wie in [Remote Installation](/howtos/freebsd/remote_install/) beschriebenes, installiertes und konfiguriertes FreeBSD Basissystem voraus.
 
 ???+ important
 

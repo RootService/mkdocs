@@ -9,10 +9,6 @@ author_url: https://github.com/JoeUser78
 
 # Remote Installation
 
-## Voraussetzungen
-
-Die Installation des FreeBSD BaseSystem setzt ein wie in [mfsBSD Image](/howtos/freebsd/mfsbsd_image/) beschriebenes, bereits fertig erstelltes mfsBSD Image voraus.
-
 ## Einleitung
 
 Unser BaseSystem wird am Ende folgende Dienste umfassen.
@@ -57,7 +53,7 @@ Folgende Punkte sind in allen folgenden HowTos zu beachten.
 - Die primäre IPv4 Adresse des Systems wird als `__IPV4ADDR__` dargestellt und ist selbsttändig zu ersetzen.
 - Die primäre IPv6 Adresse des Systems wird als `__IPV6ADDR__` dargestellt und ist selbsttändig zu ersetzen.
 
-## Vorbereitungen
+## Voraussetzungen
 
 Die Installation des FreeBSD BaseSystem setzt ein wie in [mfsBSD Image](/howtos/freebsd/mfsbsd_image/) beschriebenes, bereits fertig erstelltes mfsBSD Image voraus.
 

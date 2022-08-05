@@ -9,15 +9,15 @@ author_url: https://github.com/JoeUser78
 
 # CertBot
 
-## Voraussetzungen
-
-Zu den Voraussetzungen für dieses HowTo siehe bitte: [Hosting System](/howtos/freebsd/hosting_system/)
-
 ## Einleitung
 
 Unser Hosting System wird folgende Dienste umfassen.
 
 - CertBot 1.29.0 (LetsEncrypt ACME API 2.0)
+
+## Voraussetzungen
+
+Zu den Voraussetzungen für dieses HowTo siehe bitte: [Hosting System](/howtos/freebsd/hosting_system/)
 
 ## Installation
 

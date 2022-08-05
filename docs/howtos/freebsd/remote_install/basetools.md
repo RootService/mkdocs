@@ -13,10 +13,6 @@ contributors:
 
 # BaseTools
 
-## Voraussetzungen
-
-Zu den Voraussetzungen für dieses HowTo siehe bitte: [Remote Installation](/howtos/freebsd/remote_install/)
-
 ## Einleitung
 
 In diesem HowTo beschreibe ich step-by-step die Installation einiger Tools (Ports / Packages / Pakete) welche auf keinem [FreeBSD](https://www.freebsd.org/){: target="_blank" rel="noopener"} 64Bit BaseSystem auf einem dedizierten Server fehlen sollten.
@@ -33,6 +29,10 @@ Unsere BaseTools werden am Ende folgende Dienste umfassen.
 - w3m 0.5.3
 - GnuPG 2.3.3
 - SVN 1.14.2
+
+## Voraussetzungen
+
+Zu den Voraussetzungen für dieses HowTo siehe bitte: [Remote Installation](/howtos/freebsd/remote_install/)
 
 ## Einloggen und zu root werden
 

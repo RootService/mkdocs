@@ -9,15 +9,15 @@ author_url: https://github.com/JoeUser78
 
 # Unbound
 
-## Voraussetzungen
-
-Zu den Voraussetzungen für dieses HowTo siehe bitte: [Hosting System](/howtos/freebsd/hosting_system/)
-
 ## Einleitung
 
 Unser Hosting System wird folgende Dienste umfassen.
 
 - Unbound 1.16.1 (DNScrypt, DNS over TLS)
+
+## Voraussetzungen
+
+Zu den Voraussetzungen für dieses HowTo siehe bitte: [Hosting System](/howtos/freebsd/hosting_system/)
 
 ## Installation
 
