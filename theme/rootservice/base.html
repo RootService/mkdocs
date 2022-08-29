@@ -83,12 +83,12 @@
         <link rel="preload stylesheet" as="style" href="https://fonts.googleapis.com/css2?{{
           'family=' + text | replace(' ', '+') + ':opsz,wght@8..144,300;8..144,400;8..144,500;8..144,600;8..144,700&' +
           'family=' + code | replace(' ', '+') + ':ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&'
-        }}display=swap" crossorigin="anonymous" />
+        }}display=swap" media="print" onload="this.media='all'" crossorigin="anonymous" />
         <style>:root{--md-text-font:"{{ text }}";--md-code-font:"{{ code }}"}</style>
       {% endif %}
     {% endblock %}
     {% block styles %}
-    <link rel="preload stylesheet" as="style" href="{{ 'assets/stylesheets/main.476df7d4.min.css' | url }}" />
+    <link rel="preload stylesheet" as="style" href="{{ 'assets/stylesheets/main.69437709.min.css' | url }}" />
       {% if config.theme.palette %}
         {% set palette = config.theme.palette %}
         <link rel="preload stylesheet" as="style" href="{{ 'assets/stylesheets/palette.cbb835fc.min.css' | url }}" />
@@ -305,7 +305,7 @@
         "base": base_url,
         "features": features,
         "translations": {},
-        "search": "assets/javascripts/workers/search.b97dbffb.min.js" | url
+        "search": "assets/javascripts/workers/search.ecf98df9.min.js" | url
       } -%}
       {%- if config.extra.version -%}
         {%- set _ = app.update({ "version": config.extra.version }) -%}
@@ -334,7 +334,7 @@
       </script>
     {% endblock %}
     {% block scripts %}
-      <script defer="defer" src="{{ 'assets/javascripts/bundle.0bc13b87.min.js' | url }}"></script>
+      <script defer="defer" src="{{ 'assets/javascripts/bundle.9c69f0bc.min.js' | url }}"></script>
       {% for path in config["extra_javascript"] %}
         <script defer="defer" src="{{ path | url }}"></script>
       {% endfor %}
