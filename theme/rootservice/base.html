@@ -27,11 +27,9 @@
       {% else %}
         <meta name="robots" content="noarchive, max-snippet:-1, max-image-preview:standard" />
       {% endif %}
-        <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
-        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+        <link rel="dns-prefetch" href="https://fonts.rootservice.org" />
         <link rel="dns-prefetch" href="https://api.github.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin="anonymous" />
+        <link rel="preconnect" href="https://fonts.rootservice.org" crossorigin="anonymous" />
         <link rel="preconnect" href="https://api.github.com" crossorigin="anonymous" />
       {% if page.meta and page.meta.author %}
         <meta name="author" content="{{ page.meta.author }}" />
@@ -80,7 +78,7 @@
       {% if config.theme.font != false %}
         {% set text = config.theme.font.text | d("Roboto Flex", true) %}
         {% set code = config.theme.font.code | d("Roboto Mono", true) %}
-        <link rel="preload stylesheet" as="style" href="https://fonts.googleapis.com/css2?{{
+        <link rel="preload stylesheet" as="style" type="text/css" href="https://fonts.rootservice.org/css2?{{
           'family=' + text | replace(' ', '+') + ':opsz,wght@8..144,300;8..144,400;8..144,500;8..144,600;8..144,700&' +
           'family=' + code | replace(' ', '+') + ':ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&'
         }}display=swap" media="print" onload="this.media='all'" crossorigin="anonymous" />
