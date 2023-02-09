@@ -5,7 +5,7 @@
 {% import "partials/language.html" as lang with context %}
 <html lang="{{ lang.t('language') }}" class="no-js">
   <head>
-      <meta charset="utf-8" />
+      <meta charset="utf-8">
     {% block htmltitle %}
       {% if page.meta and page.meta.title %}
         <title>{{ page.meta.title }} - {{ config.site_name }}</title>
@@ -17,62 +17,68 @@
     {% endblock %}
     {% block site_meta %}
       {% if page.meta and page.meta.description %}
-        <meta name="description" content="{{ page.meta.description }}" />
+        <meta name="description" content="{{ page.meta.description }}">
       {% elif config.site_description %}
-        <meta name="description" content="{{ config.site_description }}" />
+        <meta name="description" content="{{ config.site_description }}">
       {% endif %}
-        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes">
       {% if page and page.meta and page.meta.robots %}
-        <meta name="robots" content="noarchive, max-snippet:-1, max-image-preview:standard, {{ page.meta.robots }}" />
+        <meta name="robots" content="noarchive, max-snippet:-1, max-image-preview:standard, {{ page.meta.robots }}">
       {% else %}
-        <meta name="robots" content="noarchive, max-snippet:-1, max-image-preview:standard" />
+        <meta name="robots" content="noarchive, max-snippet:-1, max-image-preview:standard">
       {% endif %}
-        <link rel="dns-prefetch" href="https://fonts.rootservice.org" />
-        <link rel="dns-prefetch" href="https://api.github.com" />
-        <link rel="preconnect" href="https://fonts.rootservice.org" crossorigin="anonymous" />
-        <link rel="preconnect" href="https://api.github.com" crossorigin="anonymous" />
+        <link rel="dns-prefetch" href="https://fonts.rootservice.org">
+        <link rel="dns-prefetch" href="https://api.github.com">
+        <link rel="preconnect" href="https://fonts.rootservice.org" crossorigin="anonymous">
+        <link rel="preconnect" href="https://api.github.com" crossorigin="anonymous">
       {% if page.meta and page.meta.author %}
-        <meta name="author" content="{{ page.meta.author }}" />
+        <meta name="author" content="{{ page.meta.author }}">
       {% elif config.site_author %}
-        <meta name="author" content="{{ config.site_author }}" />
+        <meta name="author" content="{{ config.site_author }}">
       {% endif %}
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:site" content="@rootservice" />
-        <meta property="og:type" content="website" />
-        <meta property="og:image" content="{{ config.site_url + 'assets/favicons/open-graph.png' }}" />
-        <meta property="og:image:width" content="800px" />
-        <meta property="og:image:height" content="800px" />
-        <meta property="og:image:type" content="image/png" />
-        <meta property="og:locale" content="de_DE" />
-        <meta property="og:site_name" content="{{ config.site_name }}" />
+        <meta name="twitter:card" content="summary">
+        <meta name="twitter:site" content="@rootservice">
+        <meta property="og:type" content="website">
+        <meta property="og:image" content="{{ config.site_url + 'assets/favicons/open-graph.png' }}">
+        <meta property="og:image:width" content="800px">
+        <meta property="og:image:height" content="800px">
+        <meta property="og:image:type" content="image/png">
+        <meta property="og:locale" content="de_DE">
+        <meta property="og:site_name" content="{{ config.site_name }}">
       {% if page.meta and page.meta.title %}
-        <meta property="og:title" content="{{ page.meta.title }}" />
+        <meta property="og:title" content="{{ page.meta.title }}">
       {% elif page.title and not page.is_homepage %}
-        <meta property="og:title" content="{{ page.title | striptags }}" />
+        <meta property="og:title" content="{{ page.title | striptags }}">
       {% else %}
-        <meta property="og:title" content="{{ config.site_name }}" />
+        <meta property="og:title" content="{{ config.site_name }}">
       {% endif %}
       {% if page.meta and page.meta.description %}
-        <meta property="og:description" content="{{ page.meta.description }}" />
+        <meta property="og:description" content="{{ page.meta.description }}">
       {% elif config.site_description %}
-        <meta property="og:description" content="{{ config.site_description }}" />
+        <meta property="og:description" content="{{ config.site_description }}">
       {% endif %}
       {% if page.canonical_url %}
-        <meta property="og:url" content="{{ page.canonical_url }}" />
-        <link rel="canonical" href="{{ page.canonical_url }}" />
+        <meta property="og:url" content="{{ page.canonical_url }}">
+        <link rel="canonical" href="{{ page.canonical_url }}">
       {% endif %}
-        <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicons/apple-touch-icon.png" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicons/favicon-32x32.png" />
-        <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicons/favicon-16x16.png" />
-        <link rel="icon" type="image/vnd.microsoft.icon" href="/assets/favicons/favicon.ico" />
-        <link rel="mask-icon" href="/assets/favicons/safari-pinned-tab.svg" color="#5bbad5" />
-        <link rel="manifest" type="application/json" href="/assets/favicons/manifest.json" />
-        <meta name="apple-mobile-web-app-title" content="RootService" />
-        <meta name="application-name" content="RootService" />
-        <meta name="msapplication-TileColor" content="#2b5797" />
-        <meta name="msapplication-TileImage" content="/assets/favicons/mstile-144x144.png" />
-        <meta name="msapplication-config" content="/assets/favicons/browserconfig.xml" />
-        <meta name="theme-color" content="#ffffff" />
+      {% if page.previous_page %}
+        <link rel="prev" href="{{ page.previous_page.url | url }}">
+      {% endif %}
+      {% if page.next_page %}
+        <link rel="next" href="{{ page.next_page.url | url }}">
+      {% endif %}
+        <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicons/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicons/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicons/favicon-16x16.png">
+        <link rel="icon" type="image/vnd.microsoft.icon" href="/assets/favicons/favicon.ico">
+        <link rel="mask-icon" href="/assets/favicons/safari-pinned-tab.svg" color="#5bbad5">
+        <link rel="manifest" type="application/json" href="/assets/favicons/manifest.json">
+        <meta name="apple-mobile-web-app-title" content="RootService">
+        <meta name="application-name" content="RootService">
+        <meta name="msapplication-TileColor" content="#2b5797">
+        <meta name="msapplication-TileImage" content="/assets/favicons/mstile-144x144.png">
+        <meta name="msapplication-config" content="/assets/favicons/browserconfig.xml">
+        <meta name="theme-color" content="#ffffff">
     {% endblock %}
     {% block fonts %}
       {% if config.theme.font != false %}
@@ -81,45 +87,43 @@
         <link rel="preload stylesheet" as="style" type="text/css" href="https://fonts.rootservice.org/css2?{{
           'family=' + text | replace(' ', '+') + ':opsz,wght@8..144,300;8..144,400;8..144,500;8..144,600;8..144,700&' +
           'family=' + code | replace(' ', '+') + ':ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&'
-        }}display=swap" media="print" onload="this.media='all'" crossorigin="anonymous" />
+        }}display=swap" media="print" onload="this.media='all'" crossorigin="anonymous">
         <style>:root{--md-text-font:"{{ text }}";--md-code-font:"{{ code }}"}</style>
       {% endif %}
     {% endblock %}
     {% block styles %}
-    <link rel="preload stylesheet" as="style" href="{{ 'assets/stylesheets/main.69437709.min.css' | url }}" />
+      <link rel="preload stylesheet" as="style" href="{{ 'assets/stylesheets/main.0d440cfe.min.css' | url }}">
       {% if config.theme.palette %}
         {% set palette = config.theme.palette %}
-        <link rel="preload stylesheet" as="style" href="{{ 'assets/stylesheets/palette.cbb835fc.min.css' | url }}" />
-        {% if palette.primary %}
-          {% import "partials/palette.html" as map %}
-          {% set primary = map.primary(
-            palette.primary | replace(" ", "-") | lower
-          ) %}
-          <meta name="theme-color" content="{{ primary }}" />
-        {% endif %}
+        <link rel="preload stylesheet" as="style" href="{{ 'assets/stylesheets/palette.2505c338.min.css' | url }}">
       {% endif %}
       {% include "partials/icons.html" %}
     {% endblock %}
-    {% for path in config["extra_css"] %}
-      <link rel="preload stylesheet" as="style" href="{{ path | url }}" />
+    {% for path in config.extra_css %}
+      <link rel="preload stylesheet" as="style" href="{{ path | url }}">
     {% endfor %}
     {% block libs %}{% endblock %}
-      {% include "partials/javascripts/base.html" %}
+    {% include "partials/javascripts/base.html" %}
     {% block analytics %}
       {% include "partials/integrations/analytics.html" %}
     {% endblock %}
+    {% if page.meta and page.meta.meta %}
+      {% for tag in page.meta.meta %}
+        <meta {% for key, value in tag.items() %} {{ key }}="{{value}}" {% endfor %}>
+      {% endfor %}
+    {% endif %}
     {% block extrahead %}{% endblock %}
   </head>
-  {% set direction = config.theme.direction or lang.t('direction') %}
+  {% set direction = config.theme.direction or lang.t("direction") %}
   {% if config.theme.palette %}
     {% set palette = config.theme.palette %}
     {% if not palette is mapping %}
       {% set palette = palette | first %}
     {% endif %}
-    {% set scheme  = palette.scheme  | replace(" ", "-") | lower %}
-    {% set primary = palette.primary | replace(" ", "-") | lower %}
-    {% set accent  = palette.accent  | replace(" ", "-") | lower %}
-    <body dir="{{ direction }}" data-md-color-scheme="{{ scheme }}" data-md-color-primary="{{ primary }}" data-md-color-accent="{{ accent }}">
+    {% set scheme  = palette.scheme  | d("default", true) %}
+    {% set primary = palette.primary | d("", true) %}
+    {% set accent  = palette.accent  | d("", true) %}
+    <body dir="{{ direction }}" data-md-color-scheme="{{ scheme | replace(' ', '-') }}" data-md-color-primary="{{ primary | replace(' ', '-') }}" data-md-color-accent="{{ accent | replace(' ', '-') }}">
   {% else %}
     <body dir="{{ direction }}">
   {% endif %}
@@ -127,7 +131,7 @@
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "Article",
+      "@type": "TechArticle",
       "@id": "{{ page.canonical_url }}",
       {% if page.meta.title %}
       "headline": "{{ page.meta.title }}",
@@ -187,16 +191,16 @@
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" for="__drawer"></label>
-    {% if page.toc | first is defined %}
-      <div data-md-component="skip">
+    <div data-md-component="skip">
+      {% if page.toc | first is defined %}
         {% set skip = page.toc | first %}
         <a href="{{ skip.url | url }}" class="md-skip">
-          {{ lang.t('skip.link.title') }}
+          {{ lang.t("action.skip") }}
         </a>
-      </div>
-    {% endif %}
-    {% if self.announce() %}
-      <div data-md-component="announce">
+      {% endif %}
+    </div>
+    <div data-md-component="announce">
+      {% if self.announce() %}
         <aside class="md-banner">
           <div class="md-banner__inner md-grid md-typeset">
             {% if "announce.dismiss" in features %}
@@ -210,8 +214,8 @@
             {% include "partials/javascripts/announce.html" %}
           {% endif %}
         </aside>
-      </div>
-    {% endif %}
+      {% endif %}
+    </div>
     {% if config.extra.version %}
       <div data-md-component="outdated" hidden>
         {% if self.outdated() %}
@@ -230,7 +234,7 @@
     <div class="md-container" data-md-component="container">
       {% block hero %}{% endblock %}
       {% block tabs %}
-        {% if not "navigation.tabs.sticky" in features %}
+        {% if "navigation.tabs.sticky" not in features %}
           {% if "navigation.tabs" in features %}
             {% include "partials/tabs.html" %}
           {% endif %}
@@ -251,7 +255,7 @@
                 </div>
               </div>
             {% endif %}
-            {% if not "toc.integrate" in features %}
+            {% if "toc.integrate" not in features %}
               {% if page.meta and page.meta.hide %}
                 {% set hidden = "hidden" if "toc" in page.meta.hide %}
               {% endif %}
@@ -264,19 +268,21 @@
               </div>
             {% endif %}
           {% endblock %}
-          <div class="md-content" data-md-component="content">
-            <article class="md-content__inner md-typeset">
-              {% block content %}
-                {% include "partials/content.html" %}
-              {% endblock %}
-            </article>
-            {% include "partials/javascripts/content.html" %}
-          </div>
+          {% block container %}
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                {% block content %}
+                  {% include "partials/content.html" %}
+                {% endblock %}
+              </article>
+            </div>
+          {% endblock %}
+          {% include "partials/javascripts/content.html" %}
         </div>
         {% if "navigation.top" in features %}
           <a href="#" class="md-top md-icon" data-md-component="top" hidden>
             {% include ".icons/material/arrow-up.svg" %}
-            {{ lang.t('top.title') }}
+            {{ lang.t("top") }}
           </a>
         {% endif %}
       </main>
@@ -303,19 +309,18 @@
         "base": base_url,
         "features": features,
         "translations": {},
-        "search": "assets/javascripts/workers/search.ecf98df9.min.js" | url
+        "search": "assets/javascripts/workers/search.db81ec45.min.js" | url
       } -%}
       {%- if config.extra.version -%}
         {%- set _ = app.update({ "version": config.extra.version }) -%}
+      {%- endif -%}
+      {%- if config.extra.tags -%}
+        {%- set _ = app.update({ "tags": config.extra.tags }) -%}
       {%- endif -%}
       {%- set translations = app.translations -%}
       {%- for key in [
         "clipboard.copy",
         "clipboard.copied",
-        "search.config.lang",
-        "search.config.pipeline",
-        "search.config.separator",
-        "search.placeholder",
         "search.result.placeholder",
         "search.result.none",
         "search.result.one",
@@ -323,7 +328,7 @@
         "search.result.more.one",
         "search.result.more.other",
         "search.result.term.missing",
-        "select.version.title"
+        "select.version"
       ] -%}
         {%- set _ = translations.update({ key: lang.t(key) }) -%}
       {%- endfor -%}
@@ -332,8 +337,8 @@
       </script>
     {% endblock %}
     {% block scripts %}
-      <script defer="defer" src="{{ 'assets/javascripts/bundle.9c69f0bc.min.js' | url }}"></script>
-      {% for path in config["extra_javascript"] %}
+      <script defer="defer" src="{{ 'assets/javascripts/bundle.6df46069.min.js' | url }}"></script>
+      {% for path in config.extra_javascript %}
         <script defer="defer" src="{{ path | url }}"></script>
       {% endfor %}
     {% endblock %}

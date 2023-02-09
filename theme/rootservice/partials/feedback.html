@@ -4,7 +4,7 @@
 {% if config.extra.analytics %}
   {% set feedback = config.extra.analytics.feedback %}
 {% endif %}
-{% if page and page.meta and page.meta.hide %}
+{% if page.meta and page.meta.hide %}
   {% if "feedback" in page.meta.hide %}
     {% set feedback = None %}
   {% endif %}
@@ -27,16 +27,12 @@
           {% for rating in feedback.ratings %}
             <div data-md-value="{{ rating.data }}" hidden>
               {% set url = "/" ~ page.url %}
-              {% if page and page.meta and page.meta.title %}
+              {% if page.meta and page.meta.title %}
                 {% set title = page.meta.title | urlencode %}
               {% else %}
                 {% set title = page.title | urlencode %}
               {% endif %}
-              {% if "{}" in rating.note %}
-                {{ rating.note.format(url, title) }}
-              {% else %}
-                {{ rating.note.format(url = url, title = title) }}
-              {% endif %}
+              {{ rating.note.format(url = url, title = title) }}
             </div>
           {% endfor %}
         </div>

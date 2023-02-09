@@ -2,10 +2,10 @@ site_name: RootService
 site_url: https://www.rootservice.org/
 site_description: Wir bieten Service, Support, HowTos und andere nützliche Informationen rund um die Administration von FreeBSD und Linux basierten Servern
 site_author: Markus Kohlmeyer
-copyright: Copyright © 2002-2022 RootService Team
+copyright: Copyright © 2002-2023 RootService Team
 repo_name: Documentation
 repo_url: https://github.com/RootService/mkdocs
-edit_uri: edit/main/docs/
+edit_uri: "blob/main/docs/"
 
 theme:
 #    name: material
@@ -43,18 +43,29 @@ theme:
         text: Roboto Flex
         code: Roboto Mono
     features:
+#        - announce.dismiss
+        - content.action.edit
+        - content.action.view
         - content.code.annotate
+        - content.code.copy
         - content.tabs.link
+        - content.tooltips
+#        - header.autohide
+#        - navigation.expand
+        - navigation.footer
+        - navigation.indexes
 #        - navigation.instant
-#        - navigation.tracking
+#        - navigation.prune
+        - navigation.sections
         - navigation.tabs
         - navigation.tabs.sticky
-        - navigation.indexes
-        - navigation.sections
         - navigation.top
+#        - navigation.tracking
         - search.highlight
+#        - search.share
         - search.suggest
         - toc.follow
+#        - toc.integrate
 
 extra_css:
 #    - assets/stylesheets/extra.css
@@ -78,14 +89,12 @@ extra:
 #          lang: en
 
 plugins:
-#    - social:
-#    - privacy:
-    - search:
-        lang:
-            - de
-#            - en
     - minify:
         minify_html: true
+#    - offline:
+#    - privacy:
+    - material/search:
+#    - social:
 
 markdown_extensions:
 # Python Markdown

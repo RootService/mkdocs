@@ -8,6 +8,8 @@ author_url: https://github.com/JoeUser78
 robots: noindex, nofollow
 hide:
     - docinfo
+search:
+    exclude: true
 ---
 
 # Datenschutzerklärung

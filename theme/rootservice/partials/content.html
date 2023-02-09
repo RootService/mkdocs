@@ -1,20 +1,12 @@
 {#-
   This file was automatically generated - do not edit
 -#}
-{% if page.edit_url %}
-  {% set edit = config.repo_url + "/edit" %}
-  {% set view = config.extra.view_url %}
-  <a href="{{ page.edit_url }}" title="{{ lang.t('edit.link.title') }}" class="md-content__button md-icon">
-    {% include ".icons/material/file-edit-outline.svg" %}
-  </a>
-  <a href="{{ page.edit_url | replace(edit, view) }}" title="View source of this page" class="md-content__button md-icon">
-    {% include ".icons/material/file-eye-outline.svg" %}
-  </a>
-{% endif %}
-{% if "tags" in config.plugins %}
+{% if "material/tags" in config.plugins %}
   {% include "partials/tags.html" %}
 {% endif %}
-{% if not "\x3ch1" in page.content %}
+{% include "partials/actions.html" %}
+{% set first = page.toc | first %}
+{% if first and first.level != 1 %}
   <h1>{{ page.title | d(config.site_name, true)}}</h1>
 {% endif %}
 {{ page.content }}
@@ -47,3 +39,4 @@
   {% include "partials/source-file.html" %}
 {% endif %}
 {% include "partials/feedback.html" %}
+{% include "partials/comments.html" %}
