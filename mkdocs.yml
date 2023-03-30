@@ -90,7 +90,7 @@ extra:
 
 plugins:
     - minify:
-        minify_html: true
+#        minify_html: true
 #    - offline:
 #    - privacy:
     - material/search:
