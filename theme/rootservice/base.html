@@ -40,38 +40,14 @@
       {% if config.extra.site_publisher %}
         <meta name="publisher" content="{{ config.extra.site_publisher }}">
       {% endif %}
-      {% if page.meta and page.meta.date %}
-        <meta name="date" content="{{ page.meta.date }}T12:00:00+02:00">
-      {% elif page.meta and page.meta.updated %}
+      {% if page.meta and page.meta.updated %}
         <meta name="date" content="{{ page.meta.updated }}T12:00:00+02:00">
+      {% elif page.meta and page.meta.date %}
+        <meta name="date" content="{{ page.meta.date }}T12:00:00+02:00">
       {% else %}
         <meta name="date" content="{{ build_date_utc.date() }}T12:00:00+02:00">
       {% endif %}
-        <meta name="twitter:card" content="summary">
-        <meta name="twitter:site" content="@rootservice">
-        <meta property="article:content_tier" content="free">
-        <meta property="article:opinion" content="false">
-        <meta property="og:type" content="website">
-        <meta property="og:image" content="{{ config.site_url + 'assets/favicons/open-graph.png' }}">
-        <meta property="og:image:width" content="800px">
-        <meta property="og:image:height" content="800px">
-        <meta property="og:image:type" content="image/png">
-        <meta property="og:locale" content="de_DE">
-        <meta property="og:site_name" content="{{ config.site_name }}">
-      {% if page.meta and page.meta.title %}
-        <meta property="og:title" content="{{ page.meta.title }}">
-      {% elif page.title and not page.is_homepage %}
-        <meta property="og:title" content="{{ page.title | striptags }}">
-      {% else %}
-        <meta property="og:title" content="{{ config.site_name }}">
-      {% endif %}
-      {% if page.meta and page.meta.description %}
-        <meta property="og:description" content="{{ page.meta.description }}">
-      {% elif config.site_description %}
-        <meta property="og:description" content="{{ config.site_description }}">
-      {% endif %}
       {% if page.canonical_url %}
-        <meta property="og:url" content="{{ page.canonical_url }}">
         <link rel="canonical" href="{{ page.canonical_url }}">
       {% endif %}
       {% if page.previous_page %}
@@ -126,6 +102,8 @@
     {% block analytics %}
       {% include "partials/integrations/analytics.html" %}
     {% endblock %}
+        <meta property="article:content_tier" content="free">
+        <meta property="article:opinion" content="false">
     {% if page.meta and page.meta.meta %}
       {% for tag in page.meta.meta %}
         <meta {% for key, value in tag.items() %} {{ key }}="{{value}}" {% endfor %}>

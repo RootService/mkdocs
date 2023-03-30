@@ -5,7 +5,7 @@ site_author: Markus Kohlmeyer
 copyright: Copyright © 2002-2023 RootService Team
 repo_name: Documentation
 repo_url: https://github.com/RootService/mkdocs
-edit_uri: "blob/main/docs/"
+edit_uri: blob/main/docs/
 
 theme:
 #    name: material
@@ -55,6 +55,7 @@ theme:
         - navigation.footer
         - navigation.indexes
 #        - navigation.instant
+#        - navigation.path
 #        - navigation.prune
         - navigation.sections
         - navigation.tabs
@@ -87,14 +88,26 @@ extra:
 #        - name: English
 #          link: /en/
 #          lang: en
+    consent:
+      title: Cookie consent
+      description: >- 
+        We use cookies to recognize your repeated visits and preferences, as well
+        as to measure the effectiveness of our documentation and whether users
+        find what they're searching for. With your consent, you're helping us to
+        make our documentation better.
+      actions:
+        - manage
+        - reject
+        - accept
 
 plugins:
+    - material/offline:
+#    - material/optimize:
+#    - material/privacy:
+    - material/search:
+    - material/social:
     - minify:
 #        minify_html: true
-#    - offline:
-#    - privacy:
-    - material/search:
-#    - social:
 
 markdown_extensions:
 # Python Markdown
@@ -111,7 +124,9 @@ markdown_extensions:
     - markdown.extensions.toc:
         permalink: true
         permalink_title: Anchor link to this section for reference
-        slugify: !!python/name:pymdownx.slugs.uslugify
+        slugify: !!python/object/apply:pymdownx.slugs.slugify
+          kwds:
+            case: lower
         toc_depth: 3
 # Python Markdown Extensions
 #    - pymdownx.arithmatex:
@@ -134,9 +149,8 @@ markdown_extensions:
         linenums: true
         linenums_style: pymdownx-inline
 #        anchor_linenums: true
+        line_spans: __span
     - pymdownx.inlinehilite:
-    - pymdownx.superfences:
-        preserve_tabs: true
     - pymdownx.keys:
         separator: "\uff0b"
         strict: true
@@ -148,10 +162,18 @@ markdown_extensions:
 #        auto_append:
 #            - refs.md
         check_paths: true
+    - pymdownx.superfences:
+        preserve_tabs: true
     - pymdownx.tabbed:
         alternate_style: true
+        slugify: !!python/object/apply:pymdownx.slugs.slugify
+          kwds:
+            case: lower
     - pymdownx.tasklist:
         custom_checkbox: true
+#    - pymdownx.escapeall:
+#        hardbreak: true
+#        nbsp: true
     - pymdownx.magiclink:
 #        repo_url_shortener: true
 #        repo_url_shorthand: true
@@ -160,9 +182,6 @@ markdown_extensions:
 #        user: JoeUser78
 #        repo: RootService
 #        normalize_issue_symbols: true
-#    - pymdownx.escapeall:
-#        hardbreak: true
-#        nbsp: true
 #    - pymdownx.progressbar:
     - pymdownx.saneheaders:
     - pymdownx.striphtml:
