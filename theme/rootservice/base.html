@@ -124,7 +124,7 @@
   {% else %}
     <body dir="{{ direction }}">
   {% endif %}
-    {% if page.meta %}
+    {% if page.meta and page.meta.json %}
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",

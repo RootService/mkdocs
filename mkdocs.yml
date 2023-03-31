@@ -101,7 +101,7 @@ extra:
         - accept
 
 plugins:
-    - material/offline:
+#    - material/offline:
 #    - material/optimize:
 #    - material/privacy:
     - material/search:
@@ -116,8 +116,8 @@ markdown_extensions:
     - markdown.extensions.attr_list:
     - markdown.extensions.def_list:
     - markdown.extensions.footnotes:
-    - markdown.extensions.meta:
     - markdown.extensions.md_in_html:
+    - markdown.extensions.meta:
     - markdown.extensions.smarty:
         smart_quotes: false
     - markdown.extensions.tables:
@@ -135,9 +135,7 @@ markdown_extensions:
     - pymdownx.betterem:
         smart_enable: all
     - pymdownx.caret:
-    - pymdownx.mark:
-    - pymdownx.tilde:
-#    - pymdownx.critic:
+    - pymdownx.critic:
 #        mode: view
     - pymdownx.details:
     - pymdownx.emoji:
@@ -150,10 +148,12 @@ markdown_extensions:
         linenums_style: pymdownx-inline
 #        anchor_linenums: true
         line_spans: __span
+        pygments_lang_class: true
     - pymdownx.inlinehilite:
     - pymdownx.keys:
         separator: "\uff0b"
         strict: true
+    - pymdownx.mark:
 #    - pymdownx.smartsymbols:
     - pymdownx.snippets:
         base_path:
@@ -164,6 +164,10 @@ markdown_extensions:
         check_paths: true
     - pymdownx.superfences:
         preserve_tabs: true
+        custom_fences:
+          - name: mermaid
+            class: mermaid
+            format: !!python/name:pymdownx.superfences.fence_code_format
     - pymdownx.tabbed:
         alternate_style: true
         slugify: !!python/object/apply:pymdownx.slugs.slugify
@@ -171,6 +175,7 @@ markdown_extensions:
             case: lower
     - pymdownx.tasklist:
         custom_checkbox: true
+    - pymdownx.tilde:
 #    - pymdownx.escapeall:
 #        hardbreak: true
 #        nbsp: true
