@@ -2,7 +2,7 @@
 title: 'BasePorts'
 description: 'In diesem HowTo wird step-by-step die Installation einiger BasePorts für ein FreeBSD 64Bit BaseSystem auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2022-08-05'
+updated: '2023-04-03'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 contributors:
@@ -19,12 +19,12 @@ In diesem HowTo beschreibe ich step-by-step die Installation einiger Ports (Pack
 
 Unsere BasePorts werden am Ende folgende Dienste umfassen.
 
-- Perl 5.36.0
+- Perl 5.32.1
 - OpenSSL 1.1.1
-- LUA 5.3.6
-- TCL 8.6.12
-- Python 3.9.13
-- Ruby 3.0.4
+- LUA 5.4.4
+- TCL 8.6.13
+- Python 3.9.16
+- Ruby 3.1.3
 
 ## Voraussetzungen
 
@@ -66,7 +66,7 @@ Wir installieren `ports-mgmt/pkg` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/ports-mgmt_pkg
 cat > /var/db/ports/ports-mgmt_pkg/options << "EOF"
-_OPTIONS_READ=pkg-1.18.3
+_OPTIONS_READ=pkg-1.19.1
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
 "EOF"
@@ -101,7 +101,7 @@ Wir installieren `sysutils/devcpu-data` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/sysutils_devcpu-data
 cat > /var/db/ports/sysutils_devcpu-data/options << "EOF"
-_OPTIONS_READ=devcpu-data-20220510
+_OPTIONS_READ=devcpu-data-20230219
 _FILE_COMPLETE_OPTIONS_LIST= AMD INTEL
 OPTIONS_FILE_SET+=AMD
 OPTIONS_FILE_SET+=INTEL
@@ -117,17 +117,17 @@ sed -e 's/^#\(cpu_microcode_\)/\1/g' -i '' /boot/loader.conf
 sysrc microcode_update_enable=YES
 ```
 
-Wir installieren `lang/perl5.36` und dessen Abhängigkeiten.
+Wir installieren `lang/perl5.32` und dessen Abhängigkeiten.
 
 ``` bash
 cat >> /etc/make.conf << "EOF"
-DEFAULT_VERSIONS+=perl5=5.36
+#DEFAULT_VERSIONS+=perl5=5.32
 "EOF"
 
 
-mkdir -p /var/db/ports/lang_perl5.36
-cat > /var/db/ports/lang_perl5.36/options << "EOF"
-_OPTIONS_READ=perl5-5.36.0
+mkdir -p /var/db/ports/lang_perl5.32
+cat > /var/db/ports/lang_perl5.32/options << "EOF"
+_OPTIONS_READ=perl5-5.32.1
 _FILE_COMPLETE_OPTIONS_LIST=DEBUG DOT_INC DTRACE GDBM MULTIPLICITY PERL_64BITINT PERL_MALLOC SITECUSTOMIZE THREADS
 OPTIONS_FILE_UNSET+=DEBUG
 OPTIONS_FILE_UNSET+=DOT_INC
@@ -141,7 +141,7 @@ OPTIONS_FILE_SET+=THREADS
 "EOF"
 
 
-cd /usr/ports/lang/perl5.36
+cd /usr/ports/lang/perl5.32
 make all install clean-depends clean
 ```
 
@@ -155,10 +155,11 @@ DEFAULT_VERSIONS+=ssl=openssl
 
 mkdir -p /var/db/ports/security_openssl
 cat > /var/db/ports/security_openssl/options << "EOF"
-_OPTIONS_READ=openssl-1.1.1
-_FILE_COMPLETE_OPTIONS_LIST=ASYNC CT MAN3 RFC3779 SHARED ZLIB ARIA DES GOST IDEA SM4 RC2 RC4 RC5 WEAK-SSL-CIPHERS MD2 MD4 MDC2 RMD160 SM2 SM3 ASM SSE2 THREADS EC NEXTPROTONEG SCTP SSL3 TLS1 TLS1_1 TLS1_2
+_OPTIONS_READ=openssl-1.1.1t
+_FILE_COMPLETE_OPTIONS_LIST=ASYNC CT KTLS MAN3 RFC3779 SHARED ZLIB ARIA DES GOST IDEA SM4 RC2 RC4 RC5 WEAK-SSL-CIPHERS MD2 MD4 MDC2 RMD160 SM2 SM3 ASM SSE2 THREADS EC NEXTPROTONEG SCTP SSL3 TLS1 TLS1_1 TLS1_2
 OPTIONS_FILE_SET+=ASYNC
 OPTIONS_FILE_SET+=CT
+OPTIONS_FILE_SET+=KTLS
 OPTIONS_FILE_SET+=MAN3
 OPTIONS_FILE_UNSET+=RFC3779
 OPTIONS_FILE_SET+=SHARED
@@ -200,7 +201,7 @@ Wir installieren `security/ca_root_nss` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/security_ca_root_nss
 cat > /var/db/ports/security_ca_root_nss/options << "EOF"
-_OPTIONS_READ=ca_root_nss-3.78
+_OPTIONS_READ=ca_root_nss-3.89
 _FILE_COMPLETE_OPTIONS_LIST=ETCSYMLINK
 OPTIONS_FILE_SET+=ETCSYMLINK
 "EOF"
@@ -215,7 +216,7 @@ Wir installieren `devel/pcre2` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/devel_pkgconf
 cat > /var/db/ports/devel_pkgconf/options << "EOF"
-_OPTIONS_READ=pkgconf-1.8.0
+_OPTIONS_READ=pkgconf-1.8.1
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
 "EOF"
@@ -246,14 +247,14 @@ OPTIONS_FILE_SET+=NLS
 
 mkdir -p /var/db/ports/misc_help2man
 cat > /var/db/ports/misc_help2man/options << "EOF"
-_OPTIONS_READ=help2man-1.49.2
+_OPTIONS_READ=help2man-1.49.3
 _FILE_COMPLETE_OPTIONS_LIST=NLS
 OPTIONS_FILE_SET+=NLS
 "EOF"
 
 mkdir -p /var/db/ports/devel_gettext-tools
 cat > /var/db/ports/devel_gettext-tools/options << "EOF"
-_OPTIONS_READ=gettext-tools-0.21
+_OPTIONS_READ=gettext-tools-0.21.1
 _FILE_COMPLETE_OPTIONS_LIST=DOCS EXAMPLES THREADS
 OPTIONS_FILE_SET+=DOCS
 OPTIONS_FILE_SET+=EXAMPLES
@@ -262,14 +263,14 @@ OPTIONS_FILE_SET+=THREADS
 
 mkdir -p /var/db/ports/devel_libtextstyle
 cat > /var/db/ports/devel_libtextstyle/options << "EOF"
-_OPTIONS_READ=libtextstyle-0.21
+_OPTIONS_READ=libtextstyle-0.21.1
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
 "EOF"
 
 mkdir -p /var/db/ports/devel_gettext-runtime
 cat > /var/db/ports/devel_gettext-runtime/options << "EOF"
-_OPTIONS_READ=gettext-runtime-0.21
+_OPTIONS_READ=gettext-runtime-0.21.1
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
 "EOF"
@@ -283,14 +284,14 @@ OPTIONS_FILE_SET+=NLS
 
 mkdir -p /var/db/ports/devel_p5-Locale-libintl
 cat > /var/db/ports/devel_p5-Locale-libintl/options << "EOF"
-_OPTIONS_READ=p5-Locale-libintl-1.32
+_OPTIONS_READ=p5-Locale-libintl-1.33
 _FILE_COMPLETE_OPTIONS_LIST=NLS
 OPTIONS_FILE_SET+=NLS
 "EOF"
 
 mkdir -p /var/db/ports/converters_libiconv
 cat > /var/db/ports/converters_libiconv/options << "EOF"
-_OPTIONS_READ=libiconv-1.16
+_OPTIONS_READ=libiconv-1.17
 _FILE_COMPLETE_OPTIONS_LIST=DOCS ENCODINGS
 OPTIONS_FILE_SET+=DOCS
 OPTIONS_FILE_SET+=ENCODINGS
@@ -305,7 +306,7 @@ OPTIONS_FILE_SET+=DOCS
 
 mkdir -p /var/db/ports/devel_pcre2
 cat > /var/db/ports/devel_pcre2/options << "EOF"
-_OPTIONS_READ=pcre2-10.40
+_OPTIONS_READ=pcre2-10.42
 _FILE_COMPLETE_OPTIONS_LIST=DOCS LIBBZ2 LIBZ LIBEDIT READLINE
 OPTIONS_FILE_SET+=DOCS
 OPTIONS_FILE_SET+=LIBBZ2
@@ -319,17 +320,17 @@ cd /usr/ports/devel/pcre2
 make all install clean-depends clean
 ```
 
-Wir installieren `lang/lua53` und dessen Abhängigkeiten.
+Wir installieren `lang/lua54` und dessen Abhängigkeiten.
 
 ``` bash
 cat >> /etc/make.conf << "EOF"
-DEFAULT_VERSIONS+=lua=5.3
+#DEFAULT_VERSIONS+=lua=5.4
 "EOF"
 
 
-mkdir -p /var/db/ports/lang_lua53
-cat > /var/db/ports/lang_lua53/options << "EOF"
-_OPTIONS_READ=lua53-5.3.6
+mkdir -p /var/db/ports/lang_lua54
+cat > /var/db/ports/lang_lua54/options << "EOF"
+_OPTIONS_READ=lua54-5.4.4
 _FILE_COMPLETE_OPTIONS_LIST= EDITNONE LIBEDIT_DL LIBEDIT READLINE DOCS ASSERT APICHECK
 OPTIONS_FILE_UNSET+=EDITNONE
 OPTIONS_FILE_SET+=LIBEDIT_DL
@@ -341,7 +342,7 @@ OPTIONS_FILE_UNSET+=APICHECK
 "EOF"
 
 
-cd /usr/ports/lang/lua53
+cd /usr/ports/lang/lua54
 make all install clean-depends clean
 ```
 
@@ -349,13 +350,13 @@ Wir installieren `lang/tcl86` und dessen Abhängigkeiten.
 
 ``` bash
 cat >> /etc/make.conf << "EOF"
-DEFAULT_VERSIONS+=tcltk=8.6
+#DEFAULT_VERSIONS+=tcltk=8.6
 "EOF"
 
 
 mkdir -p /var/db/ports/lang_tcl86
 cat > /var/db/ports/lang_tcl86/options << "EOF"
-_OPTIONS_READ=tcl86-8.6.12
+_OPTIONS_READ=tcl86-8.6.13
 _FILE_COMPLETE_OPTIONS_LIST=DEBUG DTRACE TCLMAN THREADS TZDATA
 OPTIONS_FILE_UNSET+=DEBUG
 OPTIONS_FILE_UNSET+=DTRACE
@@ -373,8 +374,8 @@ Wir installieren `lang/python39` und dessen Abhängigkeiten.
 
 ``` bash
 cat >> /etc/make.conf << "EOF"
-DEFAULT_VERSIONS+=python=3.9
-DEFAULT_VERSIONS+=python3=3.9
+#DEFAULT_VERSIONS+=python=3.9
+#DEFAULT_VERSIONS+=python3=3.9
 "EOF"
 
 
@@ -387,7 +388,7 @@ OPTIONS_FILE_SET+=DOCS
 
 mkdir -p /var/db/ports/lang_python39
 cat > /var/db/ports/lang_python39/options << "EOF"
-_OPTIONS_READ=python39-3.9.13
+_OPTIONS_READ=python39-3.9.16
 _FILE_COMPLETE_OPTIONS_LIST=DEBUG IPV6 LIBMPDEC LTO NLS PYMALLOC FNV SIPHASH
 OPTIONS_FILE_UNSET+=DEBUG
 OPTIONS_FILE_SET+=IPV6
@@ -407,11 +408,11 @@ cd /usr/ports/lang/python
 make all install clean-depends clean
 ```
 
-Wir installieren `lang/ruby30` und dessen Abhängigkeiten.
+Wir installieren `lang/ruby31` und dessen Abhängigkeiten.
 
 ``` bash
 cat >> /etc/make.conf << "EOF"
-DEFAULT_VERSIONS+=ruby=3.0
+#DEFAULT_VERSIONS+=ruby=3.1
 "EOF"
 
 
@@ -422,9 +423,9 @@ _FILE_COMPLETE_OPTIONS_LIST=CPU_OPTS
 OPTIONS_FILE_UNSET+=CPU_OPTS
 "EOF"
 
-mkdir -p /var/db/ports/lang_ruby30
-cat > /var/db/ports/lang_ruby30/options << "EOF"
-_OPTIONS_READ=ruby-3.0.4
+mkdir -p /var/db/ports/lang_ruby31
+cat > /var/db/ports/lang_ruby31/options << "EOF"
+_OPTIONS_READ=ruby-3.1.3
 _FILE_COMPLETE_OPTIONS_LIST=CAPIDOCS DEBUG DOCS EXAMPLES GMP RDOC LIBEDIT READLINE
 OPTIONS_FILE_UNSET+=CAPIDOCS
 OPTIONS_FILE_UNSET+=DEBUG
@@ -437,7 +438,7 @@ OPTIONS_FILE_UNSET+=READLINE
 "EOF"
 
 
-cd /usr/ports/lang/ruby30
+cd /usr/ports/lang/ruby31
 make all install clean-depends clean
 ```
 

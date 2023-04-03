@@ -2,7 +2,7 @@
 title: 'Postfix'
 description: 'In diesem HowTo wird step-by-step die Installation des Postfix Mailservers für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2022-08-05'
+updated: '2023-04-03'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 contributors:
@@ -15,8 +15,8 @@ contributors:
 
 Unser Hosting System wird um folgende Dienste erweitert.
 
-- Postfix 3.7.2 (Dovecot-SASL, postscreen)
-- Python-SPF-Engine 2.9.3 (SPF2)
+- Postfix 3.7.4 (Dovecot-SASL, postscreen)
+- Python-SPF-Engine 3.0.3 (SPF2)
 
 ## Voraussetzungen
 
@@ -29,7 +29,7 @@ Wir installieren `mail/postfix` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/mail_postfix
 cat > /var/db/ports/mail_postfix/options << "EOF"
-_OPTIONS_READ=postfix-3.7.2
+_OPTIONS_READ=postfix-3.7.4
 _FILE_COMPLETE_OPTIONS_LIST=BDB BLACKLISTD CDB DOCS EAI INST_BASE LDAP LMDB MYSQL NIS PCRE2 PGSQL SASL SQLITE TEST TLS SASLKMIT SASLKRB5
 OPTIONS_FILE_UNSET+=BDB
 OPTIONS_FILE_UNSET+=BLACKLISTD
@@ -44,7 +44,7 @@ OPTIONS_FILE_UNSET+=NIS
 OPTIONS_FILE_SET+=PCRE2
 OPTIONS_FILE_UNSET+=PGSQL
 OPTIONS_FILE_UNSET+=SASL
-OPTIONS_FILE_UNSET+=SQLITE
+OPTIONS_FILE_SET+=SQLITE
 OPTIONS_FILE_UNSET+=TEST
 OPTIONS_FILE_SET+=TLS
 OPTIONS_FILE_UNSET+=SASLKMIT
@@ -83,9 +83,11 @@ enable_long_queue_ids = yes
 home_mailbox = .maildir/
 inet_interfaces = all
 inet_protocols = all
+internal_mail_filter_classes = bounce
 local_header_rewrite_clients = permit_mynetworks permit_sasl_authenticated
 mail_spool_directory = /data/vmail
 mailbox_size_limit = 0
+mailbox_transport = lmtp:unix:private/dovecot-lmtp
 masquerade_domains = $mydomain
 masquerade_exceptions = root mailer-daemon
 message_size_limit = 0
@@ -95,10 +97,11 @@ mydomain = example.com
 myhostname = mail.$mydomain
 mynetworks_style = host
 myorigin = $mydomain
-non_smtpd_milters = $smtpd_milters
+non_smtpd_milters =
+  inet:127.0.0.1:8891
 notify_classes = data protocol resource software
 openssl_path = /usr/local/bin/openssl
-policyd-spf_time_limit = 3600
+#policyd-spf_time_limit = 3600
 postscreen_access_list =
   permit_mynetworks
   cidr:${config_directory}/postscreen_whitelist.cidr
@@ -149,10 +152,8 @@ remote_header_rewrite_domain = domain.invalid
 show_user_unknown_table_name = no
 smtp_dns_support_level = enabled
 smtp_tls_CAfile = /usr/local/share/certs/ca-root-nss.crt
-smtp_tls_ciphers = medium
 smtp_tls_connection_reuse = yes
 smtp_tls_loglevel = 1
-smtp_tls_mandatory_ciphers = medium
 smtp_tls_mandatory_protocols = >=TLSv1.2
 smtp_tls_note_starttls_offer = yes
 smtp_tls_protocols = >=TLSv1.2
@@ -177,14 +178,16 @@ smtpd_helo_restrictions =
   reject_invalid_helo_hostname
   reject_non_fqdn_helo_hostname
   permit
-smtpd_milters = inet:127.0.0.1:8891 inet:127.0.0.1:8893
+smtpd_milters =
+  inet:127.0.0.1:8891
+  inet:127.0.0.1:8892
+  inet:127.0.0.1:8893
 smtpd_recipient_restrictions =
   permit_mynetworks
   permit_sasl_authenticated
   reject_non_fqdn_recipient
   reject_unknown_recipient_domain
   check_recipient_access pcre:${config_directory}/recipient_checks.pcre
-  check_policy_service unix:private/policyd-spf
   permit
 smtpd_relay_restrictions =
   permit_mynetworks
@@ -203,9 +206,7 @@ smtpd_tls_auth_only = yes
 smtpd_tls_chain_files =
   /usr/local/etc/letsencrypt/live/mail.example.com/privkey.pem
   /usr/local/etc/letsencrypt/live/mail.example.com/fullchain.pem
-smtpd_tls_ciphers = medium
 smtpd_tls_loglevel = 1
-smtpd_tls_mandatory_ciphers = medium
 smtpd_tls_mandatory_protocols = >=TLSv1.2
 smtpd_tls_protocols = >=TLSv1.2
 smtpd_tls_received_header = yes
@@ -213,13 +214,11 @@ smtpd_tls_security_level = may
 smtpd_tls_session_cache_database = lmdb:${data_directory}/smtpd_scache
 strict_rfc821_envelopes = yes
 swap_bangpath = no
-tls_daemon_random_bytes = 64
 tls_eecdh_auto_curves = X448 X25519 secp384r1 prime256v1 secp521r1
-tls_high_cipherlist = TLSv1.2 +CHACHA20 +AES +SHA !DH !AESCCM !ARIA !CAMELLIA !IDEA !PSK !RSA !SHA1 !SHA256 !SHA384 !kDHd !kDHr !kECDH !aDSS !aNULL
-tls_medium_cipherlist = TLSv1.2 +CHACHA20 +AES +SHA !DH !AESCCM !ARIA !CAMELLIA !IDEA !PSK !RSA !SHA1 !kDHd !kDHr !kECDH !aDSS !aNULL
+tls_high_cipherlist = CHACHA20 AESGCM !SSLv3 !TLSv1 !DSS !RSA !PSK !aNULL @STRENGTH
+tls_medium_cipherlist = CHACHA20 AESGCM !SSLv3 !TLSv1 !DSS !RSA !PSK !aNULL @STRENGTH
 tls_preempt_cipherlist = yes
-tls_random_bytes = 64
-tls_ssl_options = NO_COMPRESSION
+tls_ssl_options = NO_COMPRESSION NO_RENEGOTIATION NO_SESSION_RESUMPTION_ON_RENEGOTIATION PRIORITIZE_CHACHA
 virtual_alias_domains = lmdb:${config_directory}/virtual_alias_domains
 virtual_alias_maps = lmdb:${config_directory}/virtual_alias_maps
 virtual_gid_maps = static:5000
@@ -228,7 +227,7 @@ virtual_mailbox_domains = lmdb:${config_directory}/virtual_mailbox_domains
 virtual_mailbox_limit = 0
 virtual_mailbox_maps = lmdb:${config_directory}/virtual_mailbox_maps
 virtual_minimum_uid = 5000
-virtual_transport = dovecot
+virtual_transport = lmtp:unix:private/dovecot-lmtp
 virtual_uid_maps = static:5000
 "EOF"
 ```
@@ -272,6 +271,7 @@ submission inet n       -       n       -       -       smtpd
 #  -o smtpd_relay_restrictions=
 #  -o smtpd_recipient_restrictions=permit_sasl_authenticated,reject
   -o milter_macro_daemon_name=ORIGINATING
+  -o smtpd_milters=$non_smtpd_milters
 # Choose one: enable submissions for loopback clients only, or for any client.
 #127.0.0.1:submissions inet n  -       n       -       -       smtpd
 submissions     inet  n       -       n       -       -       smtpd
@@ -289,6 +289,7 @@ submissions     inet  n       -       n       -       -       smtpd
 #  -o smtpd_relay_restrictions=
 #  -o smtpd_recipient_restrictions=permit_sasl_authenticated,reject
   -o milter_macro_daemon_name=ORIGINATING
+  -o smtpd_milters=$non_smtpd_milters
 #628       inet  n       -       n       -       -       qmqpd
 pickup    unix  n       -       n       60      1       pickup
 cleanup   unix  n       -       n       -       0       cleanup
@@ -387,8 +388,6 @@ postlog   unix-dgram n  -       n       -       1       postlogd
 dovecot   unix  -       n       n       -       -       pipe
   flags=DRXhu user=vmail:vmail argv=/usr/local/libexec/dovecot/dovecot-lda
   -f ${sender} -a ${recipient} -d ${user}@${nexthop}
-policyd-spf  unix  -    n       n       -       0       spawn
-  user=nobody argv=/usr/local/bin/policyd-spf
 "EOF"
 ```
 
@@ -481,7 +480,7 @@ OPTIONS_FILE_SET+=DOCS
 
 mkdir -p /var/db/ports/dns_py-dnspython
 cat > /var/db/ports/dns_py-dnspython/options << "EOF"
-_OPTIONS_READ=py39-dnspython-2.2.1
+_OPTIONS_READ=py39-dnspython-2.3.0
 _FILE_COMPLETE_OPTIONS_LIST=CURIO DNSSEC DOH EXAMPLES IDNA TRIO
 OPTIONS_FILE_UNSET+=CURIO
 OPTIONS_FILE_SET+=DNSSEC
@@ -493,7 +492,7 @@ OPTIONS_FILE_UNSET+=TRIO
 
 mkdir -p /var/db/ports/devel_py-wheel
 cat > /var/db/ports/devel_py-wheel/options << "EOF"
-_OPTIONS_READ=py39-wheel-0.36.2
+_OPTIONS_READ=py39-wheel-0.38.4
 _FILE_COMPLETE_OPTIONS_LIST=PIP SIGNATURE
 OPTIONS_FILE_UNSET+=PIP
 OPTIONS_FILE_UNSET+=SIGNATURE
@@ -501,32 +500,32 @@ OPTIONS_FILE_UNSET+=SIGNATURE
 
 mkdir -p /var/db/ports/www_py-httpx
 cat > /var/db/ports/www_py-httpx/options << "EOF"
-_OPTIONS_READ=py39-httpx-0.23.0
+_OPTIONS_READ=py39-httpx-0.23.3
 _FILE_COMPLETE_OPTIONS_LIST=BROTLI CLI HTTP2 SOCKS
 OPTIONS_FILE_SET+=BROTLI
-OPTIONS_FILE_SET+=CLI
+OPTIONS_FILE_UNSET+=CLI
 OPTIONS_FILE_SET+=HTTP2
-OPTIONS_FILE_UNSET+=SOCKS
+OPTIONS_FILE_SET+=SOCKS
 "EOF"
 
 mkdir -p /var/db/ports/www_py-httpcore
 cat > /var/db/ports/www_py-httpcore/options << "EOF"
-_OPTIONS_READ=py39-httpcore-0.15.0
+_OPTIONS_READ=py39-httpcore-0.16.3
 _FILE_COMPLETE_OPTIONS_LIST=HTTP2 SOCKS
 OPTIONS_FILE_SET+=HTTP2
-OPTIONS_FILE_UNSET+=SOCKS
+OPTIONS_FILE_SET+=SOCKS
 "EOF"
 
 mkdir -p /var/db/ports/devel_py-anyio
 cat > /var/db/ports/devel_py-anyio/options << "EOF"
-_OPTIONS_READ=py39-anyio-3.6.1
+_OPTIONS_READ=py39-anyio-3.6.2
 _FILE_COMPLETE_OPTIONS_LIST=TRIO
 OPTIONS_FILE_UNSET+=TRIO
 "EOF"
 
 mkdir -p /var/db/ports/mail_py-spf-engine
 cat > /var/db/ports/mail_py-spf-engine/options << "EOF"
-_OPTIONS_READ=py39-spf-engine-2.9.3
+_OPTIONS_READ=py39-spf-engine-3.0.3
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
 "EOF"
@@ -542,11 +541,155 @@ sysrc pyspf_milter_enable=YES
 `py-spf-engine` konfigurieren.
 
 ``` bash
-sed -e 's|^\(TestOnly[[:space:]]=\)[[:space:]].*$|\1 0|g' \
-    -e 's|^\(HELO_reject[[:space:]]=\)[[:space:]].*$|\1 SPF_Not_Pass|g' \
-    -e 's|^\(Authserv_Id[[:space:]]=\)[[:space:]].*$|\1 mail.example.com|g' \
-    /usr/local/share/doc/spf-engine/policyd-spf.conf.commented \
-    > /usr/local/etc/python-policyd-spf/policyd-spf.conf
+cat > /usr/local/etc/pyspf-milter/pyspf-milter.conf << "EOF"
+#  Amount of debugging information logged.  0 logs no debugging messages
+#  5 includes all debug messages.
+debugLevel = 1
+
+#  If set to 0, no messages are rejected by SPF.  This allows you to see the
+#  potential impact of SPF checking in your mail logs without rejecting mail.
+TestOnly = 0
+
+#  Reject and deferred reason
+#Reason_Message = Message {rejectdefer} due to: {spf}. Please see {url}
+
+#  HELO check rejection policy. Options are:
+#  HELO_reject = SPF_Not_Pass (default) - Reject if result not Pass/None/Tempfail.
+#  HELO_reject = Softfail - Reject if result Softfail and Fail
+#  HELO_reject = Fail - Reject on HELO Fail
+#  HELO_reject = Null - Only reject HELO Fail for Null sender (SPF Classic)
+#  HELO_reject = False - Never reject/defer on HELO, append header only.
+#  HELO_reject = No_Check - Never check HELO.
+HELO_reject = SPF_Not_Pass
+
+#  HELO pass restriction policy.
+#  HELO_pass_restriction = helo_passed_spf - Apply the given restriction when
+#    the HELO checking result is Pass.  The given restriction must be an
+#    action as defined for a Postfix SMTP server access table access(5).
+#HELO_pass_restriction
+
+#  Mail From rejection policy.  Options are:
+#  Mail_From_reject = SPF_Not_Pass - Reject if result not Pass/None/Tempfail.
+#  Mail_From_reject = Softfail - Reject if result Softfail and Fail
+#  Mail_From_reject = Fail - Reject on Mail From Fail (default)
+#  Mail_From_reject = False - Never reject/defer on Mail From, append header only
+#  Mail_From_reject = No_Check - Never check Mail From/Return Path.
+Mail_From_reject = Fail
+
+#  Reject only from domains that send no mail. Options are:
+#  No_Mail = False - Normal SPF record processing (default)
+#  No_Mail = True - Only reject for "v=spf1 -all" records
+
+#  Mail From pass restriction policy.
+#  Mail_From_pass_restriction = mfrom_passed_spf - Apply the given
+#    restriction when the Mail From checking result is Pass.  The given
+#    restriction must be an action as defined for a Postfix SMTP server
+#    access table access(5).
+#Mail_From_pass_restriction
+
+#  Reject mail for Netural/Softfail results for these domains.
+#  Recevier policy option to reject mail from certain domains when SPF is not
+#  Pass/None even if their SPF record does not produce a Fail result.  This
+#  Option does not change the effect of PermError_reject or TempError_Defer
+#  Reject_Not_Pass_Domains = aol.com,hotmail.com
+
+#  Policy for rejecting due to SPF PermError.  Options are:
+#  PermError_reject = True
+#  PermError_reject = False
+PermError_reject = False
+
+#  Policy for deferring messages due to SPF TempError.  Options are:
+#  TempError_Defer = True
+#  TempError_Defer = False
+TempError_Defer = False
+
+#  Prospective SPF checking - Check to see if mail sent from the defined IP
+#  address would pass.
+#  Prospective = 192.168.0.4
+
+#  Do not check SPF for localhost addresses - add to skip addresses to
+#  skip SPF for internal networks if desired. Defaults are standard IPv4 and
+#  IPv6 localhost addresses.
+skip_addresses = 127.0.0.0/8,::ffff:127.0.0.0/104,::1
+
+#  Whitelist: CIDR Notation list of IP addresses not to check SPF for.
+#  Example (default is no whitelist):
+#  Whitelist = 192.168.0.0/31,192.168.1.12
+
+# SPF HELO WHITELIST: HELO/EHLO host names to skip SPF checks for.
+# Example (default is no HELO_Whitelist):
+# HELO_Whitelist = relay.example.com,sender.example.org
+
+#  Domain_Whitelist: List of domains whose sending IPs (defined by passing
+#  their SPF check should be whitelisted from SPF.
+#  Example (default is no domain whitelist):
+#  Domain_Whitelist = pobox.com,trustedforwarder.org
+
+# Domain_Whitelist_PTR: List of domains to whitelist against SPF checks base
+# on PTR match.
+# Example (default is no PTR whitelist)
+# Domain_Whitelist_PTR = yahoo.com
+
+# SPF ENHANCED STATUS CODES: Override Postfix enhanced status codes to use the
+# RFC 7372 codes.  Disable by setting this option to "No".
+# SPF_Enhanced_Status_Codes = No
+
+# Type of header to insert to document SPF result. Can be Received-SPF (SPF)
+# or Authentication Results (AR). It cannot be both.
+# Examples: (default is Received-SPF):
+# Header_Type = AR
+# Header_Type = SPF
+
+# In order to avoid disclosing BCC recipients in SPF header fields,
+# Hide_Receiver is set to Yes by default in the interest of maximizing
+# privacy.  This setting will replace the actual recipient with <UNKNOWN> both
+# in header fields and SMTP responses.  The latter may make it more difficult
+# for senders to troubleshoot issues with their SPF deployments.
+#Hide_Receiver = No
+Hide_Receiver = Yes
+
+# Every Authentication-Results header field has an authentication identifier
+# field ('Authserv_Id'). This is similar in syntax to a fully-qualified domain
+# name. See policyd-spf.conf.5 and RFC 7001 paragraph 2.4 for details.
+# Default is HOSTNAME (as provided by socket.gethostname).  Authserv-Id must
+# be provided if Header_Type 'AR' is used.
+# Authserv_Id = mx.example.com
+Authserv_Id = mail.example.com
+
+# RFC 7208 recommends an elapsed time limit for SPF checks of at least 20
+# seconds.  Lookup_Time allows the maximum time (seconds) to be adjusted.  20
+# seconds is the default.
+# Lookup_Time = 20
+
+# Some of the available whitelisting mechanisms, i.e. Domain_Whitelist,
+# Domain_Whitelist_PTR, and HELO_Whitelist, require specific non-SPF DNS
+# lookups to determine if a connection should be white listed from SPF checks.
+#  The maximum amount of time (in seconds) allocated for each of these checks,
+# when used (none are enabled by default), is controlled by the
+# Whitelist_Lookup_Time parameter.  It defaults to 10 seconds and is applied
+# independently to each whitelisting method in use.
+# Whitelist_Lookup_Time = 10
+
+# RFC 7208 adds a new processing limit called "void lookup limit" (See section
+# 4.6.4).  Default is 2, but it can be adjusted.
+# Void_Limit = 2
+
+# In some versions of postfix, for bizarre Sendmail compatibility reasons, the
+# first header field added by a policy server is not visible to milters.  To
+# make this easy to work around, set the Mock value to true and a fixed header
+# field will be inserted so the actual SPF check will be the second field and
+# visible to milters such as DMARC milter.
+# Mock = False
+
+
+# Milter specific options
+#Socket = local:/var/run/pyspf-milter/pyspf-milter.sock
+Socket = inet:8892@localhost
+PidFile = /var/run/pyspf-milter/pyspf-milter.pid
+UserID = pyspf-milter
+InternalHosts = 127.0.0.1
+#MacroListVerify =
+"EOF"
 ```
 
 Es muss noch ein DNS-Record angelegt werden, sofern er noch nicht existieren, oder entsprechend geändert werden, sofern er bereits existieren.

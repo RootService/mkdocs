@@ -2,7 +2,7 @@
 title: 'OpenDMARC'
 description: 'In diesem HowTo wird step-by-step die Installation von OpenDMARC für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2022-08-05'
+updated: '2023-04-03'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -28,7 +28,7 @@ mkdir -p /var/db/ports/databases_p5-DBI
 cat > /var/db/ports/databases_p5-DBI/options << "EOF"
 _OPTIONS_READ=p5-DBI-1.643
 _FILE_COMPLETE_OPTIONS_LIST=PROXY
-OPTIONS_FILE_UNSET+=PROXY
+OPTIONS_FILE_SET+=PROXY
 "EOF"
 
 mkdir -p /var/db/ports/databases_p5-DBD-mysql

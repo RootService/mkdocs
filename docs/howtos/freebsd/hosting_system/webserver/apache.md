@@ -2,7 +2,7 @@
 title: 'Apache'
 description: 'In diesem HowTo wird step-by-step die Installation des Apache Webservers für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2022-08-05'
+updated: '2023-04-03'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 contributors:
@@ -15,7 +15,7 @@ contributors:
 
 Unser Hosting System wird um folgende Dienste erweitert.
 
-- Apache 2.4.54 (MPM-Event, HTTP/2, mod_brotli)
+- Apache 2.4.56 (MPM-Event, HTTP/2, mod_brotli)
 
 ## Voraussetzungen
 
@@ -27,13 +27,13 @@ Wir installieren `www/apache24` und dessen Abhängigkeiten.
 
 ``` bash
 cat >> /etc/make.conf << "EOF"
-DEFAULT_VERSIONS+=apache=2.4
+#DEFAULT_VERSIONS+=apache=2.4
 "EOF"
 
 
 mkdir -p /var/db/ports/www_apache24
 cat > /var/db/ports/www_apache24/options << "EOF"
-_OPTIONS_READ=apache24-2.4.54
+_OPTIONS_READ=apache24-2.4.56
 _FILE_COMPLETE_OPTIONS_LIST=ACCESS_COMPAT ACTIONS ALIAS ALLOWMETHODS ASIS AUTHNZ_FCGI AUTHNZ_LDAP AUTHN_ANON AUTHN_CORE AUTHN_DBD AUTHN_DBM AUTHN_FILE AUTHN_SOCACHE AUTHZ_CORE AUTHZ_DBD AUTHZ_DBM AUTHZ_GROUPFILE AUTHZ_HOST AUTHZ_OWNER AUTHZ_USER AUTH_BASIC AUTH_DIGEST AUTH_FORM AUTOINDEX BROTLI BUFFER CACHE CACHE_DISK CACHE_SOCACHE CERN_META CGI CGID CHARSET_LITE DATA DAV DAV_FS DAV_LOCK DBD DEFLATE DIALUP DIR DOCS DUMPIO ENV EXPIRES EXT_FILTER FILE_CACHE FILTER HEADERS HEARTBEAT HEARTMONITOR HTTP2 IDENT IMAGEMAP INCLUDE INFO IPV4_MAPPED LBMETHOD_BYBUSYNESS LBMETHOD_BYREQUESTS LBMETHOD_BYTRAFFIC LBMETHOD_HEARTBEAT LDAP LOGIO LOG_DEBUG LOG_FORENSIC LUA LUAJIT MACRO MD MIME MIME_MAGIC NEGOTIATION PROXY RATELIMIT REFLECTOR REMOTEIP REQTIMEOUT REQUEST REWRITE SED SESSION SETENVIF SLOTMEM_PLAIN SLOTMEM_SHM SOCACHE_DBM SOCACHE_DC SOCACHE_MEMCACHE SOCACHE_REDIS SOCACHE_SHMCB SPELING SSL STATUS SUBSTITUTE SUEXEC SUEXEC_SYSLOG UNIQUE_ID USERDIR USERTRACK VERSION VHOST_ALIAS WATCHDOG XML2ENC MPM_PREFORK MPM_WORKER MPM_EVENT MPM_SHARED PROXY_AJP PROXY_BALANCER PROXY_CONNECT PROXY_EXPRESS PROXY_FCGI  PROXY_HTTP2 PROXY_FDPASS PROXY_FTP PROXY_HCHECK PROXY_HTML PROXY_HTTP  PROXY_SCGI PROXY_UWSGI PROXY_WSTUNNEL  SESSION_COOKIE SESSION_CRYPTO SESSION_DBD  BUCKETEER CASE_FILTER CASE_FILTER_IN ECHO EXAMPLE_HOOKS EXAMPLE_IPC  OPTIONAL_FN_EXPORT OPTIONAL_FN_IMPORT OPTIONAL_HOOK_EXPORT  OPTIONAL_HOOK_IMPORT
 OPTIONS_FILE_SET+=ACCESS_COMPAT
 OPTIONS_FILE_SET+=ACTIONS
@@ -67,14 +67,14 @@ OPTIONS_FILE_SET+=CACHE_SOCACHE
 OPTIONS_FILE_SET+=CERN_META
 OPTIONS_FILE_SET+=CGI
 OPTIONS_FILE_SET+=CGID
-OPTIONS_FILE_UNSET+=CHARSET_LITE
+OPTIONS_FILE_SET+=CHARSET_LITE
 OPTIONS_FILE_SET+=DATA
 OPTIONS_FILE_SET+=DAV
 OPTIONS_FILE_SET+=DAV_FS
 OPTIONS_FILE_SET+=DAV_LOCK
 OPTIONS_FILE_SET+=DBD
 OPTIONS_FILE_SET+=DEFLATE
-OPTIONS_FILE_UNSET+=DIALUP
+OPTIONS_FILE_SET+=DIALUP
 OPTIONS_FILE_SET+=DIR
 OPTIONS_FILE_SET+=DOCS
 OPTIONS_FILE_SET+=DUMPIO
@@ -124,7 +124,7 @@ OPTIONS_FILE_UNSET+=SOCACHE_DC
 OPTIONS_FILE_SET+=SOCACHE_MEMCACHE
 OPTIONS_FILE_UNSET+=SOCACHE_REDIS
 OPTIONS_FILE_SET+=SOCACHE_SHMCB
-OPTIONS_FILE_UNSET+=SPELING
+OPTIONS_FILE_SET+=SPELING
 OPTIONS_FILE_SET+=SSL
 OPTIONS_FILE_SET+=STATUS
 OPTIONS_FILE_SET+=SUBSTITUTE
@@ -247,7 +247,7 @@ LoadModule auth_digest_module libexec/apache24/mod_auth_digest.so
 LoadModule allowmethods_module libexec/apache24/mod_allowmethods.so
 #LoadModule file_cache_module libexec/apache24/mod_file_cache.so
 LoadModule cache_module libexec/apache24/mod_cache.so
-#LoadModule cache_disk_module libexec/apache24/mod_cache_disk.so
+LoadModule cache_disk_module libexec/apache24/mod_cache_disk.so
 LoadModule cache_socache_module libexec/apache24/mod_cache_socache.so
 LoadModule socache_shmcb_module libexec/apache24/mod_socache_shmcb.so
 LoadModule socache_dbm_module libexec/apache24/mod_socache_dbm.so
@@ -265,7 +265,7 @@ LoadModule reqtimeout_module libexec/apache24/mod_reqtimeout.so
 #LoadModule include_module libexec/apache24/mod_include.so
 LoadModule filter_module libexec/apache24/mod_filter.so
 #LoadModule reflector_module libexec/apache24/mod_reflector.so
-#LoadModule substitute_module libexec/apache24/mod_substitute.so
+LoadModule substitute_module libexec/apache24/mod_substitute.so
 #LoadModule sed_module libexec/apache24/mod_sed.so
 LoadModule deflate_module libexec/apache24/mod_deflate.so
 LoadModule xml2enc_module libexec/apache24/mod_xml2enc.so
@@ -376,8 +376,6 @@ HttpProtocolOptions Strict LenientMethods Require1.0
     H2Padding 2
     H2EarlyHints On
     H2PushPriority * After 16
-    H2PushPriority image/vnd.microsoft.icon Before
-    H2PushPriority application/manifest+json Before
     H2PushPriority text/javascript Interleaved
     H2PushPriority text/css Interleaved
 </IfModule>
@@ -478,6 +476,7 @@ FileETag None
     <IfModule negotiation_module>
         AddLanguage de             .de
         AddLanguage en             .en
+        DefaultLanguage en
         LanguagePriority en de
         ForceLanguagePriority Prefer Fallback
         AddCharset us-ascii.ascii  .us-ascii
@@ -607,8 +606,12 @@ FileETag None
                     onunload onsubmit onreset onselect onchange
 </IfModule>
 <IfModule cache_module>
-    CacheQuickHandler off
+    CacheQuickHandler Off
+    CacheStorePrivate On
+    CacheIgnoreNoLastMod On
+    CacheIgnoreCacheControl On
     CacheIgnoreURLSessionIdentifiers sid SID
+    CacheHeader On
     <IfModule cache_disk_module>
         CacheRoot "/data/www/cache/"
     </IfModule>
@@ -693,12 +696,11 @@ Include "etc/apache24/vhosts.conf"
             SSLSessionCache "nonenotnull"
         </IfModule>
     </IfModule>
-#    SSLSessionTickets Off
     SSLHonorCipherOrder On
     SSLStrictSNIVHostCheck On
     SSLProtocol -ALL +TLSv1.2 +TLSv1.3
     SSLOptions +StrictRequire +StdEnvVars
-    SSLCipherSuite "TLSv1.2 +CHACHA20 +AESGCM !DH !AESCCM !ARIA !CAMELLIA !IDEA !PSK !RSA !SHA1 !SHA256 !SHA384 !kDHd !kDHr !kECDH !aDSS !aNULL"
+    SSLCipherSuite "ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256"
     SSLCipherSuite TLSv1.3 "TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384:TLS_AES_128_GCM_SHA256"
     SSLOpenSSLConfCmd Curves "X448:X25519:secp384r1:prime256v1"
     SSLOCSPEnable On
@@ -723,7 +725,6 @@ Include "etc/apache24/vhosts.conf"
     <IfModule headers_module>
         Header set Public-Key-Pins "max-age=0; includeSubdomains"
         Header set Strict-Transport-Security "max-age=15768000; includeSubdomains; preload"
-        Header set Expect-CT "max-age=0"
         Header always edit* Set-Cookie "^(.*)(?i:\s*;\s*Secure)(.*)$" "$1$2"
         Header edit* Set-Cookie "^(.*)(?i:\s*;\s*Secure)(.*)$" "$1$2"
         Header always edit Set-Cookie "^(.*)$" "$1; Secure"
@@ -751,7 +752,7 @@ Include "etc/apache24/vhosts.conf"
 cat > /usr/local/etc/apache24/vhosts.conf << "EOF"
 <VirtualHost 127.0.0.1:80>
     ServerName localhost
-    ServerAdmin webmaster@rootservice.org
+    ServerAdmin webmaster@example.com
     CustomLog "/data/www/vhosts/_localhost_/logs/apache_access_log" combined
     ErrorLog "/data/www/vhosts/_localhost_/logs/apache_error_log"
     DocumentRoot "/data/www/vhosts/_localhost_/data"

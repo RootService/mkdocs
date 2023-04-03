@@ -2,7 +2,7 @@
 title: 'Dovecot'
 description: 'In diesem HowTo wird step-by-step die Installation des Dovecot Mailservers für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2022-08-05'
+updated: '2023-04-03'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 contributors:
@@ -15,7 +15,7 @@ contributors:
 
 Unser Hosting System wird um folgende Dienste erweitert.
 
-- Dovecot 2.3.19 (IMAP only, 1GB Quota)
+- Dovecot 2.3.20 (IMAP only, 1GB Quota)
 
 ## Voraussetzungen
 
@@ -42,13 +42,13 @@ OPTIONS_FILE_SET+=DOCS
 
 mkdir -p /var/db/ports/mail_dovecot
 cat > /var/db/ports/mail_dovecot/options << "EOF"
-_OPTIONS_READ=dovecot-2.3.19.1
+_OPTIONS_READ=dovecot-2.3.20
 _FILE_COMPLETE_OPTIONS_LIST=DOCS EXAMPLES LIBSODIUM LIBUNWIND LIBWRAP LUA LZ4 GSSAPI_NONE GSSAPI_BASE GSSAPI_HEIMDAL GSSAPI_MIT CDB LDAP MYSQL PGSQL SQLITE ICU LUCENE SOLR TEXTCAT
 OPTIONS_FILE_SET+=DOCS
 OPTIONS_FILE_SET+=EXAMPLES
 OPTIONS_FILE_SET+=LIBSODIUM
 OPTIONS_FILE_UNSET+=LIBUNWIND
-OPTIONS_FILE_UNSET+=LIBWRAP
+OPTIONS_FILE_SET+=LIBWRAP
 OPTIONS_FILE_UNSET+=LUA
 OPTIONS_FILE_SET+=LZ4
 OPTIONS_FILE_SET+=GSSAPI_NONE
@@ -59,7 +59,7 @@ OPTIONS_FILE_SET+=CDB
 OPTIONS_FILE_UNSET+=LDAP
 OPTIONS_FILE_UNSET+=MYSQL
 OPTIONS_FILE_UNSET+=PGSQL
-OPTIONS_FILE_UNSET+=SQLITE
+OPTIONS_FILE_SET+=SQLITE
 OPTIONS_FILE_SET+=ICU
 OPTIONS_FILE_UNSET+=LUCENE
 OPTIONS_FILE_UNSET+=SOLR
@@ -166,6 +166,13 @@ service imap-login {
   }
   process_min_avail = 2
 }
+service lmtp {
+  unix_listener /var/spool/postfix/private/dovecot-lmtp {
+    mode = 0600
+    user = postfix
+    group = postfix
+  }
+}
 service pop3-login {
   inet_listener pop3 {
     port = 0
@@ -189,7 +196,8 @@ service stats {
 }
 ssl = required
 ssl_cert = </usr/local/etc/letsencrypt/live/mail.example.com/fullchain.pem
-ssl_cipher_list = TLSv1.2 +CHACHA20 +AES +SHA !DH !AESCCM !ARIA !CAMELLIA !IDEA !PSK !RSA !SHA1 !SHA256 !SHA384 !kDHd !kDHr !kECDH !aDSS !aNULL
+ssl_cipher_list = "ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256"
+ssl_cipher_suites = "TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384:TLS_AES_128_GCM_SHA256"
 ssl_dh = </usr/local/etc/dovecot/dh.pem
 ssl_key = </usr/local/etc/letsencrypt/live/mail.example.com/privkey.pem
 ssl_min_protocol = TLSv1.2

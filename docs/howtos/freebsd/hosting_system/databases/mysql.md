@@ -2,7 +2,7 @@
 title: 'MySQL'
 description: 'In diesem HowTo wird step-by-step die Installation des MySQL Datenbanksystem für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2022-08-05'
+updated: '2023-04-03'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 contributors:
@@ -16,7 +16,7 @@ contributors:
 
 Unser Hosting System wird um folgende Dienste erweitert.
 
-- MySQL 8.0.30 (InnoDB, GTID)
+- MySQL 8.0.32 (InnoDB, GTID)
 
 ## Voraussetzungen
 
@@ -30,21 +30,21 @@ Wir installieren `databases/mysql80-client` und dessen Abhängigkeiten.
 
 ``` bash
 cat >> /etc/make.conf << "EOF"
-DEFAULT_VERSIONS+=mysql=8.0
+#DEFAULT_VERSIONS+=mysql=8.0
 "EOF"
 ```
 
 ``` bash
 mkdir -p /var/db/ports/security_libfido2
 cat > /var/db/ports/security_libfido2/options << "EOF"
-_OPTIONS_READ=libfido2-1.11.0
+_OPTIONS_READ=libfido2-1.13.0
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
 "EOF"
 
 mkdir -p /var/db/ports/comms_hidapi
 cat > /var/db/ports/comms_hidapi/options << "EOF"
-_OPTIONS_READ=hidapi-0.12.0
+_OPTIONS_READ=hidapi-0.13.1
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
 "EOF"
@@ -58,8 +58,8 @@ OPTIONS_FILE_SET+=DOCS
 
 mkdir -p /var/db/ports/databases_mysql80-client
 cat > /var/db/ports/databases_mysql80-client/options << "EOF"
-_OPTIONS_READ=mysql80-client-8.0.30
-_FILE_COMPLETE_OPTIONS_LIST=SASLCLIENT
+_OPTIONS_READ=mysql80-client-8.0.32
+_FILE_COMPLETE_OPTIONS_LIST= SASLCLIENT
 OPTIONS_FILE_UNSET+=SASLCLIENT
 "EOF"
 
@@ -73,7 +73,7 @@ Wir installieren `databases/mysql80-server` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/databases_mysql80-server
 cat > /var/db/ports/databases_mysql80-server/options << "EOF"
-_OPTIONS_READ=mysql80-server-8.0.30
+_OPTIONS_READ=mysql80-server-8.0.32
 _FILE_COMPLETE_OPTIONS_LIST= ARCHIVE BLACKHOLE EXAMPLE FEDERATED INNOBASE PARTITION PERFSCHEMA PERFSCHM
 OPTIONS_FILE_UNSET+=ARCHIVE
 OPTIONS_FILE_UNSET+=BLACKHOLE
@@ -82,7 +82,7 @@ OPTIONS_FILE_UNSET+=FEDERATED
 OPTIONS_FILE_UNSET+=INNOBASE
 OPTIONS_FILE_UNSET+=PARTITION
 OPTIONS_FILE_UNSET+=PERFSCHEMA
-OPTIONS_FILE_UNSET+=PERFSCHM
+OPTIONS_FILE_SET+=PERFSCHM
 "EOF"
 
 

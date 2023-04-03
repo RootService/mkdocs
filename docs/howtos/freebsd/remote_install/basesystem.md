@@ -2,7 +2,7 @@
 title: 'BaseSystem'
 description: 'In diesem HowTo wird step-by-step die Remote Installation des FreeBSD 64Bit BaseSystem auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2022-08-05'
+updated: '2023-04-03'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 contributors:
@@ -19,10 +19,10 @@ In diesem HowTo beschreibe ich step-by-step die Remote Installation des [FreeBSD
 
 Unser BaseSystem wird folgende Dienste umfassen.
 
-- FreeBSD 13.1-RELEASE 64Bit
+- FreeBSD 13.2-RELEASE 64Bit
 - OpenSSL 1.1.1
-- OpenSSH 8.8
-- Unbound 1.13.1
+- OpenSSH 9.3
+- Unbound 1.17.1
 
 ## Voraussetzungen
 
@@ -41,16 +41,16 @@ Um unser [mfsBSD Image](/howtos/freebsd/mfsbsd_image/) installieren zu können, 
 cd "${Env:USERPROFILE}\VirtualBox VMs\FreeBSD"
 
 curl -o systemrescuecd-x86-5.3.2.iso https://netcologne.dl.sourceforge.net/project/systemrescuecd/sysresccd-x86/5.3.2/systemrescuecd-x86-5.3.2.iso
-# curl -o systemrescue-9.03-amd64.iso https://netcologne.dl.sourceforge.net/project/systemrescuecd/sysresccd-x86/9.03/systemrescue-9.03-amd64.iso
+# curl -o systemrescue-10.00-amd64.iso https://netcologne.dl.sourceforge.net/project/systemrescuecd/sysresccd-x86/10.00/systemrescue-10.00-amd64.iso
 
-& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" storageattach "FreeBSD" --storagectl "AHCI Controller" --port 0 --device 0 --type dvddrive --medium "systemrescuecd-x86-5.3.2.iso"
-# & "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" storageattach "FreeBSD" --storagectl "AHCI Controller" --port 0 --device 0 --type dvddrive --medium "systemrescue-9.03-amd64.iso"
+& "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" storageattach "FreeBSD" --storagectl "AHCI Controller" --port 0 --device 0 --type dvddrive --medium "systemrescuecd-x86-5.3.2.iso"
+# & "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" storageattach "FreeBSD" --storagectl "AHCI Controller" --port 0 --device 0 --type dvddrive --medium "systemrescue-10.00-amd64.iso"
 ```
 
 Wir können das RescueSystem jetzt booten.
 
 ``` powershell
-& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" startvm "FreeBSD"
+& "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" startvm "FreeBSD"
 ```
 
 Im Bootmenü wählen wir die erste Option "Boot with default options" aus und wer mit dem amerikanischen Tastaturlayout nicht zurechtkommt, sollte während dem Booten die Keymap auf `de` umstellen.
@@ -76,7 +76,7 @@ Um unsere umfangreichen Vorbereitungen nun abzuschliessen, müssen wir nur noch 
 Als Erstes kopieren wir mittels PuTTYs SCP-Client (`pscp`) das mfsBSD Image in das RescueSystem.
 
 ``` powershell
-pscp -P 2222 "${Env:USERPROFILE}\VirtualBox VMs\mfsBSD\mfsbsd-13.1-RELEASE-amd64.img" root@127.0.0.1:/tmp/mfsbsd-13.1-RELEASE-amd64.img
+pscp -P 2222 "${Env:USERPROFILE}\VirtualBox VMs\mfsBSD\mfsbsd-13.2-RELEASE-amd64.img" root@127.0.0.1:/tmp/mfsbsd-13.2-RELEASE-amd64.img
 ```
 
 Jetzt können wir das mfsBSD Image mittels `dd` auf der ersten Festplatte (`/dev/nvme0n1`) unserer virtuellen Maschine installieren und uns anschliessend wieder aus dem RescueSystem ausloggen.
@@ -84,7 +84,7 @@ Jetzt können wir das mfsBSD Image mittels `dd` auf der ersten Festplatte (`/dev
 ``` bash
 dd if=/dev/zero of=/dev/nvme0n1 count=512 bs=1M
 
-dd if=/tmp/mfsbsd-13.1-RELEASE-amd64.img of=/dev/nvme0n1 bs=1M
+dd if=/tmp/mfsbsd-13.2-RELEASE-amd64.img of=/dev/nvme0n1 bs=1M
 
 exit
 ```
@@ -92,9 +92,9 @@ exit
 Abschliessend stoppen wir die virtuelle Maschine vorübergehend und entfernen die SystemRescueCD aus dem virtuellen DVD-Laufwerk.
 
 ``` powershell
-& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" controlvm "FreeBSD" poweroff
+& "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" controlvm "FreeBSD" poweroff
 
-& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" storageattach "FreeBSD" --storagectl "AHCI Controller" --port 0 --device 0 --type dvddrive --medium emptydrive
+& "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" storageattach "FreeBSD" --storagectl "AHCI Controller" --port 0 --device 0 --type dvddrive --medium emptydrive
 ```
 
 ## FreeBSD installieren
@@ -102,7 +102,7 @@ Abschliessend stoppen wir die virtuelle Maschine vorübergehend und entfernen di
 Nachdem nun alle Vorbereitungen abgeschlossen sind, können wir endlich mit der eigentlichen FreeBSD Remote Installation beginnen, indem wir die virtuelle Maschine wieder booten.
 
 ``` powershell
-& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" startvm "FreeBSD"
+& "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" startvm "FreeBSD"
 ```
 
 Jetzt sollten wir uns mittels PuTTY als `root` mit dem Passwort `mfsroot` in das mfsBSD Image einloggen und mit der Installation von FreeBSD beginnen können.
@@ -192,8 +192,8 @@ mount -t ufs /dev/mirror/data /mnt/data
 Auf die gemounteten Partitionen entpacken wir ein FreeBSD Basesystem mit dem wir problemlos weiterarbeiten können. Je nach Auslastung des FreeBSD FTP-Servers kann dies ein wenig dauern, bitte nicht ungeduldig werden.
 
 ``` bash
-fetch -4 -q -o - --no-verify-peer https://download.freebsd.org/ftp/releases/amd64/amd64/13.1-RELEASE/base.txz   | tar Jxpvf - -C /mnt/
-fetch -4 -q -o - --no-verify-peer https://download.freebsd.org/ftp/releases/amd64/amd64/13.1-RELEASE/kernel.txz | tar Jxpvf - -C /mnt/
+fetch -4 -q -o - --no-verify-peer https://download.freebsd.org/ftp/releases/amd64/amd64/13.2-RELEASE/base.txz   | tar Jxpvf - -C /mnt/
+fetch -4 -q -o - --no-verify-peer https://download.freebsd.org/ftp/releases/amd64/amd64/13.2-RELEASE/kernel.txz | tar Jxpvf - -C /mnt/
 
 cp -a /mnt/boot/kernel /mnt/boot/GENERIC
 ```
@@ -894,18 +894,22 @@ boot_verbose="YES"
 verbose_loading="YES"
 
 # Microcode updates
-#cpu_microcode_load="YES"
-#cpu_microcode_name="/boot/firmware/intel-ucode.bin"
+cpu_microcode_load="YES"
+cpu_microcode_name="/boot/firmware/intel-ucode.bin"
 
 # Kernel selection
-#kernel="kernel"
-#kernels="kernel"
+#kernel="GENERIC"
+#kernels="GENERIC"
 
 # Kernel modules
 coretemp_load="YES"
 geom_mirror_load="YES"
-opensolaris_load="YES"
-zfs_load="YES"
+#opensolaris_load="YES"
+#zfs_load="YES"
+#accf_data_load="YES"
+#accf_http_load="YES"
+#accf_dns_load="YES"
+#cc_htcp_load="YES"
 
 # Kernel parameters
 debug.acpi.disabled="thermal"
@@ -922,6 +926,7 @@ kern.ipc.semmns=512
 kern.ipc.semmnu=256
 kern.ipc.shm_use_phys=1
 kern.ipc.shmmax=2147483648
+kern.msgbufsize=2097152
 kern.msgbuf_show_timestamp=1
 kern.random.fortuna.minpoolsize=256
 kern.sync_on_panic=0
@@ -1057,7 +1062,6 @@ Zunächst müssen eventuell vorhandene Object-Dateien im Verzeichnis `/usr/obj` 
 cd /usr/src
 
 make clean
-make cleanworld
 
 git -C /usr/src pull --rebase
 ```

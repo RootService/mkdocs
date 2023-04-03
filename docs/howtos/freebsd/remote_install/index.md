@@ -2,7 +2,7 @@
 title: 'Remote Installation'
 description: 'In diesem HowTo werden step-by-step die Voraussetzungen für die Remote Installation des FreeBSD 64Bit BaseSystem auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2022-08-05'
+updated: '2023-04-03'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -13,32 +13,32 @@ author_url: https://github.com/JoeUser78
 
 Unser BaseSystem wird am Ende folgende Dienste umfassen.
 
-- FreeBSD 13.1-RELEASE 64Bit
+- FreeBSD 13.2-RELEASE 64Bit
 - OpenSSL 1.1.1
-- OpenSSH 8.8
-- Unbound 1.13.1
+- OpenSSH 9.3
+- Unbound 1.17.1
 
 Unsere BasePorts werden am Ende folgende Dienste umfassen.
 
-- Perl 5.36.0
+- Perl 5.32.1
 - OpenSSL 1.1.1
-- LUA 5.3.6
-- TCL 8.6.12
-- Python 3.9.13
-- Ruby 3.0.4
+- LUA 5.4.4
+- TCL 8.6.13
+- Python 3.9.16
+- Ruby 3.1.3
 
 Unsere BaseTools werden am Ende folgende Dienste umfassen.
 
-- Sudo 1.9.11
-- cURL 7.84.0
-- GIT 2.37.0
+- Sudo 1.9.13
+- cURL 7.88.1
+- GIT 2.40.0
 - Portmaster 3.22
 - SMARTmontools 7.3
-- Bash 5.1.16
-- Nano 6.2
+- Bash 5.2.15
+- Nano 7.2
 - w3m 0.5.3
-- GnuPG 2.3.3
-- SVN 1.14.2
+- GnuPG 2.3.8
+- Subversion 1.14.2
 
 Folgende Punkte sind in allen folgenden HowTos zu beachten.
 
@@ -79,38 +79,43 @@ Leider bringt Microsoft Windows keinen eigenen SSH-Client mit, so dass ich auf d
 
 VirtualBox (inklusive dem Extensionpack) und PuTTY werden mit den jeweiligen Standardoptionen installiert.
 
+``` powershell
+winget install PuTTY.PuTTY
+winget install Oracle.VirtualBox
+```
+
 ## Die Virtuelle Maschine
 
 Als Erstes öffnen wir eine neue PowerShell und legen manuell eine neue virtuelle Maschine an. Diese virtuelle Maschine bekommt den Namen `FreeBSD` und wird mit einer UEFI-Firmware, einem Dual-Core Prozessor, Intels ICH9-Chipsatz, 4096MB RAM, 64MB VideoRAM, zwei 64GB SSD-Festplatten, einem DVD-Player, einer Intel-Netzwerkkarte, einem NVMe-Controller sowie einem AHCI-Controller ausgestattet. Zudem setzen wir die RTC (Real-Time Clock) der virtuellen Maschine auf UTC (Coordinated Universal Time), aktivieren den HPET (High Precision Event Timer) und legen die Bootreihenfolge fest.
 
 ``` powershell
-& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" createvm --name "FreeBSD" --ostype FreeBSD_64 --register
+& "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" createvm --name "FreeBSD" --ostype FreeBSD_64 --register
 
 cd "${Env:USERPROFILE}\VirtualBox VMs\FreeBSD"
 
-& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" createmedium disk --filename "FreeBSD1.vdi" --format VDI --size 64536
-& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" createmedium disk --filename "FreeBSD2.vdi" --format VDI --size 64536
+& "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" createmedium disk --filename "FreeBSD1.vdi" --format VDI --size 64536
+& "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" createmedium disk --filename "FreeBSD2.vdi" --format VDI --size 64536
 
-& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" modifyvm "FreeBSD" --firmware efi --cpus 2 --cpuexecutioncap 100 --cpuhotplug off
-& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" modifyvm "FreeBSD" --chipset ICH9 --graphicscontroller vmsvga --audio none --usb off
-& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" modifyvm "FreeBSD" --hwvirtex on --ioapic on --hpet on --rtcuseutc on --memory 4096 --vram 64
-& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" modifyvm "FreeBSD" --nic1 nat --nictype1 82540EM --natnet1 "192.168/16" --cableconnected1 on
-& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" modifyvm "FreeBSD" --boot1 dvd --boot2 disk --boot3 none --boot4 none
+& "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" modifyvm "FreeBSD" --firmware efi --cpus 2 --cpuexecutioncap 100 --cpuhotplug off
+& "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" modifyvm "FreeBSD" --chipset ICH9 --graphicscontroller vmsvga --audio none --usb off
+& "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" modifyvm "FreeBSD" --hwvirtex on --ioapic on --hpet on --rtcuseutc on --memory 4096 --vram 64
+& "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" modifyvm "FreeBSD" --nic1 nat --nictype1 82540EM --natnet1 "192.168/16" --cableconnected1 on
+& "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" modifyvm "FreeBSD" --boot1 dvd --boot2 disk --boot3 none --boot4 none
 
-& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" storagectl "FreeBSD" --name "NVMe Controller" --add pcie --controller NVMe --portcount 4 --bootable on
-& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" storagectl "FreeBSD" --name "AHCI Controller" --add sata --controller IntelAHCI --portcount 4 --bootable on
+& "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" storagectl "FreeBSD" --name "NVMe Controller" --add pcie --controller NVMe --portcount 4 --bootable on
+& "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" storagectl "FreeBSD" --name "AHCI Controller" --add sata --controller IntelAHCI --portcount 4 --bootable on
 
-& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" storageattach "FreeBSD" --storagectl "NVMe Controller" --port 0 --device 0 --type hdd --nonrotational on --medium "FreeBSD1.vdi"
-& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" storageattach "FreeBSD" --storagectl "NVMe Controller" --port 1 --device 0 --type hdd --nonrotational on --medium "FreeBSD2.vdi"
-& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" storageattach "FreeBSD" --storagectl "AHCI Controller" --port 0 --device 0 --type dvddrive --medium emptydrive
+& "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" storageattach "FreeBSD" --storagectl "NVMe Controller" --port 0 --device 0 --type hdd --nonrotational on --medium "FreeBSD1.vdi"
+& "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" storageattach "FreeBSD" --storagectl "NVMe Controller" --port 1 --device 0 --type hdd --nonrotational on --medium "FreeBSD2.vdi"
+& "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" storageattach "FreeBSD" --storagectl "AHCI Controller" --port 0 --device 0 --type dvddrive --medium emptydrive
 ```
 
 Die virtuelle Maschine, genauer die virtuelle Netzwerkkarte, kann dank NAT zwar problemlos mit der Aussenwelt, aber leider nicht direkt mit dem Hostsystem kommunizieren. Aus diesem Grund richten wir nun für den SSH-Zugang noch ein Portforwarding ein, welches den Port 2222 des Hostsystems auf den Port 22 der virtuellen Maschine weiterleitet.
 
 ``` powershell
-& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" modifyvm "FreeBSD" --natpf1 "VBoxSSH,tcp,,2222,,22"
-& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" modifyvm "FreeBSD" --natpf1 "VBoxHTTP,tcp,,80,,80"
-& "${Env:VBOX_MSI_INSTALL_PATH}\VBoxManage.exe" modifyvm "FreeBSD" --natpf1 "VBoxHTTPS,tcp,,443,,443"
+& "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" modifyvm "FreeBSD" --natpf1 "VBoxSSH,tcp,,2222,,22"
+& "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" modifyvm "FreeBSD" --natpf1 "VBoxHTTP,tcp,,80,,80"
+& "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" modifyvm "FreeBSD" --natpf1 "VBoxHTTPS,tcp,,443,,443"
 ```
 
 Nachdem die virtuelle Maschine nun konfiguriert ist, wird es Zeit diese zu booten.

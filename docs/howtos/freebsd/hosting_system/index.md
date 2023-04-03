@@ -2,7 +2,7 @@
 title: 'Hosting System'
 description: 'In diesem HowTo werden step-by-step die Voraussetzungen für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2022-08-05'
+updated: '2023-04-03'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -13,17 +13,17 @@ author_url: https://github.com/JoeUser78
 
 Unser Hosting System wird am Ende folgende Dienste umfassen.
 
-- CertBot 1.29.0 (LetsEncrypt ACME API 2.0)
-- Unbound 1.16.1 (DNScrypt, DNS over TLS)
-- MySQL 8.0.30 (InnoDB, GTID)
-- Dovecot 2.3.19 (IMAP only, 1GB Quota)
-- Postfix 3.7.2 (Dovecot-SASL, postscreen)
-- Python-SPF-Engine 2.9.3 (SPF2)
+- CertBot 2.4.0 (LetsEncrypt ACME API 2.0)
+- Unbound 1.17.1 (DNScrypt, DNS over TLS)
+- MySQL 8.0.32 (InnoDB, GTID)
+- Dovecot 2.3.20 (IMAP only, 1GB Quota)
+- Postfix 3.7.4 (Dovecot-SASL, postscreen)
+- Python-SPF-Engine 3.0.3 (SPF2)
 - OpenDKIM 2.10.3 (VBR, 2048 Bit RSA)
 - OpenDMARC 1.4.2 (SPF2, FailureReports)
-- Apache 2.4.54 (MPM-Event, HTTP/2, mod_brotli)
-- NGinx 1.22.0 (HTTP/2, mod_brotli)
-- PHP 8.1.8 (PHP-FPM, Composer, PEAR)
+- Apache 2.4.56 (MPM-Event, HTTP/2, mod_brotli)
+- NGinx 1.22.1 (HTTP/2, mod_brotli)
+- PHP 8.1.17 (PHP-FPM, Composer, PEAR)
 
 Folgende Punkte sind in allen folgenden HowTos zu beachten.
 

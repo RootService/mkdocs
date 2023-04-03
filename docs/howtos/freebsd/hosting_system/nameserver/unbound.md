@@ -2,7 +2,7 @@
 title: 'Unbound'
 description: 'In diesem HowTo wird step-by-step die Installation von Unbound für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2022-08-05'
+updated: '2023-04-03'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -13,7 +13,7 @@ author_url: https://github.com/JoeUser78
 
 Unser Hosting System wird folgende Dienste umfassen.
 
-- Unbound 1.16.1 (DNScrypt, DNS over TLS)
+- Unbound 1.17.1 (DNScrypt, DNS over TLS)
 
 ## Voraussetzungen
 
@@ -34,13 +34,14 @@ OPTIONS_FILE_SET+=THREADS
 
 mkdir -p /var/db/ports/dns_unbound
 cat > /var/db/ports/dns_unbound/options << "EOF"
-_OPTIONS_READ=unbound-1.16.1
-_FILE_COMPLETE_OPTIONS_LIST=DEP-RSA1024 DNSCRYPT DNSTAP DOCS DOH ECDSA EVAPI FILTER_AAAA GOST HIREDIS LIBEVENT MUNIN_PLUGIN PYTHON SUBNET TFOCL TFOSE THREADS
+_OPTIONS_READ=unbound-1.17.1
+_FILE_COMPLETE_OPTIONS_LIST=DEP-RSA1024 DNSCRYPT DNSTAP DOCS DOH DYNLIB ECDSA EVAPI FILTER_AAAA GOST HIREDIS LIBEVENT MUNIN_PLUGIN PYTHON SUBNET TFOCL TFOSE THREADS
 OPTIONS_FILE_UNSET+=DEP-RSA1024
 OPTIONS_FILE_SET+=DNSCRYPT
 OPTIONS_FILE_UNSET+=DNSTAP
 OPTIONS_FILE_SET+=DOCS
 OPTIONS_FILE_SET+=DOH
+OPTIONS_FILE_SET+=DYNLIB
 OPTIONS_FILE_SET+=ECDSA
 OPTIONS_FILE_UNSET+=EVAPI
 OPTIONS_FILE_UNSET+=FILTER_AAAA
@@ -132,7 +133,7 @@ server:
   private-address: fd00::/8
   private-address: fe80::/10
   private-address: ::ffff:0:0/96
-  private-domain: "rootservice.lan"
+  private-domain: "example.lan"
   unwanted-reply-threshold: 10000
   do-not-query-localhost: no
   minimal-responses: yes
@@ -146,15 +147,15 @@ server:
   local-data: "127.in-addr.arpa. 10800 IN SOA localhost. nobody.invalid. 2 3600 1200 604800 10800"
   local-data: "1.0.0.127.in-addr.arpa. 10800 IN PTR localhost."
 
-forward-zone:
-  name: "."
-  forward-tls-upstream: yes
-  forward-addr: 1.0.0.1@853#one.one.one.one
-  forward-addr: 8.8.4.4@853#dns.google
-  forward-addr: 149.112.112.112@853#dns.quad9.net
-  forward-addr: 1.1.1.1@853#one.one.one.one
-  forward-addr: 8.8.8.8@853#dns.google
-  forward-addr: 9.9.9.9@853#dns.quad9.net
+#forward-zone:
+#  name: "."
+#  forward-tls-upstream: yes
+#  forward-addr: 1.0.0.1@853#one.one.one.one
+#  forward-addr: 8.8.4.4@853#dns.google
+#  forward-addr: 149.112.112.112@853#dns.quad9.net
+#  forward-addr: 1.1.1.1@853#one.one.one.one
+#  forward-addr: 8.8.8.8@853#dns.google
+#  forward-addr: 9.9.9.9@853#dns.quad9.net
 
 #forward-zone:
 #  name: "."
