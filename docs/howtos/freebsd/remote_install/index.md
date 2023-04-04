@@ -86,7 +86,7 @@ winget install Oracle.VirtualBox
 
 ## Die Virtuelle Maschine
 
-Als Erstes öffnen wir eine neue PowerShell und legen manuell eine neue virtuelle Maschine an. Diese virtuelle Maschine bekommt den Namen `FreeBSD` und wird mit einer UEFI-Firmware, einem Dual-Core Prozessor, Intels ICH9-Chipsatz, 4096MB RAM, 64MB VideoRAM, zwei 64GB SSD-Festplatten, einem DVD-Player, einer Intel-Netzwerkkarte, einem NVMe-Controller sowie einem AHCI-Controller ausgestattet. Zudem setzen wir die RTC (Real-Time Clock) der virtuellen Maschine auf UTC (Coordinated Universal Time), aktivieren den HPET (High Precision Event Timer) und legen die Bootreihenfolge fest.
+Als Erstes öffnen wir eine neue PowerShell und legen manuell eine neue virtuelle Maschine an. Diese virtuelle Maschine bekommt den Namen `FreeBSD` und wird mit einer UEFI-Firmware, einem Dual-Core Prozessor, Intels ICH9-Chipsatz, 4096MB RAM, 64MB VideoRAM, zwei 64GB SSD-Festplatten, einem DVD-Player, einer Netzwerkkarte, einem NVMe-Controller sowie einem AHCI-Controller und einem TPM 2.0 ausgestattet. Zudem setzen wir die RTC (Real-Time Clock) der virtuellen Maschine auf UTC (Coordinated Universal Time), aktivieren den HPET (High Precision Event Timer) und legen die Bootreihenfolge fest.
 
 ``` powershell
 & "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" createvm --name "FreeBSD" --ostype FreeBSD_64 --register
@@ -96,14 +96,14 @@ cd "${Env:USERPROFILE}\VirtualBox VMs\FreeBSD"
 & "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" createmedium disk --filename "FreeBSD1.vdi" --format VDI --size 64536
 & "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" createmedium disk --filename "FreeBSD2.vdi" --format VDI --size 64536
 
-& "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" modifyvm "FreeBSD" --firmware efi --cpus 2 --cpuexecutioncap 100 --cpuhotplug off
-& "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" modifyvm "FreeBSD" --chipset ICH9 --graphicscontroller vmsvga --audio none --usb off
-& "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" modifyvm "FreeBSD" --hwvirtex on --ioapic on --hpet on --rtcuseutc on --memory 4096 --vram 64
-& "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" modifyvm "FreeBSD" --nic1 nat --nictype1 82540EM --natnet1 "192.168/16" --cableconnected1 on
+& "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" modifyvm "FreeBSD" --firmware efi --memory 4096 --vram 64 --cpus 2 --hpet on --hwvirtex on
+& "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" modifyvm "FreeBSD" --chipset ICH9 --iommu automatic --tpm-type 2.0 --rtc-use-utc on
+& "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" modifyvm "FreeBSD" --graphicscontroller none --audio none --usb off
+& "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" modifyvm "FreeBSD" --nic1 nat --nic-type1 virtio --nat-net1 "192.168/16"
 & "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" modifyvm "FreeBSD" --boot1 dvd --boot2 disk --boot3 none --boot4 none
 
-& "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" storagectl "FreeBSD" --name "NVMe Controller" --add pcie --controller NVMe --portcount 4 --bootable on
-& "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" storagectl "FreeBSD" --name "AHCI Controller" --add sata --controller IntelAHCI --portcount 4 --bootable on
+& "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" storagectl "FreeBSD" --name "NVMe Controller" --add pcie --controller NVMe --portcount 4 --bootable on --hostiocache off
+& "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" storagectl "FreeBSD" --name "AHCI Controller" --add sata --controller IntelAHCI --portcount 4 --bootable on --hostiocache off
 
 & "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" storageattach "FreeBSD" --storagectl "NVMe Controller" --port 0 --device 0 --type hdd --nonrotational on --medium "FreeBSD1.vdi"
 & "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" storageattach "FreeBSD" --storagectl "NVMe Controller" --port 1 --device 0 --type hdd --nonrotational on --medium "FreeBSD2.vdi"
