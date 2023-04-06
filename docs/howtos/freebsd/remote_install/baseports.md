@@ -2,7 +2,7 @@
 title: 'BasePorts'
 description: 'In diesem HowTo wird step-by-step die Installation einiger BasePorts für ein FreeBSD 64Bit BaseSystem auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-04-03'
+updated: '2023-04-06'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 contributors:
@@ -33,7 +33,7 @@ Zu den Voraussetzungen für dieses HowTo siehe bitte: [Remote Installation](/how
 ## Einloggen und zu *root* werden
 
 ``` powershell
-putty -ssh -P 2222 -i "${Env:USERPROFILE}\VirtualBox VMs\FreeBSD\ssh\id_rsa.ppk" admin@127.0.0.1
+putty -ssh -P 2222 -i "${Env:USERPROFILE}\VirtualBox VMs\FreeBSD\ssh\id_ed25519.ppk" admin@127.0.0.1
 ```
 
 ``` bash
@@ -238,6 +238,14 @@ OPTIONS_FILE_UNSET+=LIBSIGSEGV
 OPTIONS_FILE_SET+=NLS
 "EOF"
 
+mkdir -p /var/db/ports/converters_libiconv
+cat > /var/db/ports/converters_libiconv/options << "EOF"
+_OPTIONS_READ=libiconv-1.17
+_FILE_COMPLETE_OPTIONS_LIST=DOCS ENCODINGS
+OPTIONS_FILE_SET+=DOCS
+OPTIONS_FILE_SET+=ENCODINGS
+"EOF"
+
 mkdir -p /var/db/ports/print_texinfo
 cat > /var/db/ports/print_texinfo/options << "EOF"
 _OPTIONS_READ=texinfo-6.8
@@ -287,14 +295,6 @@ cat > /var/db/ports/devel_p5-Locale-libintl/options << "EOF"
 _OPTIONS_READ=p5-Locale-libintl-1.33
 _FILE_COMPLETE_OPTIONS_LIST=NLS
 OPTIONS_FILE_SET+=NLS
-"EOF"
-
-mkdir -p /var/db/ports/converters_libiconv
-cat > /var/db/ports/converters_libiconv/options << "EOF"
-_OPTIONS_READ=libiconv-1.17
-_FILE_COMPLETE_OPTIONS_LIST=DOCS ENCODINGS
-OPTIONS_FILE_SET+=DOCS
-OPTIONS_FILE_SET+=ENCODINGS
 "EOF"
 
 mkdir -p /var/db/ports/devel_automake
@@ -386,6 +386,14 @@ _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
 "EOF"
 
+mkdir -p /var/db/ports/devel_readline
+cat > /var/db/ports/devel_readline/options << "EOF"
+_OPTIONS_READ=readline-8.2.0
+_FILE_COMPLETE_OPTIONS_LIST=BRACKETEDPASTE DOCS
+OPTIONS_FILE_SET+=BRACKETEDPASTE
+OPTIONS_FILE_SET+=DOCS
+"EOF"
+
 mkdir -p /var/db/ports/lang_python39
 cat > /var/db/ports/lang_python39/options << "EOF"
 _OPTIONS_READ=python39-3.9.16
@@ -405,6 +413,134 @@ cd /usr/ports/lang/python3
 make all install clean-depends clean
 
 cd /usr/ports/lang/python
+make all install clean-depends clean
+```
+
+Wir installieren `devel/py-pip` und dessen Abhängigkeiten.
+
+``` bash
+mkdir -p /var/db/ports/www_py-beautifulsoup
+cat > /var/db/ports/www_py-beautifulsoup/options << "EOF"
+_OPTIONS_READ=py39-beautifulsoup-4.12.0
+_FILE_COMPLETE_OPTIONS_LIST=DOCS
+OPTIONS_FILE_SET+=DOCS
+"EOF"
+
+mkdir -p /var/db/ports/textproc_py-docutils
+cat > /var/db/ports/textproc_py-docutils/options << "EOF"
+_OPTIONS_READ=py39-docutils-0.19
+_FILE_COMPLETE_OPTIONS_LIST=PYGMENTS
+OPTIONS_FILE_SET+=PYGMENTS
+"EOF"
+
+mkdir -p /var/db/ports/www_py-requests
+cat > /var/db/ports/www_py-requests/options << "EOF"
+_OPTIONS_READ=py39-requests-2.28.2
+_FILE_COMPLETE_OPTIONS_LIST=SOCKS
+OPTIONS_FILE_SET+=SOCKS
+"EOF"
+
+mkdir -p /var/db/ports/net_py-urllib3
+cat > /var/db/ports/net_py-urllib3/options << "EOF"
+_OPTIONS_READ=py39-urllib3-1.26.14
+_FILE_COMPLETE_OPTIONS_LIST=BROTLI SOCKS SSL
+OPTIONS_FILE_SET+=BROTLI
+OPTIONS_FILE_SET+=SOCKS
+OPTIONS_FILE_SET+=SSL
+"EOF"
+
+mkdir -p /var/db/ports/devel_py-Jinja2
+cat > /var/db/ports/devel_py-Jinja2/options << "EOF"
+_OPTIONS_READ=py39-Jinja2-3.1.2
+_FILE_COMPLETE_OPTIONS_LIST=BABEL EXAMPLES
+OPTIONS_FILE_SET+=BABEL
+OPTIONS_FILE_SET+=EXAMPLES
+"EOF"
+
+mkdir -p /var/db/ports/devel_py-babel
+cat > /var/db/ports/devel_py-babel/options << "EOF"
+_OPTIONS_READ=py39-Babel-2.12.1
+_FILE_COMPLETE_OPTIONS_LIST=DOCS
+OPTIONS_FILE_SET+=DOCS
+"EOF"
+
+mkdir -p /var/db/ports/textproc_py-snowballstemmer
+cat > /var/db/ports/textproc_py-snowballstemmer/options << "EOF"
+_OPTIONS_READ=py39-snowballstemmer-2.2.0
+_FILE_COMPLETE_OPTIONS_LIST=PYSTEMMER
+OPTIONS_FILE_SET+=PYSTEMMER
+"EOF"
+
+mkdir -p /var/db/ports/textproc_py-toml
+cat > /var/db/ports/textproc_py-toml/options << "EOF"
+_OPTIONS_READ=py39-toml-0.10.2
+_FILE_COMPLETE_OPTIONS_LIST=DOCS
+OPTIONS_FILE_SET+=DOCS
+"EOF"
+
+mkdir -p /var/db/ports/devel_py-lxml
+cat > /var/db/ports/devel_py-lxml/options << "EOF"
+_OPTIONS_READ=py39-lxml-4.9.2
+_FILE_COMPLETE_OPTIONS_LIST=DOCS
+OPTIONS_FILE_SET+=DOCS
+"EOF"
+
+mkdir -p /var/db/ports/textproc_libxml2
+cat > /var/db/ports/textproc_libxml2/options << "EOF"
+_OPTIONS_READ=libxml2-2.10.3
+_FILE_COMPLETE_OPTIONS_LIST=DOCS ICU MEM_DEBUG READLINE STATIC THREAD_ALLOC
+OPTIONS_FILE_SET+=DOCS
+OPTIONS_FILE_SET+=ICU
+OPTIONS_FILE_UNSET+=MEM_DEBUG
+OPTIONS_FILE_SET+=READLINE
+OPTIONS_FILE_UNSET+=STATIC
+OPTIONS_FILE_UNSET+=THREAD_ALLOC
+"EOF"
+
+mkdir -p /var/db/ports/textproc_libxslt
+cat > /var/db/ports/textproc_libxslt/options << "EOF"
+_OPTIONS_READ=libxslt-1.1.37
+_FILE_COMPLETE_OPTIONS_LIST=CRYPTO MEM_DEBUG STATIC
+OPTIONS_FILE_SET+=CRYPTO
+OPTIONS_FILE_UNSET+=MEM_DEBUG
+OPTIONS_FILE_UNSET+=STATIC
+"EOF"
+
+mkdir -p /var/db/ports/security_libgcrypt
+cat > /var/db/ports/security_libgcrypt/options << "EOF"
+_OPTIONS_READ=libgcrypt-1.9.4
+_FILE_COMPLETE_OPTIONS_LIST=DOCS INFO STATIC
+OPTIONS_FILE_SET+=DOCS
+OPTIONS_FILE_UNSET+=INFO
+OPTIONS_FILE_UNSET+=STATIC
+"EOF"
+
+mkdir -p /var/db/ports/security_libgpg-error
+cat > /var/db/ports/security_libgpg-error/options << "EOF"
+_OPTIONS_READ=libgpg-error-1.46
+_FILE_COMPLETE_OPTIONS_LIST=DOCS NLS TEST
+OPTIONS_FILE_SET+=DOCS
+OPTIONS_FILE_SET+=NLS
+OPTIONS_FILE_UNSET+=TEST
+"EOF"
+
+mkdir -p /var/db/ports/devel_py-yaml
+cat > /var/db/ports/devel_py-yaml/options << "EOF"
+_OPTIONS_READ=py39-yaml-6.0
+_FILE_COMPLETE_OPTIONS_LIST=EXAMPLES LIBYAML
+OPTIONS_FILE_SET+=EXAMPLES
+OPTIONS_FILE_SET+=LIBYAML
+"EOF"
+
+mkdir -p /var/db/ports/devel_py-pip
+cat > /var/db/ports/devel_py-pip/options << "EOF"
+_OPTIONS_READ=py39-pip-22.3.1
+_FILE_COMPLETE_OPTIONS_LIST=DOCS
+OPTIONS_FILE_SET+=DOCS
+"EOF"
+
+
+cd /usr/ports/devel/py-pip
 make all install clean-depends clean
 ```
 
@@ -439,6 +575,21 @@ OPTIONS_FILE_UNSET+=READLINE
 
 
 cd /usr/ports/lang/ruby31
+make all install clean-depends clean
+```
+
+Wir installieren `devel/ruby-gems` und dessen Abhängigkeiten.
+
+``` bash
+mkdir -p /var/db/ports/devel_ruby-gems
+cat > /var/db/ports/devel_ruby-gems/options << "EOF"
+_OPTIONS_READ=ruby31-gems-3.4.7
+_FILE_COMPLETE_OPTIONS_LIST=DOCS
+OPTIONS_FILE_SET+=DOCS
+"EOF"
+
+
+cd /usr/ports/devel/ruby-gems
 make all install clean-depends clean
 ```
 

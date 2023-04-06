@@ -2,7 +2,7 @@
 title: 'MySQL'
 description: 'In diesem HowTo wird step-by-step die Installation des MySQL Datenbanksystem für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-04-03'
+updated: '2023-04-06'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 contributors:
@@ -32,9 +32,8 @@ Wir installieren `databases/mysql80-client` und dessen Abhängigkeiten.
 cat >> /etc/make.conf << "EOF"
 #DEFAULT_VERSIONS+=mysql=8.0
 "EOF"
-```
 
-``` bash
+
 mkdir -p /var/db/ports/security_libfido2
 cat > /var/db/ports/security_libfido2/options << "EOF"
 _OPTIONS_READ=libfido2-1.13.0
@@ -47,6 +46,13 @@ cat > /var/db/ports/comms_hidapi/options << "EOF"
 _OPTIONS_READ=hidapi-0.13.1
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
+"EOF"
+
+mkdir -p /var/db/ports/textproc_groff
+cat > /var/db/ports/textproc_groff/options << "EOF"
+_OPTIONS_READ=groff-1.22.4
+_FILE_COMPLETE_OPTIONS_LIST=UCHARDET
+OPTIONS_FILE_SET+=UCHARDET
 "EOF"
 
 mkdir -p /var/db/ports/print_gsfonts
@@ -97,6 +103,7 @@ chown mysql:mysql /data/db/mysql{,_secure,_tmpdir}
 
 sysrc mysql_enable=YES
 sysrc mysql_dbdir="/data/db/mysql"
+sysrc mysql_confdir="/usr/local/etc/mysql"
 sysrc mysql_optfile="/usr/local/etc/mysql/my.cnf"
 ```
 

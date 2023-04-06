@@ -2,7 +2,7 @@
 title: 'PHP-FPM'
 description: 'In diesem HowTo wird step-by-step die Installation von PHP-FPM für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-04-03'
+updated: '2023-04-06'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -27,9 +27,8 @@ Wir installieren `lang/php81` und dessen Abhängigkeiten.
 cat >> /etc/make.conf << "EOF"
 #DEFAULT_VERSIONS+=php=8.1
 "EOF"
-```
 
-``` bash
+
 mkdir -p /var/db/ports/lang_php81
 cat > /var/db/ports/lang_php81/options << "EOF"
 _OPTIONS_READ=php81-8.1.17
@@ -144,6 +143,13 @@ _OPTIONS_READ=jpeg-turbo-2.1.5.1
 _FILE_COMPLETE_OPTIONS_LIST=DOCS OPTIMIZED_CFLAGS
 OPTIONS_FILE_SET+=DOCS
 OPTIONS_FILE_SET+=OPTIMIZED_CFLAGS
+"EOF"
+
+mkdir -p /var/db/ports/archivers_libdeflate
+cat > /var/db/ports/archivers_libdeflate/options << "EOF"
+_OPTIONS_READ=libdeflate-1.18
+_FILE_COMPLETE_OPTIONS_LIST=DOCS
+OPTIONS_FILE_SET+=DOCS
 "EOF"
 
 mkdir -p /var/db/ports/devel_nasm

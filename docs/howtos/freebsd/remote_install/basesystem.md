@@ -2,7 +2,7 @@
 title: 'BaseSystem'
 description: 'In diesem HowTo wird step-by-step die Remote Installation des FreeBSD 64Bit BaseSystem auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-04-03'
+updated: '2023-04-06'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 contributors:
@@ -30,21 +30,14 @@ Zu den Voraussetzungen für dieses HowTo siehe bitte: [Remote Installation](/how
 
 ## RescueSystem booten
 
-Um unser [mfsBSD Image](/howtos/freebsd/mfsbsd_image/) installieren zu können, müssen wir unsere virtuelle Maschine mit einem RescueSystem booten. Hierfür eignet sich die auf [Gentoo Linux](https://www.gentoo.org/){: target="_blank" rel="noopener"} basierende [SystemRescueCD](https://www.system-rescue.org/){: target="_blank" rel="noopener"} am Besten, welche wir mittels des mit Windows mitgelieferten cURL-Client herunterladen und unserer virtuellen Maschine als Bootmedium zuweisen.
-
-???+ hint
-
-    Die Versionen nach 5.3.2 der SystemRescueCD basieren auf [Arch Linux](https://archlinux.org/){: target="_blank" rel="noopener"} und werden in diesem HowTo noch nicht supportet.
-    Darüberhinaus haben die neueren Versionen teilweise Probleme in VirtualBox gebootet zu werden.
+Um unser [mfsBSD Image](/howtos/freebsd/mfsbsd_image/) installieren zu können, müssen wir unsere virtuelle Maschine mit einem RescueSystem booten. Hierfür eignet sich die auf [Arch Linux](https://www.archlinux.org/){: target="_blank" rel="noopener"} basierende [SystemRescueCD](https://www.system-rescue.org/){: target="_blank" rel="noopener"} am Besten, welche wir mittels des mit Windows mitgelieferten cURL-Client herunterladen und unserer virtuellen Maschine als Bootmedium zuweisen.
 
 ``` powershell
 cd "${Env:USERPROFILE}\VirtualBox VMs\FreeBSD"
 
-curl -o systemrescuecd-x86-5.3.2.iso https://netcologne.dl.sourceforge.net/project/systemrescuecd/sysresccd-x86/5.3.2/systemrescuecd-x86-5.3.2.iso
-# curl -o systemrescue-10.00-amd64.iso https://netcologne.dl.sourceforge.net/project/systemrescuecd/sysresccd-x86/10.00/systemrescue-10.00-amd64.iso
+curl -o systemrescue-10.00-amd64.iso -L "https://sourceforge.net/projects/systemrescuecd/files/sysresccd-x86/10.00/systemrescue-10.00-amd64.iso/download"
 
-& "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" storageattach "FreeBSD" --storagectl "AHCI Controller" --port 0 --device 0 --type dvddrive --medium "systemrescuecd-x86-5.3.2.iso"
-# & "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" storageattach "FreeBSD" --storagectl "AHCI Controller" --port 0 --device 0 --type dvddrive --medium "systemrescue-10.00-amd64.iso"
+& "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" storageattach "FreeBSD" --storagectl "AHCI Controller" --port 0 --device 0 --type dvddrive --medium "systemrescue-10.00-amd64.iso"
 ```
 
 Wir können das RescueSystem jetzt booten.
@@ -53,14 +46,17 @@ Wir können das RescueSystem jetzt booten.
 & "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" startvm "FreeBSD"
 ```
 
-Im Bootmenü wählen wir die erste Option "Boot with default options" aus und wer mit dem amerikanischen Tastaturlayout nicht zurechtkommt, sollte während dem Booten die Keymap auf `de` umstellen.
+Im Bootmenü wählen wir die erste Option "Boot with default options" aus.
 
-Ist der Bootvorgang abgeschlossen, wird als Erstes das root-Passwort für das RescueSystem gesetzt und der SSH-Server gestartet.
+Ist der Bootvorgang abgeschlossen, wird als Erstes das root-Passwort für das RescueSystem gesetzt und die Firewall deaktiviert.
 
 ``` bash
+setkmap de
+
 passwd root
 
-/etc/init.d/sshd start
+systemctl stop iptables
+systemctl stop ip6tables
 ```
 
 Jetzt sollten wir uns mittels PuTTY als `root` in das RescueSystem einloggen und mit der Installation unseres mfsBSD Image fortfahren können.
@@ -192,8 +188,8 @@ mount -t ufs /dev/mirror/data /mnt/data
 Auf die gemounteten Partitionen entpacken wir ein FreeBSD Basesystem mit dem wir problemlos weiterarbeiten können. Je nach Auslastung des FreeBSD FTP-Servers kann dies ein wenig dauern, bitte nicht ungeduldig werden.
 
 ``` bash
-fetch -4 -q -o - --no-verify-peer https://download.freebsd.org/ftp/releases/amd64/amd64/13.2-RELEASE/base.txz   | tar Jxpvf - -C /mnt/
-fetch -4 -q -o - --no-verify-peer https://download.freebsd.org/ftp/releases/amd64/amd64/13.2-RELEASE/kernel.txz | tar Jxpvf - -C /mnt/
+fetch -4 -q -o - --no-verify-peer https://download.freebsd.org/releases/amd64/13.2-RELEASE/base.txz   | tar Jxpvf - -C /mnt/
+fetch -4 -q -o - --no-verify-peer https://download.freebsd.org/releases/amd64/13.2-RELEASE/kernel.txz | tar Jxpvf - -C /mnt/
 
 cp -a /mnt/boot/kernel /mnt/boot/GENERIC
 ```
@@ -254,7 +250,7 @@ cd /root
 
 ## Zeitzone einrichten
 
-Zunächst setzen wir die Systemzeit (CMOS clock) mittels `tzsetup` auf die "Region" Europe, das "Country" auf Germany und "CET" beziehungsweise "CEST" trifft ebenfalls zu.
+Zunächst setzen wir die Systemzeit (CMOS clock) mittels `tzsetup` auf die "Region" Europe, das "Country" auf Germany und "Most of Germany", die vorgegebene Zeitzone stimmt im Regelfall bereits und kann bestätigt werden.
 
 ``` bash
 /usr/sbin/tzsetup
@@ -286,8 +282,6 @@ sed -e 's/\(EDITOR[[:space:]]*\)vi[[:space:]]*$/\1ee/' -i '' /root/.cshrc
 # Use meaningfuller prompt
 sed -e 's/\(set prompt =\).*$/\1 "[%B%n%b@%B%m%b:%B%~%b] %# "/' -i '' /root/.cshrc
 
-cp /root/.cshrc /.cshrc
-
 # Set root shell to /bin/tcsh
 chsh -s /bin/tcsh root
 ```
@@ -301,9 +295,10 @@ Die hier vorgestellten Massnahmen sind äusserst simple Basics, die aus Hygieneg
 Da wir gerade ein Produktiv-System aufsetzen, werden wir den SSH-Dienst recht restriktiv konfigurieren, unter Anderem werden wir den Login per Passwort verbieten und nur per PublicKey zulassen.
 
 ``` bash
-sed -e 's|^#\(PermitRootLogin\).*$|\1 yes|' \
+sed -e 's|^#\(Port\).*$|\1 22|' \
+    -e 's|^#\(PermitRootLogin\).*$|\1 prohibit-password|' \
     -e 's|^#\(PubkeyAuthentication\).*$|\1 yes|' \
-    -e 's|^#\(PasswordAuthentication\).*$|\1 yes|' \
+    -e 's|^#\(PasswordAuthentication\).*$|\1 no|' \
     -e 's|^#\(PermitEmptyPasswords\).*$|\1 no|' \
     -e 's|^#\(KbdInteractiveAuthentication\).*$|\1 no|' \
     -e 's|^#\(ChallengeResponseAuthentication\).*$|\1 no|' \
@@ -349,10 +344,17 @@ Match Group sftponly
 
 "EOF"
 
+# Ciphers: ssh -Q cipher
+# MACs: ssh -Q mac
+# KexAlgorithms: ssh -Q kex
+# PubkeyAcceptedKeyTypes: ssh -Q key
+
 sed -e '/^# Ciphers and keying/ a\\
-Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes256-ctr\\
-Macs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,umac-128-etm@openssh.com\\
-KexAlgorithms curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha256' -i '' /etc/ssh/sshd_config
+Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com\\
+Macs hmac-sha2-512,hmac-sha2-512-etm@openssh.com,hmac-sha2-256,hmac-sha2-256-etm@openssh.com\\
+KexAlgorithms sntrup761x25519-sha512@openssh.com,curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256\\
+PubkeyAcceptedKeyTypes ssh-ed25519,ssh-ed25519-cert-v01@openssh.com,ecdsa-sha2-nistp521,ecdsa-sha2-nistp521-cert-v01@openssh.com,ecdsa-sha2-nistp384,ecdsa-sha2-nistp384-cert-v01@openssh.com,ecdsa-sha2-nistp256,ecdsa-sha2-nistp256-cert-v01@openssh.com\\
+' -i '' /etc/ssh/sshd_config
 
 ssh-keygen -q -t rsa -b 4096 -f "/etc/ssh/ssh_host_rsa_key" -N ""
 ssh-keygen -l -f "/etc/ssh/ssh_host_rsa_key.pub"
@@ -813,6 +815,7 @@ exit
 
 ``` bash
 cat > /etc/make.conf << "EOF"
+KERNCONF?=GENERIC MYKERNEL
 PRINTERDEVICE=ascii
 LICENSES_ACCEPTED+=EULA
 DISABLE_VULNERABILITIES=yes
@@ -898,8 +901,8 @@ cpu_microcode_load="YES"
 cpu_microcode_name="/boot/firmware/intel-ucode.bin"
 
 # Kernel selection
-#kernel="GENERIC"
-#kernels="GENERIC"
+kernel="GENERIC"
+kernels="GENERIC MYKERNEL"
 
 # Kernel modules
 coretemp_load="YES"
@@ -938,15 +941,12 @@ net.link.ifqmaxlen=1024
 
 ## Abschluss der Installation
 
-Um uns künftig mit unserem Arbeitsuser einloggen zu können, müssen wir uns dessen SSH-Key (id_rsa) auf unser lokales System kopieren und ihn dann mit Hilfe der [PuTTYgen Dokumentation](https://the.earth.li/~sgtatham/putty/latest/htmldoc/Chapter8.html){: target="_blank" rel="noopener"} in einen für PuTTY lesbaren Private Key umwandeln (id_rsa.ppk).
+Um uns künftig mit unserem Arbeitsuser einloggen zu können, müssen wir uns dessen SSH-Key (id_ed25519) auf unser lokales System kopieren und ihn dann mit Hilfe der [PuTTYgen Dokumentation](https://the.earth.li/~sgtatham/putty/latest/htmldoc/Chapter8.html){: target="_blank" rel="noopener"} in einen für PuTTY lesbaren Private Key umwandeln (id_ed25519.ppk).
 
 ``` powershell
 pscp -P 2222 -r root@127.0.0.1:/mnt/usr/home/admin/.ssh "${Env:USERPROFILE}\VirtualBox VMs\FreeBSD\ssh"
 
-puttygen "${Env:USERPROFILE}\VirtualBox VMs\FreeBSD\ssh\id_rsa"
-
-# Einloggen ab hier nur noch mit Key
-putty -ssh -P 2222 -i "${Env:USERPROFILE}\VirtualBox VMs\FreeBSD\ssh\id_rsa.ppk" admin@127.0.0.1
+puttygen "${Env:USERPROFILE}\VirtualBox VMs\FreeBSD\ssh\id_ed25519"
 ```
 
 Nun ist es endlich soweit: Wir verlassen das Chroot, unmounten die Partitionen und rebooten zum ersten Mal in unser neues FreeBSD Basis-System.
@@ -963,8 +963,10 @@ shutdown -r now
 
 ### Einloggen und zu *root* werden
 
+Einloggen ab hier nur noch mit Public-Key
+
 ``` powershell
-putty -ssh -P 2222 -i "${Env:USERPROFILE}\VirtualBox VMs\FreeBSD\ssh\id_rsa.ppk" admin@127.0.0.1
+putty -ssh -P 2222 -i "${Env:USERPROFILE}\VirtualBox VMs\FreeBSD\ssh\id_ed25519.ppk" admin@127.0.0.1
 ```
 
 ``` bash
@@ -1061,7 +1063,7 @@ Zunächst müssen eventuell vorhandene Object-Dateien im Verzeichnis `/usr/obj` 
 ``` bash
 cd /usr/src
 
-make clean
+make cleanworld
 
 git -C /usr/src pull --rebase
 ```
@@ -1071,7 +1073,7 @@ git -C /usr/src pull --rebase
 Das Kompilieren des Basissystems kann durchaus eine Stunde oder länger dauern.
 
 ``` bash
-make -j2 buildworld
+make -j4 buildworld
 ```
 
 ### Kernel rekompilieren und installieren
@@ -1079,8 +1081,30 @@ make -j2 buildworld
 Wenn die eigene Kernel-Konfiguration wie bei uns bereits in der `/etc/make.conf` eingetragen ist, wird sie automatisch verwendet, andernfalls wird die Konfiguration des generischen FreeBSD-Kernels verwendet. Das Kompilieren des Kernels kann durchaus eine Stunde oder länger dauern.
 
 ``` bash
-make -j2 kernel
+mkdir -p /root/kernels
+
+cat > /root/kernels/MYKERNEL << "EOF"
+include GENERIC
+ident   MYKERNEL
+options ALTQ
+options ALTQ_CBQ
+options ALTQ_RED
+options ALTQ_RIO
+options ALTQ_HFSC
+options ALTQ_CDNR
+options ALTQ_PRIQ
+options ALTQ_NOPCC
+"EOF"
+
+ln -s /root/kernels/MYKERNEL /usr/src/sys/amd64/conf/
+
+
+make -j4 KERNCONF=GENERIC INSTALLKERNEL=GENERIC INSTKERNNAME=GENERIC kernel
 sed -e 's/^#fdesc/fdesc/' -i '' /etc/fstab
+
+ 
+make -j4 KERNCONF=MYKERNEL INSTALLKERNEL=MYKERNEL INSTKERNNAME=MYKERNEL kernel
+sed -e 's/^\(kernel=\).*$/\1"MYKERNEL"/' -i '' /boot/loader.conf
 ```
 
 Normalerweise wäre nun ein Reboot in den Single User Mode an der Reihe. Da sich ein Remote-System in diesem Modus ohne KVM-Lösung aber nicht bedienen lässt, begnügen wir uns damit, das System regulär neu zu starten.
@@ -1094,7 +1118,7 @@ Wenn wir unser System zu einem späteren Zeitpunkt nochmals aktualisieren, sollt
 Einloggen und zu `root` werden
 
 ``` powershell
-putty -ssh -P 2222 -i "${Env:USERPROFILE}\VirtualBox VMs\FreeBSD\ssh\id_rsa.ppk" admin@127.0.0.1
+putty -ssh -P 2222 -i "${Env:USERPROFILE}\VirtualBox VMs\FreeBSD\ssh\id_ed25519.ppk" admin@127.0.0.1
 ```
 
 ``` bash
@@ -1132,8 +1156,8 @@ etcupdate -B
 Wir entsorgen nun noch eventuell vorhandene veraltete und überflüssige Dateien.
 
 ``` bash
-make delete-old -DBATCH_DELETE_OLD_FILES
-make delete-old-libs -DBATCH_DELETE_OLD_FILES
+make BATCH_DELETE_OLD_FILES=yes delete-old
+make BATCH_DELETE_OLD_FILES=yes delete-old-libs
 ```
 
 Anschliessend müssen wir noch die für die Installation gegebenenfalls vorgenommenen Änderungen in der `fstab` sowie `rc.conf` rückgängig machen und das System nochmals durchstarten.

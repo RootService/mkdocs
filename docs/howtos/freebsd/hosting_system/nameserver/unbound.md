@@ -2,7 +2,7 @@
 title: 'Unbound'
 description: 'In diesem HowTo wird step-by-step die Installation von Unbound für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-04-03'
+updated: '2023-04-06'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -24,6 +24,13 @@ Zu den Voraussetzungen für dieses HowTo siehe bitte: [Hosting System](/howtos/f
 Wir installieren `dns/unbound` und dessen Abhängigkeiten.
 
 ``` bash
+mkdir -p /var/db/ports/security_libsodium
+cat > /var/db/ports/security_libsodium/options << "EOF"
+_OPTIONS_READ=libsodium-1.0.18
+_FILE_COMPLETE_OPTIONS_LIST=DOCS
+OPTIONS_FILE_SET+=DOCS
+"EOF"
+
 mkdir -p /var/db/ports/devel_libevent
 cat > /var/db/ports/devel_libevent/options << "EOF"
 _OPTIONS_READ=libevent-2.1.12

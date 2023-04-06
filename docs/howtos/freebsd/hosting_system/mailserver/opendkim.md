@@ -2,7 +2,7 @@
 title: 'OpenDKIM'
 description: 'In diesem HowTo wird step-by-step die Installation von OpenDKIM für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-04-03'
+updated: '2023-04-06'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -24,22 +24,6 @@ Zu den Voraussetzungen für dieses HowTo siehe bitte: [Hosting System](/howtos/f
 Wir installieren `mail/opendkim` und dessen Abhängigkeiten.
 
 ``` bash
-mkdir -p /var/db/ports/dns_ldns
-cat > /var/db/ports/dns_ldns/options << "EOF"
-_OPTIONS_READ=ldns-1.8.3
-_FILE_COMPLETE_OPTIONS_LIST=DANETAUSAGE DOXYGEN DRILL EXAMPLES GOST RRTYPEAMTRELAY RRTYPEAVC RRTYPENINFO RRTYPERKEY RRTYPETA
-OPTIONS_FILE_SET+=DANETAUSAGE
-OPTIONS_FILE_UNSET+=DOXYGEN
-OPTIONS_FILE_SET+=DRILL
-OPTIONS_FILE_SET+=EXAMPLES
-OPTIONS_FILE_SET+=GOST
-OPTIONS_FILE_UNSET+=RRTYPEAMTRELAY
-OPTIONS_FILE_UNSET+=RRTYPEAVC
-OPTIONS_FILE_UNSET+=RRTYPENINFO
-OPTIONS_FILE_UNSET+=RRTYPERKEY
-OPTIONS_FILE_SET+=RRTYPETA
-"EOF"
-
 mkdir -p /var/db/ports/mail_opendkim
 cat > /var/db/ports/mail_opendkim/options << "EOF"
 _OPTIONS_READ=opendkim-2.10.3
@@ -147,7 +131,7 @@ Singning-Key erzeugen.
 ``` bash
 opendkim-genkey -v -r -b 2048 -h sha256 -s 20230403 -d example.com -D /data/db/opendkim/keys/example.com
 
-chmod 0600 /data/db/opendkim/keys/*.private
+chmod 0600 /data/db/opendkim/keys/*/*.private
 ```
 
 KeyTable anlegen.

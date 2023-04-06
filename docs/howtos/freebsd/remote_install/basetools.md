@@ -2,7 +2,7 @@
 title: 'BaseTools'
 description: 'In diesem HowTo wird step-by-step die Installation einiger BaseTools für ein FreeBSD 64Bit BaseSystem auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-04-03'
+updated: '2023-04-06'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 contributors:
@@ -20,13 +20,13 @@ In diesem HowTo beschreibe ich step-by-step die Installation einiger Tools (Port
 Unsere BaseTools werden am Ende folgende Dienste umfassen.
 
 - Sudo 1.9.13
-- cURL 7.88.1
+- cURL 8.0.1
+- Bash 5.2.15
 - GIT 2.40.0
 - Portmaster 3.22
 - SMARTmontools 7.3
-- Bash 5.2.15
+- SQLite 3.41.0
 - Nano 7.2
-- w3m 0.5.3
 - GnuPG 2.3.8
 - Subversion 1.14.2
 
@@ -37,7 +37,7 @@ Zu den Voraussetzungen für dieses HowTo siehe bitte: [Remote Installation](/how
 ## Einloggen und zu root werden
 
 ``` powershell
-putty -ssh -P 2222 -i "${Env:USERPROFILE}\VirtualBox VMs\FreeBSD\ssh\id_rsa.ppk" admin@127.0.0.1
+putty -ssh -P 2222 -i "${Env:USERPROFILE}\VirtualBox VMs\FreeBSD\ssh\id_ed25519.ppk" admin@127.0.0.1
 ```
 
 ``` bash
@@ -86,6 +86,46 @@ _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
 "EOF"
 
+mkdir -p /var/db/ports/devel_cmake-core
+cat > /var/db/ports/devel_cmake-core/options << "EOF"
+_OPTIONS_READ=cmake-core-3.25.1
+_FILE_COMPLETE_OPTIONS_LIST=CPACK DOCS
+OPTIONS_FILE_SET+=CPACK
+OPTIONS_FILE_SET+=DOCS
+"EOF"
+
+mkdir -p /var/db/ports/textproc_expat2
+cat > /var/db/ports/textproc_expat2/options << "EOF"
+_OPTIONS_READ=expat-2.5.0
+_FILE_COMPLETE_OPTIONS_LIST=DOCS STATIC TEST
+OPTIONS_FILE_SET+=DOCS
+OPTIONS_FILE_UNSET+=STATIC
+OPTIONS_FILE_UNSET+=TEST
+"EOF"
+
+mkdir -p /var/db/ports/devel_ninja
+cat > /var/db/ports/devel_ninja/options << "EOF"
+_OPTIONS_READ=ninja-1.11.1
+_FILE_COMPLETE_OPTIONS_LIST=BASH DOCS ZSH
+OPTIONS_FILE_SET+=BASH
+OPTIONS_FILE_SET+=DOCS
+OPTIONS_FILE_SET+=ZSH
+"EOF"
+
+mkdir -p /var/db/ports/archivers_zstd
+cat > /var/db/ports/archivers_zstd/options << "EOF"
+_OPTIONS_READ=zstd-1.5.4
+_FILE_COMPLETE_OPTIONS_LIST=OPTIMIZED_CFLAGS
+OPTIONS_FILE_UNSET+=OPTIMIZED_CFLAGS
+"EOF"
+
+mkdir -p /var/db/ports/archivers_liblz4
+cat > /var/db/ports/archivers_liblz4/options << "EOF"
+_OPTIONS_READ=liblz4-1.9.4
+_FILE_COMPLETE_OPTIONS_LIST=TEST
+OPTIONS_FILE_UNSET+=TEST
+"EOF"
+
 mkdir -p /var/db/ports/security_libssh2
 cat > /var/db/ports/security_libssh2/options << "EOF"
 _OPTIONS_READ=libssh2-1.10.0
@@ -104,32 +144,17 @@ OPTIONS_FILE_UNSET+=IDN
 OPTIONS_FILE_UNSET+=IDN2
 "EOF"
 
-mkdir -p /var/db/ports/archivers_zstd
-cat > /var/db/ports/archivers_zstd/options << "EOF"
-_OPTIONS_READ=zstd-1.5.4
-_FILE_COMPLETE_OPTIONS_LIST=OPTIMIZED_CFLAGS
-OPTIONS_FILE_UNSET+=OPTIMIZED_CFLAGS
-"EOF"
-
-mkdir -p /var/db/ports/devel_ninja
-cat > /var/db/ports/devel_ninja/options << "EOF"
-_OPTIONS_READ=ninja-1.11.1
-_FILE_COMPLETE_OPTIONS_LIST=BASH DOCS ZSH
-OPTIONS_FILE_SET+=BASH
+mkdir -p /var/db/ports/security_rhash
+cat > /var/db/ports/security_rhash/options << "EOF"
+_OPTIONS_READ=rhash-1.4.3
+_FILE_COMPLETE_OPTIONS_LIST=DOCS NLS
 OPTIONS_FILE_SET+=DOCS
-OPTIONS_FILE_SET+=ZSH
-"EOF"
-
-mkdir -p /var/db/ports/archivers_liblz4
-cat > /var/db/ports/archivers_liblz4/options << "EOF"
-_OPTIONS_READ=liblz4-1.9.4
-_FILE_COMPLETE_OPTIONS_LIST=TEST
-OPTIONS_FILE_UNSET+=TEST
+OPTIONS_FILE_SET+=NLS
 "EOF"
 
 mkdir -p /var/db/ports/ftp_curl
 cat > /var/db/ports/ftp_curl/options << "EOF"
-_OPTIONS_READ=curl-7.88.1
+_OPTIONS_READ=curl-8.0.1
 _FILE_COMPLETE_OPTIONS_LIST=ALTSVC BROTLI CA_BUNDLE COOKIES CURL_DEBUG DEBUG DOCS EXAMPLES IDN IPV6 NTLM PROXY PSL STATIC TLS_SRP ZSTD GSSAPI_BASE GSSAPI_HEIMDAL GSSAPI_MIT GSSAPI_NONE CARES THREADED_RESOLVER GNUTLS OPENSSL WOLFSSL DICT FTP GOPHER HTTP HTTP2 IMAP LDAP LDAPS LIBSSH2 MQTT POP3 RTMP RTSP SMB SMTP TELNET TFTP
 OPTIONS_FILE_SET+=ALTSVC
 OPTIONS_FILE_SET+=BROTLI
@@ -183,23 +208,6 @@ make all install clean-depends clean
 Wir installieren `devel/git` und dessen Abhängigkeiten.
 
 ``` bash
-mkdir -p /var/db/ports/devel_ruby-gems
-cat > /var/db/ports/devel_ruby-gems/options << "EOF"
-_OPTIONS_READ=ruby31-gems-3.4.7
-_FILE_COMPLETE_OPTIONS_LIST=DOCS
-OPTIONS_FILE_SET+=DOCS
-"EOF"
-
-mkdir -p /var/db/ports/textproc_xmlto
-cat > /var/db/ports/textproc_xmlto/options << "EOF"
-_OPTIONS_READ=xmlto-0.0.28
-_FILE_COMPLETE_OPTIONS_LIST=DOCS DBLATEX FOP PASSIVETEX
-OPTIONS_FILE_SET+=DOCS
-OPTIONS_FILE_UNSET+=DBLATEX
-OPTIONS_FILE_UNSET+=FOP
-OPTIONS_FILE_UNSET+=PASSIVETEX
-"EOF"
-
 mkdir -p /var/db/ports/shells_bash
 cat > /var/db/ports/shells_bash/options << "EOF"
 _OPTIONS_READ=bash-5.2.15
@@ -223,51 +231,22 @@ OPTIONS_FILE_SET+=EXAMPLES
 OPTIONS_FILE_SET+=NLS
 "EOF"
 
+mkdir -p /var/db/ports/textproc_xmlto
+cat > /var/db/ports/textproc_xmlto/options << "EOF"
+_OPTIONS_READ=xmlto-0.0.28
+_FILE_COMPLETE_OPTIONS_LIST=DOCS DBLATEX FOP PASSIVETEX
+OPTIONS_FILE_SET+=DOCS
+OPTIONS_FILE_UNSET+=DBLATEX
+OPTIONS_FILE_UNSET+=FOP
+OPTIONS_FILE_UNSET+=PASSIVETEX
+"EOF"
+
 mkdir -p /var/db/ports/misc_getopt
 cat > /var/db/ports/misc_getopt/options << "EOF"
 _OPTIONS_READ=getopt-1.1.6
 _FILE_COMPLETE_OPTIONS_LIST=DOCS NLS
 OPTIONS_FILE_SET+=DOCS
 OPTIONS_FILE_SET+=NLS
-"EOF"
-
-mkdir -p /var/db/ports/textproc_libxml2
-cat > /var/db/ports/textproc_libxml2/options << "EOF"
-_OPTIONS_READ=libxml2-2.10.3
-_FILE_COMPLETE_OPTIONS_LIST=DOCS ICU MEM_DEBUG READLINE STATIC THREAD_ALLOC
-OPTIONS_FILE_SET+=DOCS
-OPTIONS_FILE_SET+=ICU
-OPTIONS_FILE_UNSET+=MEM_DEBUG
-OPTIONS_FILE_SET+=READLINE
-OPTIONS_FILE_SET+=STATIC
-OPTIONS_FILE_UNSET+=THREAD_ALLOC
-"EOF"
-
-mkdir -p /var/db/ports/textproc_libxslt
-cat > /var/db/ports/textproc_libxslt/options << "EOF"
-_OPTIONS_READ=libxslt-1.1.37
-_FILE_COMPLETE_OPTIONS_LIST=CRYPTO MEM_DEBUG STATIC
-OPTIONS_FILE_SET+=CRYPTO
-OPTIONS_FILE_UNSET+=MEM_DEBUG
-OPTIONS_FILE_UNSET+=STATIC
-"EOF"
-
-mkdir -p /var/db/ports/security_libgcrypt
-cat > /var/db/ports/security_libgcrypt/options << "EOF"
-_OPTIONS_READ=libgcrypt-1.9.4
-_FILE_COMPLETE_OPTIONS_LIST=DOCS INFO STATIC
-OPTIONS_FILE_SET+=DOCS
-OPTIONS_FILE_SET+=INFO
-OPTIONS_FILE_UNSET+=STATIC
-"EOF"
-
-mkdir -p /var/db/ports/security_libgpg-error
-cat > /var/db/ports/security_libgpg-error/options << "EOF"
-_OPTIONS_READ=libgpg-error-1.46
-_FILE_COMPLETE_OPTIONS_LIST=DOCS NLS TEST
-OPTIONS_FILE_SET+=DOCS
-OPTIONS_FILE_SET+=NLS
-OPTIONS_FILE_UNSET+=TEST
 "EOF"
 
 mkdir -p /var/db/ports/textproc_docbook-xsl
@@ -322,15 +301,6 @@ cat > /var/db/ports/devel_libatomic_ops/options << "EOF"
 _OPTIONS_READ=libatomic_ops-7.6.14
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
-"EOF"
-
-mkdir -p /var/db/ports/textproc_expat2
-cat > /var/db/ports/textproc_expat2/options << "EOF"
-_OPTIONS_READ=expat-2.5.0
-_FILE_COMPLETE_OPTIONS_LIST=DOCS STATIC TEST
-OPTIONS_FILE_SET+=DOCS
-OPTIONS_FILE_UNSET+=STATIC
-OPTIONS_FILE_UNSET+=TEST
 "EOF"
 
 mkdir -p /var/db/ports/security_p5-Authen-SASL
@@ -572,67 +542,6 @@ cat > /var/db/ports/textproc_utf8proc/options << "EOF"
 _OPTIONS_READ=utf8proc-2.8.0
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
-"EOF"
-
-mkdir -p /var/db/ports/devel_cmake-core
-cat > /var/db/ports/devel_cmake-core/options << "EOF"
-_OPTIONS_READ=cmake-core-3.25.1
-_FILE_COMPLETE_OPTIONS_LIST=CPACK DOCS
-OPTIONS_FILE_SET+=CPACK
-OPTIONS_FILE_SET+=DOCS
-"EOF"
-
-mkdir -p /var/db/ports/devel_py-Jinja2
-cat > /var/db/ports/devel_py-Jinja2/options << "EOF"
-_OPTIONS_READ=py39-Jinja2-3.1.2
-_FILE_COMPLETE_OPTIONS_LIST=BABEL EXAMPLES
-OPTIONS_FILE_SET+=BABEL
-OPTIONS_FILE_SET+=EXAMPLES
-"EOF"
-
-mkdir -p /var/db/ports/devel_py-babel
-cat > /var/db/ports/devel_py-babel/options << "EOF"
-_OPTIONS_READ=py39-Babel-2.12.1
-_FILE_COMPLETE_OPTIONS_LIST=DOCS
-OPTIONS_FILE_SET+=DOCS
-"EOF"
-
-mkdir -p /var/db/ports/textproc_py-docutils
-cat > /var/db/ports/textproc_py-docutils/options << "EOF"
-_OPTIONS_READ=py39-docutils-0.19
-_FILE_COMPLETE_OPTIONS_LIST=PYGMENTS
-OPTIONS_FILE_SET+=PYGMENTS
-"EOF"
-
-mkdir -p /var/db/ports/textproc_py-snowballstemmer
-cat > /var/db/ports/textproc_py-snowballstemmer/options << "EOF"
-_OPTIONS_READ=py39-snowballstemmer-2.2.0
-_FILE_COMPLETE_OPTIONS_LIST=PYSTEMMER
-OPTIONS_FILE_SET+=PYSTEMMER
-"EOF"
-
-mkdir -p /var/db/ports/www_py-requests
-cat > /var/db/ports/www_py-requests/options << "EOF"
-_OPTIONS_READ=py39-requests-2.28.2
-_FILE_COMPLETE_OPTIONS_LIST=SOCKS
-OPTIONS_FILE_SET+=SOCKS
-"EOF"
-
-mkdir -p /var/db/ports/net_py-urllib3
-cat > /var/db/ports/net_py-urllib3/options << "EOF"
-_OPTIONS_READ=py39-urllib3-1.26.14
-_FILE_COMPLETE_OPTIONS_LIST=BROTLI SOCKS SSL
-OPTIONS_FILE_SET+=BROTLI
-OPTIONS_FILE_SET+=SOCKS
-OPTIONS_FILE_SET+=SSL
-"EOF"
-
-mkdir -p /var/db/ports/security_rhash
-cat > /var/db/ports/security_rhash/options << "EOF"
-_OPTIONS_READ=rhash-1.4.3
-_FILE_COMPLETE_OPTIONS_LIST=DOCS NLS
-OPTIONS_FILE_SET+=DOCS
-OPTIONS_FILE_SET+=NLS
 "EOF"
 
 mkdir -p /var/db/ports/www_serf

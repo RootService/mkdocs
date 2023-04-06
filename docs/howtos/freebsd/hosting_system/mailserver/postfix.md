@@ -2,7 +2,7 @@
 title: 'Postfix'
 description: 'In diesem HowTo wird step-by-step die Installation des Postfix Mailservers für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-04-03'
+updated: '2023-04-06'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 contributors:
@@ -182,6 +182,7 @@ smtpd_milters =
   inet:127.0.0.1:8891
   inet:127.0.0.1:8892
   inet:127.0.0.1:8893
+  unix:/var/run/spamass-milter/spamass-milter.sock
 smtpd_recipient_restrictions =
   permit_mynetworks
   permit_sasl_authenticated
@@ -446,7 +447,7 @@ cat > /usr/local/etc/postfix/recipient_checks.pcre << "EOF"
 Abschliessende Arbeiten.
 
 ``` bash
-newliases
+/usr/local/bin/newaliases
 
 pw groupadd -n vmail -g 5000
 pw useradd -n vmail -u 5000 -g vmail -c 'Virtual Mailuser' -d /nonexistent -s /usr/sbin/nologin
@@ -488,14 +489,6 @@ OPTIONS_FILE_SET+=DOH
 OPTIONS_FILE_SET+=EXAMPLES
 OPTIONS_FILE_SET+=IDNA
 OPTIONS_FILE_UNSET+=TRIO
-"EOF"
-
-mkdir -p /var/db/ports/devel_py-wheel
-cat > /var/db/ports/devel_py-wheel/options << "EOF"
-_OPTIONS_READ=py39-wheel-0.38.4
-_FILE_COMPLETE_OPTIONS_LIST=PIP SIGNATURE
-OPTIONS_FILE_UNSET+=PIP
-OPTIONS_FILE_UNSET+=SIGNATURE
 "EOF"
 
 mkdir -p /var/db/ports/www_py-httpx

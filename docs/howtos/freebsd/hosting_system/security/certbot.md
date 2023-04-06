@@ -2,7 +2,7 @@
 title: 'CertBot'
 description: 'In diesem HowTo wird step-by-step die Installation von CertBot für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-04-03'
+updated: '2023-04-06'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
