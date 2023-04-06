@@ -35,7 +35,7 @@ Um unser [mfsBSD Image](/howtos/freebsd/mfsbsd_image/) installieren zu können, 
 ``` powershell
 cd "${Env:USERPROFILE}\VirtualBox VMs\FreeBSD"
 
-curl -o systemrescue-10.00-amd64.iso -L "https://sourceforge.net/projects/systemrescuecd/files/sysresccd-x86/10.00/systemrescue-10.00-amd64.iso/download"
+curl -o "systemrescue-10.00-amd64.iso" -L "https://sourceforge.net/projects/systemrescuecd/files/sysresccd-x86/10.00/systemrescue-10.00-amd64.iso/download"
 
 & "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" storageattach "FreeBSD" --storagectl "AHCI Controller" --port 0 --device 0 --type dvddrive --medium "systemrescue-10.00-amd64.iso"
 ```
@@ -188,8 +188,8 @@ mount -t ufs /dev/mirror/data /mnt/data
 Auf die gemounteten Partitionen entpacken wir ein FreeBSD Basesystem mit dem wir problemlos weiterarbeiten können. Je nach Auslastung des FreeBSD FTP-Servers kann dies ein wenig dauern, bitte nicht ungeduldig werden.
 
 ``` bash
-fetch -4 -q -o - --no-verify-peer https://download.freebsd.org/releases/amd64/13.2-RELEASE/base.txz   | tar Jxpvf - -C /mnt/
-fetch -4 -q -o - --no-verify-peer https://download.freebsd.org/releases/amd64/13.2-RELEASE/kernel.txz | tar Jxpvf - -C /mnt/
+fetch -4 -q -o - --no-verify-peer "https://download.freebsd.org/releases/amd64/13.2-RELEASE/base.txz"   | tar Jxpvf - -C /mnt/
+fetch -4 -q -o - --no-verify-peer "https://download.freebsd.org/releases/amd64/13.2-RELEASE/kernel.txz" | tar Jxpvf - -C /mnt/
 
 cp -a /mnt/boot/kernel /mnt/boot/GENERIC
 ```

@@ -26,7 +26,7 @@ winget install PuTTY.PuTTY
 winget install Oracle.VirtualBox
 
 $Env:vbox_ver=((winget show Oracle.VirtualBox) -match '^Version' -split '\s+')[1]
-curl -o Oracle_VM_VirtualBox_Extension_Pack-${Env:vbox_ver}.vbox-extpack -L https://download.virtualbox.org/virtualbox/${Env:vbox_ver}/Oracle_VM_VirtualBox_Extension_Pack-${Env:vbox_ver}.vbox-extpack
+curl -o "Oracle_VM_VirtualBox_Extension_Pack-${Env:vbox_ver}.vbox-extpack" -L "https://download.virtualbox.org/virtualbox/${Env:vbox_ver}/Oracle_VM_VirtualBox_Extension_Pack-${Env:vbox_ver}.vbox-extpack"
 & "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" extpack install --replace Oracle_VM_VirtualBox_Extension_Pack-${Env:vbox_ver}.vbox-extpack
 rm Oracle_VM_VirtualBox_Extension_Pack-${Env:vbox_ver}.vbox-extpack
 $Env:vbox_ver=''
@@ -55,14 +55,14 @@ cd "${Env:USERPROFILE}\VirtualBox VMs\mfsBSD"
 & "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" storageattach "mfsBSD" --storagectl "AHCI Controller" --port 0 --device 0 --type dvddrive --medium emptydrive
 ```
 
-Als nächstes benötigen wir die FreeBSD 64Bit Installations-DVD, welche wir mittels des mit Windows mitgelieferten cURL-Client herunterladen und unserer virtuellen Maschine als Bootmedium zuweisen.
+Als nächstes benötigen wir die FreeBSD 64Bit Installations-CD, welche wir mittels des mit Windows mitgelieferten cURL-Client herunterladen und unserer virtuellen Maschine als Bootmedium zuweisen.
 
 ``` powershell
 cd "${Env:USERPROFILE}\VirtualBox VMs\mfsBSD"
 
-curl -o FreeBSD-13.2-RELEASE-amd64-dvd1.iso -L https://download.freebsd.org/releases/ISO-IMAGES/13.2/FreeBSD-13.2-RELEASE-amd64-dvd1.iso
+curl -o "FreeBSD-13.2-RELEASE-amd64-disc1.iso" -L "https://download.freebsd.org/releases/ISO-IMAGES/13.2/FreeBSD-13.2-RELEASE-amd64-disc1.iso"
 
-& "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" storageattach "mfsBSD" --storagectl "AHCI Controller" --port 0 --device 0 --type dvddrive --medium "FreeBSD-13.2-RELEASE-amd64-dvd1.iso"
+& "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" storageattach "mfsBSD" --storagectl "AHCI Controller" --port 0 --device 0 --type dvddrive --medium "FreeBSD-13.2-RELEASE-amd64-disc1.iso"
 ```
 
 Nachdem die virtuelle Maschine nun fertig konfiguriert ist, wird es Zeit diese zu booten.
@@ -333,7 +333,7 @@ Nun fehlt noch das mfsBSD-Buildscript, welches wir jetzt mittels `fetch` in unse
 ``` bash
 cd /usr/local/mfsbsd
 
-fetch -4 -q -o 'mfsbsd-master.tar.gz' --no-verify-peer https://github.com/mmatuska/mfsbsd/archive/master.tar.gz
+fetch -4 -q -o "mfsbsd-master.tar.gz" --no-verify-peer "https://github.com/mmatuska/mfsbsd/archive/master.tar.gz"
 
 tar xf mfsbsd-master.tar.gz
 chown -R root:wheel mfsbsd-master

@@ -185,7 +185,7 @@ remote-control:
 "EOF"
 
 
-fetch -o /usr/local/etc/unbound/root.hints https://www.internic.net/domain/named.root
+curl -o "/usr/local/etc/unbound/root.hints" -L "https://www.internic.net/domain/named.root"
 chown unbound /usr/local/etc/unbound/root.hints
 
 
