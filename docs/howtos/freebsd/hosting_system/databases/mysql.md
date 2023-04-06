@@ -34,13 +34,6 @@ cat >> /etc/make.conf << "EOF"
 "EOF"
 
 
-mkdir -p /var/db/ports/security_libfido2
-cat > /var/db/ports/security_libfido2/options << "EOF"
-_OPTIONS_READ=libfido2-1.13.0
-_FILE_COMPLETE_OPTIONS_LIST=DOCS
-OPTIONS_FILE_SET+=DOCS
-"EOF"
-
 mkdir -p /var/db/ports/comms_hidapi
 cat > /var/db/ports/comms_hidapi/options << "EOF"
 _OPTIONS_READ=hidapi-0.13.1

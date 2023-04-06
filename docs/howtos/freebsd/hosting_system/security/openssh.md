@@ -24,30 +24,11 @@ Zu den Voraussetzungen für dieses HowTo siehe bitte: [Hosting System](/howtos/f
 Wir installieren `security/openssh-portable` und dessen Abhängigkeiten.
 
 ``` bash
-mkdir -p /var/db/ports/devel_kyua
-cat > /var/db/ports/devel_kyua/options << "EOF"
-_OPTIONS_READ=kyua-0.13
-_FILE_COMPLETE_OPTIONS_LIST=DOCS EXAMPLES TEST
+mkdir -p /var/db/ports/security_libfido2
+cat > /var/db/ports/security_libfido2/options << "EOF"
+_OPTIONS_READ=libfido2-1.13.0
+_FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
-OPTIONS_FILE_SET+=EXAMPLES
-OPTIONS_FILE_SET+=TEST
-"EOF"
-
-mkdir -p /var/db/ports/devel_atf
-cat > /var/db/ports/devel_atf/options << "EOF"
-_OPTIONS_READ=atf-0.21
-_FILE_COMPLETE_OPTIONS_LIST=DOCS TEST
-OPTIONS_FILE_SET+=DOCS
-OPTIONS_FILE_SET+=TEST
-"EOF"
-
-mkdir -p /var/db/ports/devel_lutok
-cat > /var/db/ports/devel_lutok/options << "EOF"
-_OPTIONS_READ=lutok-0.4
-_FILE_COMPLETE_OPTIONS_LIST=DOCS EXAMPLES TEST
-OPTIONS_FILE_SET+=DOCS
-OPTIONS_FILE_SET+=EXAMPLES
-OPTIONS_FILE_SET+=TEST
 "EOF"
 
 mkdir -p /var/db/ports/dns_ldns
@@ -73,7 +54,7 @@ _FILE_COMPLETE_OPTIONS_LIST=BLACKLISTD BSM DOCS FIDO_U2F HPN KERB_GSSAPI LDNS LI
 OPTIONS_FILE_UNSET+=BLACKLISTD
 OPTIONS_FILE_UNSET+=BSM
 OPTIONS_FILE_SET+=DOCS
-OPTIONS_FILE_UNSET+=FIDO_U2F
+OPTIONS_FILE_SET+=FIDO_U2F
 OPTIONS_FILE_UNSET+=HPN
 OPTIONS_FILE_UNSET+=KERB_GSSAPI
 OPTIONS_FILE_SET+=LDNS
@@ -158,7 +139,6 @@ sed -e '/^# Ciphers and keying/ a\\
 Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com\\
 Macs hmac-sha2-512,hmac-sha2-512-etm@openssh.com,hmac-sha2-256,hmac-sha2-256-etm@openssh.com\\
 KexAlgorithms sntrup761x25519-sha512@openssh.com,curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256\\
-PubkeyAcceptedKeyTypes ssh-ed25519,ssh-ed25519-cert-v01@openssh.com,ecdsa-sha2-nistp521,ecdsa-sha2-nistp521-cert-v01@openssh.com,ecdsa-sha2-nistp384,ecdsa-sha2-nistp384-cert-v01@openssh.com,ecdsa-sha2-nistp256,ecdsa-sha2-nistp256-cert-v01@openssh.com\\
 ' -i '' /usr/local/etc/ssh/sshd_config
 
 ssh-keygen -q -t rsa -b 4096 -f "/usr/local/etc/ssh/ssh_host_rsa_key" -N ""
