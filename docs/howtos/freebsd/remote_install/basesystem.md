@@ -1083,16 +1083,19 @@ Wenn die eigene Kernel-Konfiguration wie bei uns bereits in der `/etc/make.conf`
 mkdir -p /root/kernels
 
 cat > /root/kernels/MYKERNEL << "EOF"
-include GENERIC
-ident   MYKERNEL
-options ALTQ
-options ALTQ_CBQ
-options ALTQ_RED
-options ALTQ_RIO
-options ALTQ_HFSC
-options ALTQ_CDNR
-options ALTQ_PRIQ
-options ALTQ_NOPCC
+include         GENERIC
+ident           MYKERNEL
+options         ALTQ
+options         ALTQ_CBQ        # Class Based Queueing
+options         ALTQ_RED        # Random Early Detection
+options         ALTQ_RIO        # RED In/Out
+options         ALTQ_CODEL      # CoDel Active Queueing
+options         ALTQ_HFSC       # Hierarchical Packet Scheduler
+options         ALTQ_FAIRQ      # Fair Packet Scheduler
+options         ALTQ_CDNR       # Traffic conditioner
+options         ALTQ_PRIQ       # Priority Queueing
+options         ALTQ_NOPCC      # Required if the TSC is unusable
+options         ALTQ_DEBUG
 "EOF"
 
 ln -s /root/kernels/MYKERNEL /usr/src/sys/amd64/conf/
