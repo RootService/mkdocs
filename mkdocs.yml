@@ -106,6 +106,7 @@ plugins:
 #    - material/privacy:
     - material/search:
     - material/social:
+        cards_font: Roboto
     - minify:
 #        minify_html: true
 
