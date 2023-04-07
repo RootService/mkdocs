@@ -83,7 +83,7 @@ VirtualBox (inklusive dem Extensionpack) und PuTTY werden mit den jeweiligen Sta
 winget install PuTTY.PuTTY
 winget install Oracle.VirtualBox
 
-$Env:vbox_ver=((winget show Oracle.VirtualBox) -match '^Version' -split '\s+')[1]
+$Env:vbox_ver=((winget show Oracle.VirtualBox) -match '^Version:' -split '\s+')[1]
 curl -o "Oracle_VM_VirtualBox_Extension_Pack-${Env:vbox_ver}.vbox-extpack" -L "https://download.virtualbox.org/virtualbox/${Env:vbox_ver}/Oracle_VM_VirtualBox_Extension_Pack-${Env:vbox_ver}.vbox-extpack"
 & "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" extpack install --replace Oracle_VM_VirtualBox_Extension_Pack-${Env:vbox_ver}.vbox-extpack
 rm Oracle_VM_VirtualBox_Extension_Pack-${Env:vbox_ver}.vbox-extpack

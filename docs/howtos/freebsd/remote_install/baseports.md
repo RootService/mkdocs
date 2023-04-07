@@ -517,7 +517,7 @@ OPTIONS_FILE_UNSET+=STATIC
 
 mkdir -p /var/db/ports/security_libgpg-error
 cat > /var/db/ports/security_libgpg-error/options << "EOF"
-_OPTIONS_READ=libgpg-error-1.46
+_OPTIONS_READ=libgpg-error-1.47
 _FILE_COMPLETE_OPTIONS_LIST=DOCS NLS TEST
 OPTIONS_FILE_SET+=DOCS
 OPTIONS_FILE_SET+=NLS

@@ -23,7 +23,7 @@ Unser Hosting System wird am Ende folgende Dienste umfassen.
 - OpenDKIM 2.10.3 (VBR, 2048 Bit RSA)
 - OpenDMARC 1.4.2 (SPF2, FailureReports)
 - SpamAssassin 4.0.0 (SpamAss-Milter)
-- Apache 2.4.56 (MPM-Event, HTTP/2, mod_brotli)
+- Apache 2.4.57 (MPM-Event, HTTP/2, mod_brotli)
 - NGinx 1.22.1 (HTTP/2, mod_brotli)
 - PHP 8.1.17 (PHP-FPM, Composer, PEAR)
 - NodeJS 18.15.0 (NPM, YARN)

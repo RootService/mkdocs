@@ -15,7 +15,7 @@ contributors:
 
 Unser Hosting System wird um folgende Dienste erweitert.
 
-- Apache 2.4.56 (MPM-Event, HTTP/2, mod_brotli)
+- Apache 2.4.57 (MPM-Event, HTTP/2, mod_brotli)
 
 ## Voraussetzungen
 
