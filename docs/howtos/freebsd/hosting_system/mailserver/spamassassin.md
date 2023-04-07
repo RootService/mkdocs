@@ -2,7 +2,7 @@
 title: 'SpamAssassin'
 description: 'In diesem HowTo wird step-by-step die Installation von SpamAssassin für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-04-06'
+updated: '2023-04-07'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -24,6 +24,34 @@ Zu den Voraussetzungen für dieses HowTo siehe bitte: [Hosting System](/howtos/f
 Wir installieren `mail/spamassassin` und dessen Abhängigkeiten.
 
 ``` bash
+mkdir -p /var/db/ports/devel_p5-Moo
+cat > /var/db/ports/devel_p5-Moo/options << "EOF"
+_OPTIONS_READ=p5-Moo-2.005005
+_FILE_COMPLETE_OPTIONS_LIST=XS
+OPTIONS_FILE_SET+=XS
+"EOF"
+
+mkdir -p /var/db/ports/devel_p5-Class-C3
+cat > /var/db/ports/devel_p5-Class-C3/options << "EOF"
+_OPTIONS_READ=p5-Class-C3-0.35
+_FILE_COMPLETE_OPTIONS_LIST=XS
+OPTIONS_FILE_SET+=XS
+"EOF"
+
+mkdir -p /var/db/ports/devel_p5-strictures
+cat > /var/db/ports/devel_p5-strictures/options << "EOF"
+_OPTIONS_READ=p5-strictures-2.000006
+_FILE_COMPLETE_OPTIONS_LIST=STRICTURES_EXTRA
+OPTIONS_FILE_SET+=STRICTURES_EXTRA
+"EOF"
+
+mkdir -p /var/db/ports/devel_p5-Data-Dumper-Concise
+cat > /var/db/ports/devel_p5-Data-Dumper-Concise/options << "EOF"
+_OPTIONS_READ=p5-Data-Dumper-Concise-2.023
+_FILE_COMPLETE_OPTIONS_LIST=ARGNAMES
+OPTIONS_FILE_SET+=ARGNAMES
+"EOF"
+
 mkdir -p /var/db/ports/dns_p5-Net-DNS
 cat > /var/db/ports/dns_p5-Net-DNS/options << "EOF"
 _OPTIONS_READ=p5-Net-DNS-1.37
