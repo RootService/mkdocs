@@ -388,7 +388,7 @@ OPTIONS_FILE_SET+=DOCS
 
 mkdir -p /var/db/ports/devel_readline
 cat > /var/db/ports/devel_readline/options << "EOF"
-_OPTIONS_READ=readline-8.2.0
+_OPTIONS_READ=readline-8.2.1
 _FILE_COMPLETE_OPTIONS_LIST=BRACKETEDPASTE DOCS
 OPTIONS_FILE_SET+=BRACKETEDPASTE
 OPTIONS_FILE_SET+=DOCS
@@ -442,7 +442,7 @@ OPTIONS_FILE_SET+=SOCKS
 
 mkdir -p /var/db/ports/net_py-urllib3
 cat > /var/db/ports/net_py-urllib3/options << "EOF"
-_OPTIONS_READ=py39-urllib3-1.26.14
+_OPTIONS_READ=py39-urllib3-1.26.15
 _FILE_COMPLETE_OPTIONS_LIST=BROTLI SOCKS SSL
 OPTIONS_FILE_SET+=BROTLI
 OPTIONS_FILE_SET+=SOCKS
@@ -583,7 +583,7 @@ Wir installieren `devel/ruby-gems` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/devel_ruby-gems
 cat > /var/db/ports/devel_ruby-gems/options << "EOF"
-_OPTIONS_READ=ruby31-gems-3.4.7
+_OPTIONS_READ=ruby31-gems-3.4.9
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
 "EOF"

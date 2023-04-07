@@ -503,7 +503,7 @@ OPTIONS_FILE_SET+=SOCKS
 
 mkdir -p /var/db/ports/www_py-httpcore
 cat > /var/db/ports/www_py-httpcore/options << "EOF"
-_OPTIONS_READ=py39-httpcore-0.16.3
+_OPTIONS_READ=py39-httpcore-0.17.0
 _FILE_COMPLETE_OPTIONS_LIST=HTTP2 SOCKS
 OPTIONS_FILE_SET+=HTTP2
 OPTIONS_FILE_SET+=SOCKS

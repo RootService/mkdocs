@@ -298,7 +298,7 @@ OPTIONS_FILE_SET+=DOCS
 
 mkdir -p /var/db/ports/devel_libatomic_ops
 cat > /var/db/ports/devel_libatomic_ops/options << "EOF"
-_OPTIONS_READ=libatomic_ops-7.6.14
+_OPTIONS_READ=libatomic_ops-7.8.0
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
 "EOF"
