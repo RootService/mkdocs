@@ -168,15 +168,15 @@ sysrc spamass_milter_localflags="-r 15 -f -u spamd -- -u spamd"
 
 ## Konfigurieren
 
-`local.conf` einrichten.
+`local.cf` einrichten.
 
 ``` bash
 sed -e 's|^#[[:space:]]*\(report_contact\)[[:space:]].*$|\1 postmaster@example.com|g' \
     -e 's|^#[[:space:]]*\(report_hostname\)[[:space:]].*$|\1 mail.example.com|g' \
     -e 's|^#[[:space:]]*\(report_safe\)[[:space:]].*$|\1 0|g' \
-    /usr/local/etc/mail/spamassassin/local.conf.sample > /usr/local/etc/mail/spamassassin/local.conf
+    /usr/local/etc/mail/spamassassin/local.cf.sample > /usr/local/etc/mail/spamassassin/local.cf
 
-cat >> /usr/local/etc/mail/spamassassin/local.conf << "EOF"
+cat >> /usr/local/etc/mail/spamassassin/local.cf << "EOF"
 clear_headers
 add_header all Flag _YESNOCAPS_
 add_header all Level _STARS(*)_
