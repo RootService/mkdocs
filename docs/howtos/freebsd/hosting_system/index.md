@@ -2,7 +2,7 @@
 title: 'Hosting System'
 description: 'In diesem HowTo werden step-by-step die Voraussetzungen für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-04-07'
+updated: '2023-04-08'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -14,7 +14,7 @@ author_url: https://github.com/JoeUser78
 Unser Hosting System wird am Ende folgende Dienste umfassen.
 
 - CertBot 2.4.0 (LetsEncrypt ACME API 2.0)
-- OpenSSH 9.3 (Public-Key-Auth)
+- OpenSSH 9.2p1 (Public-Key-Auth)
 - Unbound 1.17.1 (DNScrypt, DNS over TLS)
 - MySQL 8.0.32 (InnoDB, GTID)
 - Dovecot 2.3.20 (IMAP only, 1GB Quota)

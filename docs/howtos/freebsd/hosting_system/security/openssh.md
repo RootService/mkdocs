@@ -2,7 +2,7 @@
 title: 'OpenSSH'
 description: 'In diesem HowTo wird step-by-step die Installation von OpenSSH für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-04-07'
+updated: '2023-04-08'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -13,7 +13,7 @@ author_url: https://github.com/JoeUser78
 
 Unser Hosting System wird folgende Dienste umfassen.
 
-- OpenSSH 9.3 (Public-Key-Auth)
+- OpenSSH 9.2p1 (Public-Key-Auth)
 
 ## Voraussetzungen
 
@@ -49,7 +49,7 @@ OPTIONS_FILE_SET+=RRTYPETA
 
 mkdir -p /var/db/ports/security_openssh-portable
 cat > /var/db/ports/security_openssh-portable/options << "EOF"
-_OPTIONS_READ=openssh-portable-9.3.p1
+_OPTIONS_READ=openssh-portable-9.2.p1
 _FILE_COMPLETE_OPTIONS_LIST=BLACKLISTD BSM DOCS FIDO_U2F HPN KERB_GSSAPI LDNS LIBEDIT NONECIPHER PAM TCP_WRAPPERS XMSS MIT HEIMDAL HEIMDAL_BASE
 OPTIONS_FILE_UNSET+=BLACKLISTD
 OPTIONS_FILE_UNSET+=BSM

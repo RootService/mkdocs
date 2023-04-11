@@ -2,7 +2,7 @@
 title: 'Remote Installation'
 description: 'In diesem HowTo werden step-by-step die Voraussetzungen für die Remote Installation des FreeBSD 64Bit BaseSystem auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-04-07'
+updated: '2023-04-08'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -14,8 +14,8 @@ author_url: https://github.com/JoeUser78
 Unser BaseSystem wird am Ende folgende Dienste umfassen.
 
 - FreeBSD 13.2-RELEASE 64Bit
-- OpenSSL 1.1.1
-- OpenSSH 9.3
+- OpenSSL 1.1.1t
+- OpenSSH 9.2p1
 - Unbound 1.17.1
 
 Unsere BasePorts werden am Ende folgende Dienste umfassen.
