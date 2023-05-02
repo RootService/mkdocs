@@ -2,7 +2,7 @@
 title: 'BaseTools'
 description: 'In diesem HowTo wird step-by-step die Installation einiger BaseTools für ein FreeBSD 64Bit BaseSystem auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-04-08'
+updated: '2023-05-02'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -15,13 +15,13 @@ In diesem HowTo beschreibe ich step-by-step die Installation einiger Tools (Port
 
 Unsere BaseTools werden am Ende folgende Dienste umfassen.
 
-- Sudo 1.9.13
+- Sudo 1.9.13p3
 - cURL 8.0.1
 - Bash 5.2.15
-- GIT 2.40.0
+- GIT 2.40.1
 - Portmaster 3.22
 - SMARTmontools 7.3
-- SQLite 3.41.0
+- SQLite 3.41.2
 - Nano 7.2
 - GnuPG 2.3.8
 - Subversion 1.14.2
@@ -324,7 +324,7 @@ OPTIONS_FILE_SET+=EXAMPLES
 
 mkdir -p /var/db/ports/devel_git
 cat > /var/db/ports/devel_git/options << "EOF"
-_OPTIONS_READ=git-2.40.0
+_OPTIONS_READ=git-2.40.1
 _FILE_COMPLETE_OPTIONS_LIST=CONTRIB CURL GITWEB HTMLDOCS ICONV NLS PCRE2 PERL SEND_EMAIL SUBTREE
 OPTIONS_FILE_SET+=CONTRIB
 OPTIONS_FILE_SET+=CURL
@@ -416,7 +416,7 @@ Wir installieren `databases/sqlite3` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/databases_sqlite3
 cat > /var/db/ports/databases_sqlite3/options << "EOF"
-_OPTIONS_READ=sqlite3-3.41.0
+_OPTIONS_READ=sqlite3-3.41.2
 _FILE_COMPLETE_OPTIONS_LIST=ARMOR DBPAGE DBSTAT DIRECT_READ DQS EXAMPLES EXTENSION FTS3_TOKEN FTS4 FTS5 LIKENOTBLOB MEMMAN METADATA NORMALIZE NULL_TRIM RBU SECURE_DELETE SORT_REF STATIC STMT STRIP TCL THREADS TRUSTED_SCHEMA UNKNOWN_SQL UNLOCK_NOTIFY UPDATE_LIMIT URI URI_AUTHORITY TS0 TS1 TS2 TS3 STAT3 STAT4 LIBEDIT READLINE SESSION OFFSET SOUNDEX GEOPOLY RTREE RTREE_INT ICU UNICODE61
 OPTIONS_FILE_UNSET+=ARMOR
 OPTIONS_FILE_SET+=DBPAGE

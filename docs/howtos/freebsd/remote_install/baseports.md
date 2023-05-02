@@ -2,7 +2,7 @@
 title: 'BasePorts'
 description: 'In diesem HowTo wird step-by-step die Installation einiger BasePorts für ein FreeBSD 64Bit BaseSystem auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-04-08'
+updated: '2023-05-02'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -20,7 +20,7 @@ Unsere BasePorts werden am Ende folgende Dienste umfassen.
 - LUA 5.4.4
 - TCL 8.6.13
 - Python 3.9.16
-- Ruby 3.1.3
+- Ruby 3.1.4
 
 ## Voraussetzungen
 
@@ -97,7 +97,7 @@ Wir installieren `sysutils/devcpu-data` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/sysutils_devcpu-data
 cat > /var/db/ports/sysutils_devcpu-data/options << "EOF"
-_OPTIONS_READ=devcpu-data-20230219
+_OPTIONS_READ=devcpu-data-20230424
 _FILE_COMPLETE_OPTIONS_LIST= AMD INTEL
 OPTIONS_FILE_SET+=AMD
 OPTIONS_FILE_SET+=INTEL
@@ -417,7 +417,7 @@ Wir installieren `devel/py-pip` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/www_py-beautifulsoup
 cat > /var/db/ports/www_py-beautifulsoup/options << "EOF"
-_OPTIONS_READ=py39-beautifulsoup-4.12.0
+_OPTIONS_READ=py39-beautifulsoup-4.12.2
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
 "EOF"
@@ -431,7 +431,7 @@ OPTIONS_FILE_SET+=PYGMENTS
 
 mkdir -p /var/db/ports/www_py-requests
 cat > /var/db/ports/www_py-requests/options << "EOF"
-_OPTIONS_READ=py39-requests-2.28.2
+_OPTIONS_READ=py39-requests-2.29.0
 _FILE_COMPLETE_OPTIONS_LIST=SOCKS
 OPTIONS_FILE_SET+=SOCKS
 "EOF"
@@ -530,7 +530,7 @@ OPTIONS_FILE_SET+=LIBYAML
 
 mkdir -p /var/db/ports/devel_py-pip
 cat > /var/db/ports/devel_py-pip/options << "EOF"
-_OPTIONS_READ=py39-pip-22.3.1
+_OPTIONS_READ=py39-pip-23.1.2
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
 "EOF"
@@ -557,7 +557,7 @@ OPTIONS_FILE_UNSET+=CPU_OPTS
 
 mkdir -p /var/db/ports/lang_ruby31
 cat > /var/db/ports/lang_ruby31/options << "EOF"
-_OPTIONS_READ=ruby-3.1.3
+_OPTIONS_READ=ruby-3.1.4
 _FILE_COMPLETE_OPTIONS_LIST=CAPIDOCS DEBUG DOCS EXAMPLES GMP RDOC LIBEDIT READLINE
 OPTIONS_FILE_UNSET+=CAPIDOCS
 OPTIONS_FILE_UNSET+=DEBUG
@@ -579,7 +579,7 @@ Wir installieren `devel/ruby-gems` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/devel_ruby-gems
 cat > /var/db/ports/devel_ruby-gems/options << "EOF"
-_OPTIONS_READ=ruby31-gems-3.4.9
+_OPTIONS_READ=ruby31-gems-3.4.12
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
 "EOF"

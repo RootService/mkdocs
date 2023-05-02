@@ -2,7 +2,7 @@
 title: 'Postfix'
 description: 'In diesem HowTo wird step-by-step die Installation des Postfix Mailservers für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-04-08'
+updated: '2023-05-02'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -13,7 +13,7 @@ author_url: https://github.com/JoeUser78
 
 Unser Hosting System wird um folgende Dienste erweitert.
 
-- Postfix 3.7.4 (Dovecot-SASL, postscreen)
+- Postfix 3.8.0 (Dovecot-SASL, postscreen)
 - Python-SPF-Engine 3.0.3 (SPF2)
 
 ## Voraussetzungen
@@ -27,7 +27,7 @@ Wir installieren `mail/postfix` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/mail_postfix
 cat > /var/db/ports/mail_postfix/options << "EOF"
-_OPTIONS_READ=postfix-3.7.4
+_OPTIONS_READ=postfix-3.8.0
 _FILE_COMPLETE_OPTIONS_LIST=BDB BLACKLISTD CDB DOCS EAI INST_BASE LDAP LMDB MYSQL NIS PCRE2 PGSQL SASL SQLITE TEST TLS SASLKMIT SASLKRB5
 OPTIONS_FILE_UNSET+=BDB
 OPTIONS_FILE_UNSET+=BLACKLISTD
@@ -491,7 +491,7 @@ OPTIONS_FILE_UNSET+=TRIO
 
 mkdir -p /var/db/ports/www_py-httpx
 cat > /var/db/ports/www_py-httpx/options << "EOF"
-_OPTIONS_READ=py39-httpx-0.23.3
+_OPTIONS_READ=py39-httpx-0.24.0
 _FILE_COMPLETE_OPTIONS_LIST=BROTLI CLI HTTP2 SOCKS
 OPTIONS_FILE_SET+=BROTLI
 OPTIONS_FILE_UNSET+=CLI

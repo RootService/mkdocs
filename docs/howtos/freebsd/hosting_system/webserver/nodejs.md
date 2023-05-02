@@ -2,7 +2,7 @@
 title: 'NodeJS'
 description: 'In diesem HowTo wird step-by-step die Installation des NodeJS Servers für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-04-08'
+updated: '2023-05-02'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -13,7 +13,7 @@ author_url: https://github.com/JoeUser78
 
 Unser Hosting System wird um folgende Dienste erweitert.
 
-- NodeJS 18.15.0 (NPM, YARN)
+- NodeJS 18.16.0 (NPM, YARN)
 
 ## Voraussetzungen
 
@@ -53,7 +53,7 @@ OPTIONS_FILE_SET+=DOCS
 
 mkdir -p /var/db/ports/www_node18
 cat > /var/db/ports/www_node18/options << "EOF"
-_OPTIONS_READ=node18-18.15.0
+_OPTIONS_READ=node18-18.16.0
 _FILE_COMPLETE_OPTIONS_LIST=BUNDLED_SSL DOCS DTRACE NLS
 OPTIONS_FILE_UNSET+=BUNDLED_SSL
 OPTIONS_FILE_SET+=DOCS

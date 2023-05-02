@@ -2,7 +2,7 @@
 title: 'Hosting System'
 description: 'In diesem HowTo werden step-by-step die Voraussetzungen für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-04-08'
+updated: '2023-05-02'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -18,7 +18,7 @@ Unser Hosting System wird am Ende folgende Dienste umfassen.
 - Unbound 1.17.1 (DNScrypt, DNS over TLS)
 - MySQL 8.0.32 (InnoDB, GTID)
 - Dovecot 2.3.20 (IMAP only, 1GB Quota)
-- Postfix 3.7.4 (Dovecot-SASL, postscreen)
+- Postfix 3.8.0 (Dovecot-SASL, postscreen)
 - Python-SPF-Engine 3.0.3 (SPF2)
 - OpenDKIM 2.10.3 (VBR, 2048 Bit RSA)
 - OpenDMARC 1.4.2 (SPF2, FailureReports)
@@ -26,7 +26,7 @@ Unser Hosting System wird am Ende folgende Dienste umfassen.
 - Apache 2.4.57 (MPM-Event, HTTP/2, mod_brotli)
 - NGinx 1.22.1 (HTTP/2, mod_brotli)
 - PHP 8.1.18 (PHP-FPM, Composer, PEAR)
-- NodeJS 18.15.0 (NPM, YARN)
+- NodeJS 18.16.0 (NPM, YARN)
 
 Folgende Punkte sind in allen folgenden HowTos zu beachten.
 
