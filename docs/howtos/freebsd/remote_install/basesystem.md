@@ -148,6 +148,9 @@ Für eine leicht erhöhte Datensicherheit legen wir mittels `gmirror` ein Softwa
 
 ``` bash
 kldload geom_mirror
+kldload zfs
+
+sysctl vfs.zfs.min_auto_ashift=12
 
 gmirror label -b load root nvd0p2 nvd1p2
 gmirror label -b load data nvd0p3 nvd1p3
@@ -395,11 +398,11 @@ net.inet.ip.maxfragsperpacket=0
 net.inet.ip.process_options=0
 net.inet.ip.random_id=1
 net.inet.ip.redirect=0
-##net.inet.ip.stealth=1
+net.inet.ip.stealth=1
 net.inet.ip.ttl=128
 net.inet.raw.maxdgram=16384
 net.inet.raw.recvspace=16384
-##net.inet.sctp.blackhole=2
+net.inet.sctp.blackhole=2
 net.inet.tcp.abc_l_var=44
 net.inet.tcp.blackhole=2
 net.inet.tcp.cc.algorithm=htcp
@@ -422,7 +425,7 @@ net.inet.tcp.msl=2500
 net.inet.tcp.mssdflt=1460
 net.inet.tcp.nolocaltimewait=1
 net.inet.tcp.path_mtu_discovery=0
-##net.inet.tcp.recvbuf_inc=65536
+net.inet.tcp.recvbuf_inc=65536
 net.inet.tcp.recvbuf_max=16777216
 net.inet.tcp.recvspace=131072
 net.inet.tcp.rfc6675_pipe=1
@@ -438,7 +441,7 @@ net.inet6.icmp6.nodeinfo=0
 net.inet6.icmp6.rediraccept=0
 net.inet6.ip6.forwarding=1
 net.inet6.ip6.redirect=0
-##net.inet6.ip6.stealth=1
+net.inet6.ip6.stealth=1
 net.local.stream.recvspace=524288
 net.local.stream.sendspace=524288
 net.route.netisr_maxqlen=4096
@@ -450,7 +453,7 @@ security.bsd.hardlink_check_gid=1
 security.bsd.hardlink_check_uid=1
 vfs.read_max=128
 vfs.ufs.dirhash_maxmem=67108864
-##vfs.zfs.min_auto_ashift=12
+vfs.zfs.min_auto_ashift=12
 "EOF"
 ```
 
@@ -583,7 +586,7 @@ cat > /etc/fstab << "EOF"
 # Device                   Mountpoint              FStype  Options             Dump    Pass
 /dev/mirror/root           /                       ufs     rw                  1       1
 dev                        /dev                    devfs   rw                  0       0
-#fdesc                      /dev/fd                 fdescfs rw,late             0       0
+fdesc                      /dev/fd                 fdescfs rw,late             0       0
 proc                       /proc                   procfs  rw                  0       0
 /dev/mirror/swap           none                    swap    sw                  0       0
 /dev/mirror/data           /data                   ufs     rw                  2       2
@@ -602,6 +605,7 @@ cat > /etc/rc.conf << "EOF"
 kld_list="accf_data accf_http accf_dns cc_htcp"
 fsck_y_enable="YES"
 dmesg_enable="YES"
+zfs_enable="YES"
 dumpdev="AUTO"
 
 ##############################################################
@@ -891,12 +895,7 @@ kernels="GENERIC MYKERNEL"
 # Kernel modules
 coretemp_load="YES"
 geom_mirror_load="YES"
-#opensolaris_load="YES"
-#zfs_load="YES"
-#accf_data_load="YES"
-#accf_http_load="YES"
-#accf_dns_load="YES"
-#cc_htcp_load="YES"
+zfs_load="YES"
 
 # Kernel parameters
 debug.acpi.disabled="thermal"
@@ -1074,12 +1073,10 @@ ident           MYKERNEL
 
 ln -s /root/kernels/MYKERNEL /usr/src/sys/amd64/conf/
 
-
 make -j4 KERNCONF=GENERIC INSTALLKERNEL=GENERIC INSTKERNNAME=GENERIC kernel
-sed -e 's/^#fdesc/fdesc/' -i '' /etc/fstab
 
- 
 make -j4 KERNCONF=MYKERNEL INSTALLKERNEL=MYKERNEL INSTKERNNAME=MYKERNEL kernel
+
 sed -e 's/^\(kernel=\).*$/\1"MYKERNEL"/' -i '' /boot/loader.conf
 ```
 

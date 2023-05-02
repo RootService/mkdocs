@@ -84,7 +84,7 @@ OPTIONS_FILE_SET+=DOCS
 
 mkdir -p /var/db/ports/devel_cmake-core
 cat > /var/db/ports/devel_cmake-core/options << "EOF"
-_OPTIONS_READ=cmake-core-3.25.1
+_OPTIONS_READ=cmake-core-3.26.1
 _FILE_COMPLETE_OPTIONS_LIST=CPACK DOCS
 OPTIONS_FILE_SET+=CPACK
 OPTIONS_FILE_SET+=DOCS

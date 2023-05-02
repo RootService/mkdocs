@@ -265,6 +265,7 @@ LoadModule filter_module libexec/apache24/mod_filter.so
 #LoadModule reflector_module libexec/apache24/mod_reflector.so
 LoadModule substitute_module libexec/apache24/mod_substitute.so
 #LoadModule sed_module libexec/apache24/mod_sed.so
+#LoadModule charset_lite_module libexec/apache24/mod_charset_lite.so
 LoadModule deflate_module libexec/apache24/mod_deflate.so
 LoadModule xml2enc_module libexec/apache24/mod_xml2enc.so
 LoadModule proxy_html_module libexec/apache24/mod_proxy_html.so
@@ -304,6 +305,7 @@ LoadModule proxy_fcgi_module libexec/apache24/mod_proxy_fcgi.so
 #LoadModule slotmem_shm_module libexec/apache24/mod_slotmem_shm.so
 #LoadModule slotmem_plain_module libexec/apache24/mod_slotmem_plain.so
 LoadModule ssl_module libexec/apache24/mod_ssl.so
+#LoadModule dialup_module libexec/apache24/mod_dialup.so
 LoadModule http2_module libexec/apache24/mod_http2.so
 LoadModule proxy_http2_module libexec/apache24/mod_proxy_http2.so
 #LoadModule md_module libexec/apache24/mod_md.so
@@ -332,6 +334,7 @@ LoadModule negotiation_module libexec/apache24/mod_negotiation.so
 LoadModule dir_module libexec/apache24/mod_dir.so
 #LoadModule imagemap_module libexec/apache24/mod_imagemap.so
 #LoadModule actions_module libexec/apache24/mod_actions.so
+#LoadModule speling_module libexec/apache24/mod_speling.so
 #LoadModule userdir_module libexec/apache24/mod_userdir.so
 LoadModule alias_module libexec/apache24/mod_alias.so
 LoadModule rewrite_module libexec/apache24/mod_rewrite.so
@@ -405,6 +408,8 @@ UseCanonicalName On
 HostnameLookups Double
 ServerTokens OS
 ServerSignature Off
+ServerName devnull.example.com
+ServerAdmin webmaster@example.com
 AccessFileName .htaccess
 AllowEncodedSlashes NoDecode
 AddDefaultCharset UTF-8
@@ -437,8 +442,6 @@ AliasMatch "^/?\.well-known/acme-challenge(.*)" "/data/www/acme/.well-known/acme
 FileETag None
 <IfModule headers_module>
     RequestHeader unset Proxy early
-    Header always unset ETag
-    Header unset ETag
 </IfModule>
 <IfModule dir_module>
     DirectoryIndex index.html index.htm index.php
@@ -619,10 +622,11 @@ FileETag None
 </IfModule>
 <IfModule userdir_module>
     UserDir disabled
-    UserDir "/home/*/public_html"
+    UserDir public_html
     <Directory "/home/*/public_html">
         Options None +SymLinksIfOwnerMatch
         AllowOverride None
+        Require method GET POST OPTIONS
         Require all granted
     </Directory>
 </IfModule>
@@ -652,24 +656,33 @@ FileETag None
 </IfModule>
 <IfModule headers_module>
     Header set Access-Control-Allow-Methods "GET, POST, OPTIONS"
-#    Header set Access-Control-Allow-Headers "Origin, X-Requested-With, Content-Type, Accept, Accept-Encoding"
-    Header set Access-Control-Allow-Origin "null"
     <IfModule setenvif_module>
         SetEnvIf Origin ":" IS_CORS
         Header set Access-Control-Allow-Origin "*" env=IS_CORS
     </IfModule>
     Header set Access-Control-Max-Age "600"
     Header set Content-Security-Policy "\
-block-all-mixed-content; \
 upgrade-insecure-requests; \
-default-src 'self' 'unsafe-inline' https: data: blob: mediastream:; \
-script-src 'self' 'unsafe-inline' 'unsafe-eval' https: blob: mediastream:; \
+default-src 'self'; \
+child-src 'self'; \
+connect-src 'self' https:; \
+font-src 'self' https:; \
+frame-src 'self'; \
+img-src 'self' https:; \
+manifest-src 'self'; \
+media-src 'self'; \
+object-src 'none'; \
+script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' https:; \
+style-src 'self' 'unsafe-inline' 'unsafe-eval' https:; \
+worker-src 'self'; \
 form-action 'self' https:; \
 frame-ancestors 'self'; \
-sandbox allow-forms allow-modals allow-pointer-lock allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts allow-top-navigation"
+sandbox allow-downloads allow-forms allow-modals allow-orientation-lock allow-pointer-lock allow-popups allow-popups-to-escape-sandbox allow-presentation allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation"
+    Header set Cross-Origin-Opener-Policy "same-origin"
+    Header set Cross-Origin-Embedder-Policy "require-corp"
+    Header set Cross-Origin-Resource-Policy "same-origin"
     Header set Referrer-Policy "strict-origin-when-cross-origin"
     Header set Timing-Allow-Origin "*"
-    Header set Upgrade-Insecure-Requests "1"
     Header set X-Content-Type-Options "nosniff"
     Header set X-DNS-Prefetch-Control "on"
     Header set X-Download-Options "noopen"
@@ -697,9 +710,12 @@ Include "etc/apache24/vhosts.conf"
     SSLHonorCipherOrder On
     SSLStrictSNIVHostCheck On
     SSLProtocol -ALL +TLSv1.2 +TLSv1.3
+    SSLProxyProtocol -ALL +TLSv1.2 +TLSv1.3
     SSLOptions +StrictRequire +StdEnvVars
     SSLCipherSuite "ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256"
     SSLCipherSuite TLSv1.3 "TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384:TLS_AES_128_GCM_SHA256"
+    SSLProxyCipherSuite "ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256"
+    SSLProxyCipherSuite TLSv1.3 "TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384:TLS_AES_128_GCM_SHA256"
     SSLOpenSSLConfCmd Curves "X448:X25519:secp384r1:prime256v1"
     SSLOCSPEnable On
     SSLStaplingFakeTryLater Off
@@ -723,23 +739,24 @@ Include "etc/apache24/vhosts.conf"
     <IfModule headers_module>
         Header set Public-Key-Pins "max-age=0; includeSubdomains"
         Header set Strict-Transport-Security "max-age=15768000; includeSubdomains; preload"
-        Header always edit* Set-Cookie "^(.*)(?i:\s*;\s*Secure)(.*)$" "$1$2"
         Header edit* Set-Cookie "^(.*)(?i:\s*;\s*Secure)(.*)$" "$1$2"
-        Header always edit Set-Cookie "^(.*)$" "$1; Secure"
         Header edit Set-Cookie "^(.*)$" "$1; Secure"
     </IfModule>
 </IfModule>
 <IfModule headers_module>
-    Header always edit* Set-Cookie "^(.*)(?i:\s*;\s*HttpOnly)(.*)$" "$1$2"
+    Header merge Cache-Control "private"
+    Header merge Cache-Control "no-cache"
+    Header merge Cache-Control "no-transform"
+    Header merge Cache-Control "must-revalidate"
+    Header merge Cache-Control "proxy-revalidate"
     Header edit* Set-Cookie "^(.*)(?i:\s*;\s*HttpOnly)(.*)$" "$1$2"
-    Header always edit Set-Cookie "^(.*)$" "$1; HttpOnly"
     Header edit Set-Cookie "^(.*)$" "$1; HttpOnly"
-    Header always edit* Set-Cookie "^(.*)(?i:\s*;\s*SameSite=[A-Za-z0-9]+)(.*)$" "$1$2"
     Header edit* Set-Cookie "^(.*)(?i:\s*;\s*SameSite=[A-Za-z0-9]+)(.*)$" "$1$2"
-    Header always edit Set-Cookie "^(.*)$" "$1; SameSite=Lax"
     Header edit Set-Cookie "^(.*)$" "$1; SameSite=Lax"
     Header always unset Pragma
+    Header always unset ETag
     Header unset Pragma
+    Header unset ETag
 </IfModule>
 "EOF"
 ```

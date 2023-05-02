@@ -25,7 +25,7 @@ Unser Hosting System wird am Ende folgende Dienste umfassen.
 - SpamAssassin 4.0.0 (SpamAss-Milter)
 - Apache 2.4.57 (MPM-Event, HTTP/2, mod_brotli)
 - NGinx 1.22.1 (HTTP/2, mod_brotli)
-- PHP 8.1.17 (PHP-FPM, Composer, PEAR)
+- PHP 8.1.18 (PHP-FPM, Composer, PEAR)
 - NodeJS 18.15.0 (NPM, YARN)
 
 Folgende Punkte sind in allen folgenden HowTos zu beachten.
