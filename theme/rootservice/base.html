@@ -18,10 +18,14 @@
     {% endblock %}
         <link rel="dns-prefetch" href="https://fonts.gstatic.com">
         <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    {% if config.repo_url and config.repo_show %}
         <link rel="dns-prefetch" href="https://api.github.com">
+    {% endif %}
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
         <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin="anonymous">
+    {% if config.repo_url and config.repo_show %}
         <link rel="preconnect" href="https://api.github.com" crossorigin="anonymous">
+    {% endif %}
     {% block site_meta %}
       {% if page.meta and page.meta.description %}
         <meta name="description" content="{{ page.meta.description }}">
