@@ -2,7 +2,7 @@
 title: 'Unbound'
 description: 'In diesem HowTo wird step-by-step die Installation von Unbound für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-05-02'
+updated: '2023-05-20'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -25,14 +25,14 @@ Wir installieren `dns/unbound` und dessen Abhängigkeiten.
 
 ``` bash
 mkdir -p /var/db/ports/security_libsodium
-cat > /var/db/ports/security_libsodium/options << "EOF"
+cat << "EOF" > /var/db/ports/security_libsodium/options
 _OPTIONS_READ=libsodium-1.0.18
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
 "EOF"
 
 mkdir -p /var/db/ports/devel_libevent
-cat > /var/db/ports/devel_libevent/options << "EOF"
+cat << "EOF" > /var/db/ports/devel_libevent/options
 _OPTIONS_READ=libevent-2.1.12
 _FILE_COMPLETE_OPTIONS_LIST=OPENSSL THREADS
 OPTIONS_FILE_SET+=OPENSSL
@@ -40,7 +40,7 @@ OPTIONS_FILE_SET+=THREADS
 "EOF"
 
 mkdir -p /var/db/ports/dns_unbound
-cat > /var/db/ports/dns_unbound/options << "EOF"
+cat << "EOF" > /var/db/ports/dns_unbound/options
 _OPTIONS_READ=unbound-1.17.1
 _FILE_COMPLETE_OPTIONS_LIST=DEP-RSA1024 DNSCRYPT DNSTAP DOCS DOH DYNLIB ECDSA EVAPI FILTER_AAAA GOST HIREDIS LIBEVENT MUNIN_PLUGIN PYTHON SUBNET TFOCL TFOSE THREADS
 OPTIONS_FILE_UNSET+=DEP-RSA1024
@@ -76,7 +76,7 @@ sysrc unbound_enable=YES
 Wir konfigurieren Unbound:
 
 ``` bash
-cat > /usr/local/etc/unbound/unbound.conf << "EOF"
+cat << "EOF" > /usr/local/etc/unbound/unbound.conf
 server:
   verbosity: 1
   num-threads: 4
@@ -195,12 +195,12 @@ sudo -u unbound unbound-anchor -a "/usr/local/etc/unbound/root.key"
 sudo -u unbound unbound-control-setup
 
 
-cat > /etc/resolv.conf << "EOF"
+cat << "EOF" > /etc/resolv.conf
 nameserver 127.0.0.1
 options edns0 ndots:1 timeout:0.3 attempts:1 rotate
 "EOF"
 
-cat > /etc/resolvconf.conf << "EOF"
+cat << "EOF" > /etc/resolvconf.conf
 resolvconf=NO
 "EOF"
 

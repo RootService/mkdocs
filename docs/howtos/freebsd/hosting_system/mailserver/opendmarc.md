@@ -2,7 +2,7 @@
 title: 'OpenDMARC'
 description: 'In diesem HowTo wird step-by-step die Installation von OpenDMARC für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-05-02'
+updated: '2023-05-20'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -25,21 +25,21 @@ Wir installieren `mail/opendmarc` und dessen Abhängigkeiten.
 
 ``` bash
 mkdir -p /var/db/ports/databases_p5-DBI
-cat > /var/db/ports/databases_p5-DBI/options << "EOF"
+cat << "EOF" > /var/db/ports/databases_p5-DBI/options
 _OPTIONS_READ=p5-DBI-1.643
 _FILE_COMPLETE_OPTIONS_LIST=PROXY
 OPTIONS_FILE_SET+=PROXY
 "EOF"
 
 mkdir -p /var/db/ports/databases_p5-DBD-mysql
-cat > /var/db/ports/databases_p5-DBD-mysql/options << "EOF"
+cat << "EOF" > /var/db/ports/databases_p5-DBD-mysql/options
 _OPTIONS_READ=p5-DBD-mysql-4.050
 _FILE_COMPLETE_OPTIONS_LIST=SSL
 OPTIONS_FILE_SET+=SSL
 "EOF"
 
 mkdir -p /var/db/ports/mail_opendmarc
-cat > /var/db/ports/mail_opendmarc/options << "EOF"
+cat << "EOF" > /var/db/ports/mail_opendmarc/options
 _OPTIONS_READ=opendmarc-1.4.2
 _FILE_COMPLETE_OPTIONS_LIST=DOCS SPF
 OPTIONS_FILE_SET+=DOCS
@@ -52,7 +52,7 @@ make all install clean-depends clean
 
 
 sysrc opendmarc_enable=YES
-sysrc opendmarc_socket="inet:8893@localhost"
+sysrc opendmarc_socketspec="inet:8895@localhost"
 ```
 
 ``` bash
@@ -80,7 +80,7 @@ sed -e 's|^#[[:space:]]\(AuthservID\)[[:space:]].*$|\1 mail.example.com|g' \
     -e 's|^#[[:space:]]\(PidFile\)[[:space:]].*$|# \1 /var/run/opendmarc/pid|g' \
     -e 's|^#[[:space:]]\(PublicSuffixList\)[[:space:]].*$|\1 /usr/local/share/public_suffix_list/public_suffix_list.dat|g' \
     -e 's|^#[[:space:]]\(RejectFailures\)[[:space:]].*$|\1 false|g' \
-    -e 's|^#[[:space:]]\(Socket\)[[:space:]]*inet.*$|\1 inet:8893@localhost|g' \
+    -e 's|^#[[:space:]]\(Socket\)[[:space:]]*inet.*$|\1 inet:8895@localhost|g' \
     -e 's|^#[[:space:]]\(SPFIgnoreResults\)[[:space:]].*$|\1 true|g' \
     -e 's|^#[[:space:]]\(SPFSelfValidate\)[[:space:]].*$|\1 true|g' \
     -e 's|^#[[:space:]]\(Syslog\)[[:space:]].*$|\1 true|g' \
@@ -94,7 +94,7 @@ sed -e 's|^#[[:space:]]\(AuthservID\)[[:space:]].*$|\1 mail.example.com|g' \
 IgnoreHosts anlegen.
 
 ``` bash
-cat > /data/db/opendmarc/ignorehosts << "EOF"
+cat << "EOF" > /data/db/opendmarc/ignorehosts
 ::1
 127.0.0.1
 localhost
@@ -109,7 +109,7 @@ ifconfig `route -n get -inet6 default | \
     awk '/inet6 / {if(substr($2,1,1)!="f") print $2}' \
     >> /data/db/opendmarc/ignorehosts
 
-cat >> /data/db/opendmarc/ignorehosts << "EOF"
+cat << "EOF" >> /data/db/opendmarc/ignorehosts
 example.com
 *.example.com
 "EOF"

@@ -2,7 +2,7 @@
 title: 'BaseTools'
 description: 'In diesem HowTo wird step-by-step die Installation einiger BaseTools für ein FreeBSD 64Bit BaseSystem auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-05-02'
+updated: '2023-05-20'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -16,13 +16,14 @@ In diesem HowTo beschreibe ich step-by-step die Installation einiger Tools (Port
 Unsere BaseTools werden am Ende folgende Dienste umfassen.
 
 - Sudo 1.9.13p3
-- cURL 8.0.1
+- cURL 8.1.0
+- wget 1.21.3
 - Bash 5.2.15
 - GIT 2.40.1
-- Portmaster 3.22
+- Portmaster 3.23
 - SMARTmontools 7.3
-- SQLite 3.41.2
 - Nano 7.2
+- SQLite 3.41.2
 - GnuPG 2.3.8
 - Subversion 1.14.2
 
@@ -46,7 +47,7 @@ Wir installieren `security/sudo` und dessen Abhängigkeiten.
 
 ``` bash
 mkdir -p /var/db/ports/security_sudo
-cat > /var/db/ports/security_sudo/options << "EOF"
+cat << "EOF" > /var/db/ports/security_sudo/options
 _OPTIONS_READ=sudo-1.9.13p3
 _FILE_COMPLETE_OPTIONS_LIST=AUDIT DISABLE_AUTH DISABLE_ROOT_SUDO DOCS EXAMPLES INSULTS LDAP NLS NOARGS_SHELL OPIE PAM PYTHON SSSD GSSAPI_BASE GSSAPI_HEIMDAL GSSAPI_MIT
 OPTIONS_FILE_SET+=AUDIT
@@ -76,14 +77,14 @@ Wir installieren `ftp/curl` und dessen Abhängigkeiten.
 
 ``` bash
 mkdir -p /var/db/ports/archivers_brotli
-cat > /var/db/ports/archivers_brotli/options << "EOF"
+cat << "EOF" > /var/db/ports/archivers_brotli/options
 _OPTIONS_READ=brotli-1.0.9
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
 "EOF"
 
 mkdir -p /var/db/ports/devel_cmake-core
-cat > /var/db/ports/devel_cmake-core/options << "EOF"
+cat << "EOF" > /var/db/ports/devel_cmake-core/options
 _OPTIONS_READ=cmake-core-3.26.1
 _FILE_COMPLETE_OPTIONS_LIST=CPACK DOCS
 OPTIONS_FILE_SET+=CPACK
@@ -91,7 +92,7 @@ OPTIONS_FILE_SET+=DOCS
 "EOF"
 
 mkdir -p /var/db/ports/textproc_expat2
-cat > /var/db/ports/textproc_expat2/options << "EOF"
+cat << "EOF" > /var/db/ports/textproc_expat2/options
 _OPTIONS_READ=expat-2.5.0
 _FILE_COMPLETE_OPTIONS_LIST=DOCS STATIC TEST
 OPTIONS_FILE_SET+=DOCS
@@ -100,7 +101,7 @@ OPTIONS_FILE_UNSET+=TEST
 "EOF"
 
 mkdir -p /var/db/ports/devel_ninja
-cat > /var/db/ports/devel_ninja/options << "EOF"
+cat << "EOF" > /var/db/ports/devel_ninja/options
 _OPTIONS_READ=ninja-1.11.1
 _FILE_COMPLETE_OPTIONS_LIST=BASH DOCS ZSH
 OPTIONS_FILE_SET+=BASH
@@ -109,21 +110,21 @@ OPTIONS_FILE_SET+=ZSH
 "EOF"
 
 mkdir -p /var/db/ports/archivers_zstd
-cat > /var/db/ports/archivers_zstd/options << "EOF"
+cat << "EOF" > /var/db/ports/archivers_zstd/options
 _OPTIONS_READ=zstd-1.5.4
 _FILE_COMPLETE_OPTIONS_LIST=OPTIMIZED_CFLAGS
 OPTIONS_FILE_UNSET+=OPTIMIZED_CFLAGS
 "EOF"
 
 mkdir -p /var/db/ports/archivers_liblz4
-cat > /var/db/ports/archivers_liblz4/options << "EOF"
+cat << "EOF" > /var/db/ports/archivers_liblz4/options
 _OPTIONS_READ=liblz4-1.9.4
 _FILE_COMPLETE_OPTIONS_LIST=TEST
 OPTIONS_FILE_UNSET+=TEST
 "EOF"
 
 mkdir -p /var/db/ports/security_libssh2
-cat > /var/db/ports/security_libssh2/options << "EOF"
+cat << "EOF" > /var/db/ports/security_libssh2/options
 _OPTIONS_READ=libssh2-1.10.0
 _FILE_COMPLETE_OPTIONS_LIST=GCRYPT TRACE ZLIB
 OPTIONS_FILE_UNSET+=GCRYPT
@@ -132,7 +133,7 @@ OPTIONS_FILE_SET+=ZLIB
 "EOF"
 
 mkdir -p /var/db/ports/dns_libpsl
-cat > /var/db/ports/dns_libpsl/options << "EOF"
+cat << "EOF" > /var/db/ports/dns_libpsl/options
 _OPTIONS_READ=libpsl-0.21.2
 _FILE_COMPLETE_OPTIONS_LIST= ICU IDN IDN2
 OPTIONS_FILE_SET+=ICU
@@ -141,7 +142,7 @@ OPTIONS_FILE_UNSET+=IDN2
 "EOF"
 
 mkdir -p /var/db/ports/security_rhash
-cat > /var/db/ports/security_rhash/options << "EOF"
+cat << "EOF" > /var/db/ports/security_rhash/options
 _OPTIONS_READ=rhash-1.4.3
 _FILE_COMPLETE_OPTIONS_LIST=DOCS NLS
 OPTIONS_FILE_SET+=DOCS
@@ -149,8 +150,8 @@ OPTIONS_FILE_SET+=NLS
 "EOF"
 
 mkdir -p /var/db/ports/ftp_curl
-cat > /var/db/ports/ftp_curl/options << "EOF"
-_OPTIONS_READ=curl-8.0.1
+cat << "EOF" > /var/db/ports/ftp_curl/options
+_OPTIONS_READ=curl-8.1.0
 _FILE_COMPLETE_OPTIONS_LIST=ALTSVC BROTLI CA_BUNDLE COOKIES CURL_DEBUG DEBUG DOCS EXAMPLES IDN IPV6 NTLM PROXY PSL STATIC TLS_SRP ZSTD GSSAPI_BASE GSSAPI_HEIMDAL GSSAPI_MIT GSSAPI_NONE CARES THREADED_RESOLVER GNUTLS OPENSSL WOLFSSL DICT FTP GOPHER HTTP HTTP2 IMAP LDAP LDAPS LIBSSH2 MQTT POP3 RTMP RTSP SMB SMTP TELNET TFTP
 OPTIONS_FILE_SET+=ALTSVC
 OPTIONS_FILE_SET+=BROTLI
@@ -201,11 +202,44 @@ cd /usr/ports/ftp/curl
 make all install clean-depends clean
 ```
 
+Wir installieren `ftp/wget` und dessen Abhängigkeiten.
+
+``` bash
+mkdir -p /var/db/ports/devel_libunistring
+cat << "EOF" > /var/db/ports/devel_libunistring/options
+_OPTIONS_READ=libunistring-1.1
+_FILE_COMPLETE_OPTIONS_LIST=DOCS
+OPTIONS_FILE_SET+=DOCS
+"EOF"
+
+mkdir -p /var/db/ports/ftp_wget
+cat << "EOF" > /var/db/ports/ftp_wget/options
+_OPTIONS_READ=wget-1.21.3
+_FILE_COMPLETE_OPTIONS_LIST=DOCS IDN IPV6 MANPAGES METALINK NLS NTLM PSL GNUTLS OPENSSL PCRE1 PCRE2
+OPTIONS_FILE_SET+=DOCS
+OPTIONS_FILE_SET+=IDN
+OPTIONS_FILE_SET+=IPV6
+OPTIONS_FILE_SET+=MANPAGES
+OPTIONS_FILE_UNSET+=METALINK
+OPTIONS_FILE_SET+=NLS
+OPTIONS_FILE_UNSET+=NTLM
+OPTIONS_FILE_SET+=PSL
+OPTIONS_FILE_UNSET+=GNUTLS
+OPTIONS_FILE_SET+=OPENSSL
+OPTIONS_FILE_UNSET+=PCRE1
+OPTIONS_FILE_SET+=PCRE2
+"EOF"
+
+
+cd /usr/ports/ftp/wget
+make all install clean-depends clean
+```
+
 Wir installieren `devel/git` und dessen Abhängigkeiten.
 
 ``` bash
 mkdir -p /var/db/ports/shells_bash
-cat > /var/db/ports/shells_bash/options << "EOF"
+cat << "EOF" > /var/db/ports/shells_bash/options
 _OPTIONS_READ=bash-5.2.15
 _FILE_COMPLETE_OPTIONS_LIST=DOCS FDESCFS HELP NLS PORTS_READLINE STATIC SYSBASHRC SYSLOG
 OPTIONS_FILE_SET+=DOCS
@@ -219,7 +253,7 @@ OPTIONS_FILE_UNSET+=SYSLOG
 "EOF"
 
 mkdir -p /var/db/ports/devel_bison
-cat > /var/db/ports/devel_bison/options << "EOF"
+cat << "EOF" > /var/db/ports/devel_bison/options
 _OPTIONS_READ=bison-3.8.2
 _FILE_COMPLETE_OPTIONS_LIST=DOCS EXAMPLES NLS
 OPTIONS_FILE_SET+=DOCS
@@ -228,7 +262,7 @@ OPTIONS_FILE_SET+=NLS
 "EOF"
 
 mkdir -p /var/db/ports/textproc_xmlto
-cat > /var/db/ports/textproc_xmlto/options << "EOF"
+cat << "EOF" > /var/db/ports/textproc_xmlto/options
 _OPTIONS_READ=xmlto-0.0.28
 _FILE_COMPLETE_OPTIONS_LIST=DOCS DBLATEX FOP PASSIVETEX
 OPTIONS_FILE_SET+=DOCS
@@ -238,7 +272,7 @@ OPTIONS_FILE_UNSET+=PASSIVETEX
 "EOF"
 
 mkdir -p /var/db/ports/misc_getopt
-cat > /var/db/ports/misc_getopt/options << "EOF"
+cat << "EOF" > /var/db/ports/misc_getopt/options
 _OPTIONS_READ=getopt-1.1.6
 _FILE_COMPLETE_OPTIONS_LIST=DOCS NLS
 OPTIONS_FILE_SET+=DOCS
@@ -246,7 +280,7 @@ OPTIONS_FILE_SET+=NLS
 "EOF"
 
 mkdir -p /var/db/ports/textproc_docbook-xsl
-cat > /var/db/ports/textproc_docbook-xsl/options << "EOF"
+cat << "EOF" > /var/db/ports/textproc_docbook-xsl/options
 _OPTIONS_READ=docbook-xsl-1.79.1
 _FILE_COMPLETE_OPTIONS_LIST=DOCS ECLIPSE EPUB EXTENSIONS HIGHLIGHTING HTMLHELP JAVAHELP PROFILING ROUNDTRIP SLIDES TEMPLATE TESTS TOOLS WEBSITE XHTML11
 OPTIONS_FILE_SET+=DOCS
@@ -267,14 +301,14 @@ OPTIONS_FILE_SET+=XHTML11
 "EOF"
 
 mkdir -p /var/db/ports/textproc_xmlcatmgr
-cat > /var/db/ports/textproc_xmlcatmgr/options << "EOF"
+cat << "EOF" > /var/db/ports/textproc_xmlcatmgr/options
 _OPTIONS_READ=xmlcatmgr-2.2
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
 "EOF"
 
 mkdir -p /var/db/ports/www_w3m
-cat > /var/db/ports/www_w3m/options << "EOF"
+cat << "EOF" > /var/db/ports/www_w3m/options
 _OPTIONS_READ=w3m-0.5.3.20230129
 _FILE_COMPLETE_OPTIONS_LIST=DOCS INLINE_IMAGE JAPANESE KEY_LYNX NLS
 OPTIONS_FILE_SET+=DOCS
@@ -285,7 +319,7 @@ OPTIONS_FILE_SET+=NLS
 "EOF"
 
 mkdir -p /var/db/ports/devel_boehm-gc
-cat > /var/db/ports/devel_boehm-gc/options << "EOF"
+cat << "EOF" > /var/db/ports/devel_boehm-gc/options
 _OPTIONS_READ=boehm-gc-8.2.2
 _FILE_COMPLETE_OPTIONS_LIST=DEBUG DOCS
 OPTIONS_FILE_UNSET+=DEBUG
@@ -293,21 +327,21 @@ OPTIONS_FILE_SET+=DOCS
 "EOF"
 
 mkdir -p /var/db/ports/devel_libatomic_ops
-cat > /var/db/ports/devel_libatomic_ops/options << "EOF"
+cat << "EOF" > /var/db/ports/devel_libatomic_ops/options
 _OPTIONS_READ=libatomic_ops-7.8.0
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
 "EOF"
 
 mkdir -p /var/db/ports/security_p5-Authen-SASL
-cat > /var/db/ports/security_p5-Authen-SASL/options << "EOF"
+cat << "EOF" > /var/db/ports/security_p5-Authen-SASL/options
 _OPTIONS_READ=p5-Authen-SASL-2.16
 _FILE_COMPLETE_OPTIONS_LIST=KERBEROS
 OPTIONS_FILE_UNSET+=KERBEROS
 "EOF"
 
 mkdir -p /var/db/ports/security_p5-IO-Socket-SSL
-cat > /var/db/ports/security_p5-IO-Socket-SSL/options << "EOF"
+cat << "EOF" > /var/db/ports/security_p5-IO-Socket-SSL/options
 _OPTIONS_READ=p5-IO-Socket-SSL-2.081
 _FILE_COMPLETE_OPTIONS_LIST=EXAMPLES IDN IPV6
 OPTIONS_FILE_SET+=EXAMPLES
@@ -316,14 +350,14 @@ OPTIONS_FILE_SET+=IPV6
 "EOF"
 
 mkdir -p /var/db/ports/security_p5-Net-SSLeay
-cat > /var/db/ports/security_p5-Net-SSLeay/options << "EOF"
+cat << "EOF" > /var/db/ports/security_p5-Net-SSLeay/options
 _OPTIONS_READ=p5-Net-SSLeay-1.92
 _FILE_COMPLETE_OPTIONS_LIST=EXAMPLES
 OPTIONS_FILE_SET+=EXAMPLES
 "EOF"
 
 mkdir -p /var/db/ports/devel_git
-cat > /var/db/ports/devel_git/options << "EOF"
+cat << "EOF" > /var/db/ports/devel_git/options
 _OPTIONS_READ=git-2.40.1
 _FILE_COMPLETE_OPTIONS_LIST=CONTRIB CURL GITWEB HTMLDOCS ICONV NLS PCRE2 PERL SEND_EMAIL SUBTREE
 OPTIONS_FILE_SET+=CONTRIB
@@ -347,8 +381,8 @@ Wir installieren `ports-mgmt/portmaster` und dessen Abhängigkeiten.
 
 ``` bash
 mkdir -p /var/db/ports/ports-mgmt_portmaster
-cat > /var/db/ports/ports-mgmt_portmaster/options << "EOF"
-_OPTIONS_READ=portmaster-3.22
+cat << "EOF" > /var/db/ports/ports-mgmt_portmaster/options
+_OPTIONS_READ=portmaster-3.23
 _FILE_COMPLETE_OPTIONS_LIST=BASH ZSH
 OPTIONS_FILE_SET+=BASH
 OPTIONS_FILE_SET+=ZSH
@@ -363,7 +397,7 @@ Wir installieren `sysutils/smartmontools` und dessen Abhängigkeiten.
 
 ``` bash
 mkdir -p /var/db/ports/sysutils_smartmontools
-cat > /var/db/ports/sysutils_smartmontools/options << "EOF"
+cat << "EOF" > /var/db/ports/sysutils_smartmontools/options
 _OPTIONS_READ=smartmontools-7.3
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
@@ -388,7 +422,7 @@ sysrc smartd_enable=YES
 Die `/etc/periodic.conf` wird um folgenden Inhalt erweitert.
 
 ``` bash
-cat >> /etc/periodic.conf << "EOF"
+cat << "EOF" >> /etc/periodic.conf
 daily_status_smart_enable="YES"
 daily_status_smart_devices="/dev/nvme0 /dev/nvme1"
 "EOF"
@@ -398,7 +432,7 @@ Wir installieren `editors/nano` und dessen Abhängigkeiten.
 
 ``` bash
 mkdir -p /var/db/ports/editors_nano
-cat > /var/db/ports/editors_nano/options << "EOF"
+cat << "EOF" > /var/db/ports/editors_nano/options
 _OPTIONS_READ=nano-7.2
 _FILE_COMPLETE_OPTIONS_LIST=DOCS EXAMPLES NLS
 OPTIONS_FILE_SET+=DOCS
@@ -415,7 +449,7 @@ Wir installieren `databases/sqlite3` und dessen Abhängigkeiten.
 
 ``` bash
 mkdir -p /var/db/ports/databases_sqlite3
-cat > /var/db/ports/databases_sqlite3/options << "EOF"
+cat << "EOF" > /var/db/ports/databases_sqlite3/options
 _OPTIONS_READ=sqlite3-3.41.2
 _FILE_COMPLETE_OPTIONS_LIST=ARMOR DBPAGE DBSTAT DIRECT_READ DQS EXAMPLES EXTENSION FTS3_TOKEN FTS4 FTS5 LIKENOTBLOB MEMMAN METADATA NORMALIZE NULL_TRIM RBU SECURE_DELETE SORT_REF STATIC STMT STRIP TCL THREADS TRUSTED_SCHEMA UNKNOWN_SQL UNLOCK_NOTIFY UPDATE_LIMIT URI URI_AUTHORITY TS0 TS1 TS2 TS3 STAT3 STAT4 LIBEDIT READLINE SESSION OFFSET SOUNDEX GEOPOLY RTREE RTREE_INT ICU UNICODE61
 OPTIONS_FILE_UNSET+=ARMOR
@@ -474,7 +508,7 @@ Wir installieren `security/gnupg` und dessen Abhängigkeiten.
 
 ``` bash
 mkdir -p /var/db/ports/security_pinentry
-cat > /var/db/ports/security_pinentry/options << "EOF"
+cat << "EOF" > /var/db/ports/security_pinentry/options
 _OPTIONS_READ=pinentry-1.2.1
 _FILE_COMPLETE_OPTIONS_LIST= EFL FLTK GNOME GTK2 NCURSES QT5 TTY
 OPTIONS_FILE_UNSET+=EFL
@@ -487,14 +521,14 @@ OPTIONS_FILE_SET+=TTY
 "EOF"
 
 mkdir -p /var/db/ports/security_pinentry-tty
-cat > /var/db/ports/security_pinentry-tty/options << "EOF"
+cat << "EOF" > /var/db/ports/security_pinentry-tty/options
 _OPTIONS_READ=pinentry-tty-1.2.1
 _FILE_COMPLETE_OPTIONS_LIST=LIBSECRET
 OPTIONS_FILE_UNSET+=LIBSECRET
 "EOF"
 
 mkdir -p /var/db/ports/security_gnupg
-cat > /var/db/ports/security_gnupg/options << "EOF"
+cat << "EOF" > /var/db/ports/security_gnupg/options
 _OPTIONS_READ=gnupg-2.3.8
 _FILE_COMPLETE_OPTIONS_LIST=DOCS GNUTLS LARGE_RSA LDAP NLS SCDAEMON SUID_GPG WKS_SERVER
 OPTIONS_FILE_SET+=DOCS
@@ -516,7 +550,7 @@ Wir installieren `devel/subversion` und dessen Abhängigkeiten.
 
 ``` bash
 mkdir -p /var/db/ports/devel_apr1
-cat > /var/db/ports/devel_apr1/options << "EOF"
+cat << "EOF" > /var/db/ports/devel_apr1/options
 _OPTIONS_READ=apr-1.7.3.1.6.3
 _FILE_COMPLETE_OPTIONS_LIST=IPV6 BDB BDB5 SSL NSS GDBM LDAP MYSQL NDBM ODBC PGSQL SQLITE
 OPTIONS_FILE_SET+=IPV6
@@ -534,14 +568,14 @@ OPTIONS_FILE_UNSET+=SQLITE
 "EOF"
 
 mkdir -p /var/db/ports/textproc_utf8proc
-cat > /var/db/ports/textproc_utf8proc/options << "EOF"
+cat << "EOF" > /var/db/ports/textproc_utf8proc/options
 _OPTIONS_READ=utf8proc-2.8.0
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
 "EOF"
 
 mkdir -p /var/db/ports/www_serf
-cat > /var/db/ports/www_serf/options << "EOF"
+cat << "EOF" > /var/db/ports/www_serf/options
 _OPTIONS_READ=serf-1.3.9
 _FILE_COMPLETE_OPTIONS_LIST=DOCS GSSAPI_BASE GSSAPI_HEIMDAL GSSAPI_MIT
 OPTIONS_FILE_SET+=DOCS
@@ -551,7 +585,7 @@ OPTIONS_FILE_UNSET+=GSSAPI_MIT
 "EOF"
 
 mkdir -p /var/db/ports/devel_subversion
-cat > /var/db/ports/devel_subversion/options << "EOF"
+cat << "EOF" > /var/db/ports/devel_subversion/options
 _OPTIONS_READ=subversion-1.14.2
 _FILE_COMPLETE_OPTIONS_LIST=BDB DOCS FREEBSD_TEMPLATE GPG_AGENT NLS SASL SERF STATIC SVNSERVE_WRAPPER TEST TOOLS
 OPTIONS_FILE_UNSET+=BDB
@@ -587,7 +621,7 @@ Wenn wir ein Programm nicht kennen, dann finden wir zu jedem Port eine Datei `pk
 - Aufräumen des Portstree und der Distfiles mittels portmaster
 
 ``` bash
-cat > /usr/local/sbin/update-ports << "EOF"
+cat << "EOF" > /usr/local/sbin/update-ports
 #!/bin/sh
 
 git -C /usr/ports pull --rebase

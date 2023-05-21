@@ -2,7 +2,7 @@
 title: 'PHP-FPM'
 description: 'In diesem HowTo wird step-by-step die Installation von PHP-FPM für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-05-02'
+updated: '2023-05-20'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -13,7 +13,7 @@ author_url: https://github.com/JoeUser78
 
 Unser Hosting System wird folgende Dienste umfassen.
 
-- PHP 8.1.18 (PHP-FPM, Composer, PEAR)
+- PHP 8.1.19 (PHP-FPM, Composer, PEAR)
 
 ## Voraussetzungen
 
@@ -24,14 +24,14 @@ Zu den Voraussetzungen für dieses HowTo siehe bitte: [Hosting System](/howtos/f
 Wir installieren `lang/php81` und dessen Abhängigkeiten.
 
 ``` bash
-cat >> /etc/make.conf << "EOF"
+cat << "EOF" >> /etc/make.conf
 #DEFAULT_VERSIONS+=php=8.1
 "EOF"
 
 
 mkdir -p /var/db/ports/lang_php81
-cat > /var/db/ports/lang_php81/options << "EOF"
-_OPTIONS_READ=php81-8.1.18
+cat << "EOF" > /var/db/ports/lang_php81/options
+_OPTIONS_READ=php81-8.1.19
 _FILE_COMPLETE_OPTIONS_LIST=CGI CLI DEBUG DTRACE EMBED FPM IPV6 LINKTHR  MYSQLND PHPDBG ZTS
 OPTIONS_FILE_SET+=CGI
 OPTIONS_FILE_SET+=CLI
@@ -60,8 +60,8 @@ Wir installieren `lang/php81-extensions` und dessen Abhängigkeiten.
 
 ``` bash
 mkdir -p /var/db/ports/databases_php81-dba
-cat > /var/db/ports/databases_php81-dba/options << "EOF"
-_OPTIONS_READ=php81-dba-8.1.18
+cat << "EOF" > /var/db/ports/databases_php81-dba/options
+_OPTIONS_READ=php81-dba-8.1.19
 _FILE_COMPLETE_OPTIONS_LIST=CDB DB4 FLATFILE GDBM INIFILE LMDB QDBM TOKYO
 OPTIONS_FILE_SET+=CDB
 OPTIONS_FILE_UNSET+=DB4
@@ -74,8 +74,8 @@ OPTIONS_FILE_UNSET+=TOKYO
 "EOF"
 
 mkdir -p /var/db/ports/graphics_php81-gd
-cat > /var/db/ports/graphics_php81-gd/options << "EOF"
-_OPTIONS_READ=php81-gd-8.1.18
+cat << "EOF" > /var/db/ports/graphics_php81-gd/options
+_OPTIONS_READ=php81-gd-8.1.19
 _FILE_COMPLETE_OPTIONS_LIST=JIS WEBP X11
 OPTIONS_FILE_UNSET+=JIS
 OPTIONS_FILE_SET+=WEBP
@@ -83,7 +83,7 @@ OPTIONS_FILE_UNSET+=X11
 "EOF"
 
 mkdir -p /var/db/ports/print_freetype2
-cat > /var/db/ports/print_freetype2/options << "EOF"
+cat << "EOF" > /var/db/ports/print_freetype2/options
 _OPTIONS_READ=freetype2-2.12.1
 _FILE_COMPLETE_OPTIONS_LIST=BROTLI DEBUG DOCS LONG_PCF_NAMES PNG TABLE_VALIDATION LCD_FILTERING LCD_RENDERING FIX_SIZE_METRICS TT_SIZE_METRICS V38 V40
 OPTIONS_FILE_SET+=BROTLI
@@ -101,7 +101,7 @@ OPTIONS_FILE_SET+=V40
 "EOF"
 
 mkdir -p /var/db/ports/graphics_png
-cat > /var/db/ports/graphics_png/options << "EOF"
+cat << "EOF" > /var/db/ports/graphics_png/options
 _OPTIONS_READ=png-1.6.39
 _FILE_COMPLETE_OPTIONS_LIST=APNG SIMD
 OPTIONS_FILE_SET+=APNG
@@ -109,7 +109,7 @@ OPTIONS_FILE_SET+=SIMD
 "EOF"
 
 mkdir -p /var/db/ports/graphics_webp
-cat > /var/db/ports/graphics_webp/options << "EOF"
+cat << "EOF" > /var/db/ports/graphics_webp/options
 _OPTIONS_READ=webp-1.3.0
 _FILE_COMPLETE_OPTIONS_LIST=IMGCONV X11
 OPTIONS_FILE_SET+=IMGCONV
@@ -117,28 +117,28 @@ OPTIONS_FILE_UNSET+=X11
 "EOF"
 
 mkdir -p /var/db/ports/graphics_giflib
-cat > /var/db/ports/graphics_giflib/options << "EOF"
+cat << "EOF" > /var/db/ports/graphics_giflib/options
 _OPTIONS_READ=giflib-5.2.1
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
 "EOF"
 
 mkdir -p /var/db/ports/graphics_tiff
-cat > /var/db/ports/graphics_tiff/options << "EOF"
+cat << "EOF" > /var/db/ports/graphics_tiff/options
 _OPTIONS_READ=tiff-4.4.0
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
 "EOF"
 
 mkdir -p /var/db/ports/graphics_jbigkit
-cat > /var/db/ports/graphics_jbigkit/options << "EOF"
+cat << "EOF" > /var/db/ports/graphics_jbigkit/options
 _OPTIONS_READ=jbigkit-2.1
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
 "EOF"
 
 mkdir -p /var/db/ports/graphics_jpeg-turbo
-cat > /var/db/ports/graphics_jpeg-turbo/options << "EOF"
+cat << "EOF" > /var/db/ports/graphics_jpeg-turbo/options
 _OPTIONS_READ=jpeg-turbo-2.1.5.1
 _FILE_COMPLETE_OPTIONS_LIST=DOCS OPTIMIZED_CFLAGS
 OPTIONS_FILE_SET+=DOCS
@@ -146,21 +146,21 @@ OPTIONS_FILE_SET+=OPTIMIZED_CFLAGS
 "EOF"
 
 mkdir -p /var/db/ports/archivers_libdeflate
-cat > /var/db/ports/archivers_libdeflate/options << "EOF"
+cat << "EOF" > /var/db/ports/archivers_libdeflate/options
 _OPTIONS_READ=libdeflate-1.18
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
 "EOF"
 
 mkdir -p /var/db/ports/devel_nasm
-cat > /var/db/ports/devel_nasm/options << "EOF"
+cat << "EOF" > /var/db/ports/devel_nasm/options
 _OPTIONS_READ=nasm-2.16.01
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
 "EOF"
 
 mkdir -p /var/db/ports/graphics_gd
-cat > /var/db/ports/graphics_gd/options << "EOF"
+cat << "EOF" > /var/db/ports/graphics_gd/options
 _OPTIONS_READ=libgd-2.3.3
 _FILE_COMPLETE_OPTIONS_LIST=PNG JPEG WEBP TIFF XPM HEIF AVIF LIQ FREETYPE FONTCONFIG RAQM ICONV
 OPTIONS_FILE_SET+=PNG
@@ -178,7 +178,7 @@ OPTIONS_FILE_SET+=ICONV
 "EOF"
 
 mkdir -p /var/db/ports/x11-fonts_fontconfig
-cat > /var/db/ports/x11-fonts_fontconfig/options << "EOF"
+cat << "EOF" > /var/db/ports/x11-fonts_fontconfig/options
 _OPTIONS_READ=fontconfig-2.14.2
 _FILE_COMPLETE_OPTIONS_LIST=BITMAPS DOCS NLS TEST HINTING_NONE HINTING_SLIGHT HINTING_MEDIUM HINTING_FULL
 OPTIONS_FILE_SET+=BITMAPS
@@ -192,15 +192,15 @@ OPTIONS_FILE_UNSET+=HINTING_FULL
 "EOF"
 
 mkdir -p /var/db/ports/mail_php81-imap
-cat > /var/db/ports/mail_php81-imap/options << "EOF"
-_OPTIONS_READ=php81-imap-8.1.18
+cat << "EOF" > /var/db/ports/mail_php81-imap/options
+_OPTIONS_READ=php81-imap-8.1.19
 _FILE_COMPLETE_OPTIONS_LIST= CCLIENT PANDA
 OPTIONS_FILE_UNSET+=CCLIENT
 OPTIONS_FILE_SET+=PANDA
 "EOF"
 
 mkdir -p /var/db/ports/mail_panda-cclient
-cat > /var/db/ports/mail_panda-cclient/options << "EOF"
+cat << "EOF" > /var/db/ports/mail_panda-cclient/options
 _OPTIONS_READ=panda-cclient-20130621
 _FILE_COMPLETE_OPTIONS_LIST=IPV6 MBX_DEFAULT SSL SSL_AND_PLAINTEXT
 OPTIONS_FILE_SET+=IPV6
@@ -210,14 +210,14 @@ OPTIONS_FILE_UNSET+=SSL_AND_PLAINTEXT
 "EOF"
 
 mkdir -p /var/db/ports/converters_php81-mbstring
-cat > /var/db/ports/converters_php81-mbstring/options << "EOF"
-_OPTIONS_READ=php81-mbstring-8.1.18
+cat << "EOF" > /var/db/ports/converters_php81-mbstring/options
+_OPTIONS_READ=php81-mbstring-8.1.19
 _FILE_COMPLETE_OPTIONS_LIST=REGEX
 OPTIONS_FILE_SET+=REGEX
 "EOF"
 
 mkdir -p /var/db/ports/devel_oniguruma
-cat > /var/db/ports/devel_oniguruma/options << "EOF"
+cat << "EOF" > /var/db/ports/devel_oniguruma/options
 _OPTIONS_READ=oniguruma-6.9.8
 _FILE_COMPLETE_OPTIONS_LIST=DOCS EXAMPLES
 OPTIONS_FILE_SET+=DOCS
@@ -225,21 +225,21 @@ OPTIONS_FILE_SET+=EXAMPLES
 "EOF"
 
 mkdir -p /var/db/ports/databases_php81-mysqli
-cat > /var/db/ports/databases_php81-mysqli/options << "EOF"
-_OPTIONS_READ=php81-mysqli-8.1.18
+cat << "EOF" > /var/db/ports/databases_php81-mysqli/options
+_OPTIONS_READ=php81-mysqli-8.1.19
 _FILE_COMPLETE_OPTIONS_LIST=MYSQLND
 OPTIONS_FILE_SET+=MYSQLND
 "EOF"
 
 mkdir -p /var/db/ports/databases_php81-pdo_mysql
-cat > /var/db/ports/databases_php81-pdo_mysql/options << "EOF"
-_OPTIONS_READ=php81-pdo_mysql-8.1.18
+cat << "EOF" > /var/db/ports/databases_php81-pdo_mysql/options
+_OPTIONS_READ=php81-pdo_mysql-8.1.19
 _FILE_COMPLETE_OPTIONS_LIST=MYSQLND
 OPTIONS_FILE_SET+=MYSQLND
 "EOF"
 
 mkdir -p /var/db/ports/lang_php81-extensions
-cat > /var/db/ports/lang_php81-extensions/options << "EOF"
+cat << "EOF" > /var/db/ports/lang_php81-extensions/options
 _OPTIONS_READ=php81-extensions-1.1
 _FILE_COMPLETE_OPTIONS_LIST=BCMATH BZ2 CALENDAR CTYPE CURL DBA DOM ENCHANT EXIF FFI FILEINFO FILTER FTP GD GETTEXT GMP ICONV IMAP INTL LDAP MBSTRING MYSQLI ODBC OPCACHE PCNTL PDO PDO_DBLIB PDO_FIREBIRD PDO_MYSQL PDO_ODBC PDO_PGSQL PDO_SQLITE PGSQL PHAR POSIX PSPELL READLINE SESSION SHMOP SIMPLEXML SNMP SOAP SOCKETS SODIUM SQLITE3 SYSVMSG SYSVSEM SYSVSHM TIDY TOKENIZER XML XMLREADER XMLWRITER XSL ZIP ZLIB
 OPTIONS_FILE_SET+=BCMATH
@@ -312,7 +312,7 @@ Die Konfiguration entspricht weitestgehend den Empfehlungen der PHP-Entwickler u
 `php.ini` einrichten.
 
 ``` bash
-cat > /usr/local/etc/php.ini << "EOF"
+cat << "EOF" > /usr/local/etc/php.ini
 arg_separator.input = ";&"
 arg_separator.output = "&amp;"
 assert.active = "0"
@@ -418,7 +418,7 @@ Wir installieren `devel/php-composer2` und dessen Abhängigkeiten.
 
 ``` bash
 mkdir -p /var/db/ports/devel_php-composer2
-cat > /var/db/ports/devel_php-composer2/options << "EOF"
+cat << "EOF" > /var/db/ports/devel_php-composer2/options
 _OPTIONS_READ=php81-composer2-2.5.5
 _FILE_COMPLETE_OPTIONS_LIST=CURL
 OPTIONS_FILE_SET+=CURL
@@ -435,7 +435,7 @@ Wir installieren `devel/pear` und dessen Abhängigkeiten.
 
 ``` bash
 mkdir -p /var/db/ports/devel_pear
-cat > /var/db/ports/devel_pear/options << "EOF"
+cat << "EOF" > /var/db/ports/devel_pear/options
 _OPTIONS_READ=php81-pear-1.10.13
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS

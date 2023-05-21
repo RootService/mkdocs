@@ -2,7 +2,7 @@
 title: 'OpenSSH'
 description: 'In diesem HowTo wird step-by-step die Installation von OpenSSH für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-05-02'
+updated: '2023-05-20'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -25,14 +25,14 @@ Wir installieren `security/openssh-portable` und dessen Abhängigkeiten.
 
 ``` bash
 mkdir -p /var/db/ports/security_libfido2
-cat > /var/db/ports/security_libfido2/options << "EOF"
+cat << "EOF" > /var/db/ports/security_libfido2/options
 _OPTIONS_READ=libfido2-1.13.0
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
 "EOF"
 
 mkdir -p /var/db/ports/dns_ldns
-cat > /var/db/ports/dns_ldns/options << "EOF"
+cat << "EOF" > /var/db/ports/dns_ldns/options
 _OPTIONS_READ=ldns-1.8.3
 _FILE_COMPLETE_OPTIONS_LIST=DANETAUSAGE DOXYGEN DRILL EXAMPLES GOST RRTYPEAMTRELAY RRTYPEAVC RRTYPENINFO RRTYPERKEY RRTYPETA
 OPTIONS_FILE_SET+=DANETAUSAGE
@@ -48,7 +48,7 @@ OPTIONS_FILE_SET+=RRTYPETA
 "EOF"
 
 mkdir -p /var/db/ports/security_openssh-portable
-cat > /var/db/ports/security_openssh-portable/options << "EOF"
+cat << "EOF" > /var/db/ports/security_openssh-portable/options
 _OPTIONS_READ=openssh-portable-9.2.p1
 _FILE_COMPLETE_OPTIONS_LIST=BLACKLISTD BSM DOCS FIDO_U2F HPN KERB_GSSAPI LDNS LIBEDIT NONECIPHER PAM TCP_WRAPPERS XMSS MIT HEIMDAL HEIMDAL_BASE
 OPTIONS_FILE_UNSET+=BLACKLISTD
@@ -105,7 +105,7 @@ sed -e 's|^#\(Port\).*$|\1 22222|' \
     -e 's|^\(Subsystem.*\)$|#\1|' \
     -i '' /usr/local/etc/ssh/sshd_config
 
-cat >> /usr/local/etc/ssh/sshd_config << "EOF"
+cat << "EOF" >> /usr/local/etc/ssh/sshd_config
 
 Subsystem sftp internal-sftp -u 0027
 

@@ -2,7 +2,7 @@
 title: 'NGinx'
 description: 'In diesem HowTo wird step-by-step die Installation des NGinx Webservers für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-05-02'
+updated: '2022-05-20'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -29,7 +29,7 @@ Wir installieren `www/nginx` und dessen Abhängigkeiten.
 
 ``` bash
 mkdir -p /var/db/ports/www_nginx
-cat > /var/db/ports/www_nginx/options << "EOF"
+cat << "EOF" > /var/db/ports/www_nginx/options
 _OPTIONS_READ=nginx-1.22.1
 _FILE_COMPLETE_OPTIONS_LIST=DEBUG DEBUGLOG DSO FILE_AIO IPV6 NJS THREADS WWW PCRE_ONE PCRE_TWO MAIL MAIL_IMAP MAIL_POP3 MAIL_SMTP MAIL_SSL GOOGLE_PERFTOOLS HTTP HTTP_ADDITION HTTP_AUTH_REQ  HTTP_CACHE HTTP_DAV HTTP_FLV HTTP_GUNZIP_FILTER HTTP_GZIP_STATIC  HTTP_IMAGE_FILTER HTTP_MP4 HTTP_PERL HTTP_RANDOM_INDEX HTTP_REALIP  HTTP_SECURE_LINK HTTP_SLICE HTTP_SLICE_AHEAD  HTTP_SSL HTTP_STATUS HTTP_SUB HTTP_XSLT HTTPV2 HTTPV2_AUTOTUNE AJP AWS_AUTH BROTLI CACHE_PURGE CLOJURE CT DEVEL_KIT  ARRAYVAR DRIZZLE DYNAMIC_TLS DYNAMIC_HC DYNAMIC_UPSTREAM ECHO ENCRYPTSESSION  FORMINPUT GRIDFS HEADERS_MORE HTTP_ACCEPT_LANGUAGE  HTTP_AUTH_DIGEST HTTP_AUTH_JWT HTTP_AUTH_KRB5 HTTP_AUTH_LDAP  HTTP_AUTH_PAM HTTP_DAV_EXT HTTP_EVAL HTTP_FANCYINDEX HTTP_FOOTER  HTTP_GEOIP2 HTTP_IP2LOCATION HTTP_IP2PROXY HTTP_JSON_STATUS HTTP_MOGILEFS  HTTP_MP4_H264 HTTP_NOTICE HTTP_PUSH HTTP_PUSH_STREAM HTTP_REDIS  HTTP_RESPONSE HTTP_SUBS_FILTER HTTP_TARANTOOL HTTP_UPLOAD  HTTP_UPLOAD_PROGRESS HTTP_UPSTREAM_CHECK HTTP_UPSTREAM_FAIR  HTTP_UPSTREAM_STICKY HTTP_VIDEO_THUMBEXTRACTOR HTTP_ZIP ICONV LET LINK LUA  MEMC MODSECURITY3 NAXSI OPENTRACING PASSENGER POSTGRES RDS_CSV  RDS_JSON REDIS2 RTMP SET_MISC SFLOW SHIBBOLETH SLOWFS_CACHE  SMALL_LIGHT SRCACHE VOD VTS XSS WEBSOCKIFY STREAM STREAM_REALIP STREAM_SSL  STREAM_SSL_PREREAD
 OPTIONS_FILE_UNSET+=DEBUG
@@ -157,7 +157,7 @@ sysrc nginxlimits_enable=YES
 
 
 mkdir -p /usr/local/etc/newsyslog.conf.d
-cat >> /usr/local/etc/newsyslog.conf.d/nginx << "EOF"
+cat << "EOF" >> /usr/local/etc/newsyslog.conf.d/nginx
 /var/log/nginx/*.log                    644  13    *    $W6D0 JCG   /var/run/nginx.pid
 /data/www/vhosts/*/logs/nginx_*_log     644  24    *    $M1D0 JCG   /var/run/nginx.pid
 "EOF"
@@ -196,7 +196,7 @@ Die folgende Konfiguration verwendet für den localhost den Pfad `/data/www/vhos
 `nginx.conf` einrichten.
 
 ``` bash
-cat > /usr/local/etc/nginx/nginx.conf << "EOF"
+cat << "EOF" > /usr/local/etc/nginx/nginx.conf
 user  www  www;
 load_module  /usr/local/libexec/nginx/ngx_http_brotli_filter_module.so;
 load_module  /usr/local/libexec/nginx/ngx_http_brotli_static_module.so;
@@ -260,7 +260,7 @@ http {
 `vhosts.conf` einrichten.
 
 ``` bash
-cat > /usr/local/etc/nginx/vhosts.conf << "EOF"
+cat << "EOF" > /usr/local/etc/nginx/vhosts.conf
     server {
         listen  8080;
         server_name  localhost "";
@@ -355,7 +355,7 @@ cat > /usr/local/etc/nginx/vhosts.conf << "EOF"
 `vhosts-ssl.conf` einrichten.
 
 ``` bash
-cat > /usr/local/etc/nginx/vhosts-ssl.conf << "EOF"
+cat << "EOF" > /usr/local/etc/nginx/vhosts-ssl.conf
     server {
         listen  8443 default_server ssl http2;
         server_name  devnull.example.com;
@@ -443,12 +443,12 @@ cat > /usr/local/etc/nginx/vhosts-ssl.conf << "EOF"
 `defaults.conf` und `headers.conf` einrichten.
 
 ``` bash
-cat > /usr/local/etc/nginx/defaults.conf << "EOF"
+cat << "EOF" > /usr/local/etc/nginx/defaults.conf
         location ~* /?(.+/)*[\._] { return 403; }
         location ~* /?\.well-known { allow all; }
 "EOF"
 
-cat > /usr/local/etc/nginx/headers.conf << "EOF"
+cat << "EOF" > /usr/local/etc/nginx/headers.conf
         add_header  Access-Control-Allow-Methods  "GET, POST, OPTIONS";
 #        add_header  Access-Control-Allow-Headers "Origin, X-Requested-With, Content-Type, Accept, Accept-Encoding"
         add_header  Access-Control-Allow-Origin  "*";

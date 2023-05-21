@@ -2,7 +2,7 @@
 title: 'BaseSystem'
 description: 'In diesem HowTo wird step-by-step die Remote Installation des FreeBSD 64Bit BaseSystem auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-05-02'
+updated: '2023-05-20'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -116,8 +116,7 @@ Da jeder Administrator andere Präferenzen an sein Partitionslayout stellt und w
 
 | Partition | Mountpunkt | Filesystem | Grösse |
 | :-------: | :--------- | :--------: | -----: |
-| /dev/mirror/root | /     | UFS2 | 32 GB |
-| /dev/mirror/data | /data | UFS2 | 24 GB |
+| /dev/mirror/root | /     | UFS2 | 60 GB |
 | /dev/mirror/swap | none  | SWAP |  4 GB |
 
 Als Erstes müssen wir die Festplatte partitionieren, was wir mittels `gpart` erledigen werden. Zuvor müssen wir dies aber dem Kernel mittels `sysctl` mitteilen, da er uns andernfalls dazwischenfunken würde.
@@ -133,15 +132,18 @@ gpart destroy -F nvd1
 gpart create -s gpt nvd0
 gpart create -s gpt nvd1
 
-gpart add -t efi          -b 4096 -s 62M -a 4096 nvd0
-gpart add -t freebsd-ufs          -s 32G -a 4096 nvd0
-gpart add -t freebsd-ufs          -s 24G -a 4096 nvd0
-gpart add -t freebsd-swap         -s  4G -a 4096 nvd0
+gpart add -t freebsd-boot  -b      40 -s     216 -l bootfs0 nvd0
+gpart add -t efi           -b     256 -s    3840 -l uefifs0 nvd0
+gpart add -t freebsd-swap  -b    4096 -s 8388608 -l swapfs0 nvd0
+gpart add -t freebsd-ufs   -b 8392704            -l rootfs0 nvd0
 
-gpart add -t efi          -b 4096 -s 62M -a 4096 nvd1
-gpart add -t freebsd-ufs          -s 32G -a 4096 nvd1
-gpart add -t freebsd-ufs          -s 24G -a 4096 nvd1
-gpart add -t freebsd-swap         -s  4G -a 4096 nvd1
+gpart add -t freebsd-boot  -b      40 -s     216 -l bootfs1 nvd1
+gpart add -t efi           -b     256 -s    3840 -l uefifs1 nvd1
+gpart add -t freebsd-swap  -b    4096 -s 8388608 -l swapfs1 nvd1
+gpart add -t freebsd-ufs   -b 8392704            -l rootfs1 nvd1
+
+gpart set -a bootme -i 4 nvd0
+gpart set -a bootme -i 4 nvd1
 ```
 
 Für eine leicht erhöhte Datensicherheit legen wir mittels `gmirror` ein Software-RAID1 an.
@@ -152,9 +154,8 @@ kldload zfs
 
 sysctl vfs.zfs.min_auto_ashift=12
 
-gmirror label -b load root nvd0p2 nvd1p2
-gmirror label -b load data nvd0p3 nvd1p3
-gmirror label -b prefer -F swap nvd0p4 nvd1p4
+gmirror label -b load rootfs nvd0p4 nvd1p4
+gmirror label -b prefer -F swapfs nvd0p3 nvd1p3
 ```
 
 ## Formatieren der Partitionen
@@ -162,14 +163,8 @@ gmirror label -b prefer -F swap nvd0p4 nvd1p4
 Nun müssen wir noch die Systempartition und die Partition für die Nutzdaten mit "UFS2" und einer 4K-Blockgrösse formatieren und aktivieren auch gleich die "soft-updates".
 
 ``` bash
-newfs -O2 -U -f 4096 /dev/mirror/root
-newfs -O2 -U -f 4096 /dev/mirror/data
-
-tunefs -a enable /dev/mirror/root
-tunefs -a enable /dev/mirror/data
-
-tunefs -l enable /dev/mirror/root
-tunefs -l enable /dev/mirror/data
+newfs -U -l -t /dev/mirror/rootfs
+tunefs -a enable /dev/mirror/rootfs
 ```
 
 ## Mounten der Partitionen
@@ -177,9 +172,8 @@ tunefs -l enable /dev/mirror/data
 Die Partitionen mounten wir unterhalb von `/mnt`.
 
 ``` bash
-mount -t ufs /dev/mirror/root /mnt
+mount -t ufs /dev/mirror/rootfs /mnt
 mkdir -p /mnt/data
-mount -t ufs /dev/mirror/data /mnt/data
 ```
 
 ## Installation der Chroot-Umgebung
@@ -198,31 +192,33 @@ Unser System soll natürlich auch von den Festplatten booten können, weshalb wi
 Festplatte 1:
 
 ``` bash
-newfs_msdos -F 32 -c 1 /dev/nvd0p1
+newfs_msdos /dev/gpt/uefifs0
 
-mount -t msdosfs -o longnames /dev/nvd0p1 /mnt/boot/efi
+mount -t msdosfs /dev/gpt/uefifs0 /mnt/boot/efi
 
 mkdir -p /mnt/boot/efi/EFI/BOOT
 cp /mnt/boot/loader.efi /mnt/boot/efi/EFI/BOOT/BOOTX64.efi
+efibootmgr -a -c -l vtbd0p2:/EFI/BOOT/BOOTX64.efi -L FreeBSD
 
 umount /mnt/boot/efi
 
-gpart set -a bootme -i 2 nvd0
+gpart bootcode -b /mnt/boot/pmbr -p /mnt/boot/gptboot -i 1 nvd0
 ```
 
 Festplatte 2:
 
 ``` bash
-newfs_msdos -F 32 -c 1 /dev/nvd1p1
+newfs_msdos /dev/gpt/uefifs1
 
-mount -t msdosfs -o longnames /dev/nvd1p1 /mnt/boot/efi
+mount -t msdosfs /dev/gpt/uefifs1 /mnt/boot/efi
 
 mkdir -p /mnt/boot/efi/EFI/BOOT
 cp /mnt/boot/loader.efi /mnt/boot/efi/EFI/BOOT/BOOTX64.efi
+efibootmgr -a -c -l vtbd0p2:/EFI/BOOT/BOOTX64.efi -L FreeBSD
 
 umount /mnt/boot/efi
 
-gpart set -a bootme -i 2 nvd1
+gpart bootcode -b /mnt/boot/pmbr -p /mnt/boot/gptboot -i 1 nvd1
 ```
 
 ## Vorbereiten der Chroot-Umgebung
@@ -252,7 +248,7 @@ cd /root
 Zunächst setzen wir die Systemzeit (CMOS clock) mittels `tzsetup` auf die "Region" Europe, das "Country" auf Germany und "Most of Germany", die vorgegebene Zeitzone stimmt im Regelfall bereits und kann bestätigt werden.
 
 ``` bash
-/usr/sbin/tzsetup
+/usr/sbin/tzsetup Europe/Berlin
 ```
 
 Cronjob zur regelmässigen Syncronisation mit einem Zeitserver einrichten.
@@ -269,7 +265,7 @@ Unter FreeBSD ist die Tenex C Shell (TCSH) die Standard-Shell. Für Bash-gewohnt
 
 ``` bash
 # Colorize console output
-cat >> /etc/csh.cshrc << "EOF"
+cat << "EOF" >> /etc/csh.cshrc
 setenv LSCOLORS "Dxfxcxdxbxegedabagacad"
 alias ls        ls -FGIPTW
 alias l         ls -FGIPTWahl
@@ -277,12 +273,21 @@ alias l         ls -FGIPTWahl
 
 # Use ee instead of vi as standard editor
 sed -e 's/\(EDITOR[[:space:]]*\)vi[[:space:]]*$/\1ee/' -i '' /root/.cshrc
+sed -e 's/\(EDITOR=\)vi;\([[:space:]].*\)$/\1ee;\2/' -i '' /root/.profile
+sed -e 's/\(EDITOR[[:space:]]*\)vi[[:space:]]*$/\1ee/' -i '' /usr/share/skel/dot.cshrc
+sed -e 's/\(set EDITOR=\)vi[[:space:]]*$/\1ee/' -i '' /usr/share/skel/dot.mailrc
+sed -e 's/\(set VISUAL=\)vi[[:space:]]*$/\1ee/' -i '' /usr/share/skel/dot.mailrc
+sed -e 's/\(EDITOR=\)vi;\([[:space:]].*\)$/\1ee;\2/' -i '' /usr/share/skel/dot.profile
 
 # Use meaningfuller prompt
 sed -e 's/\(set prompt =\).*$/\1 "[%B%n%b@%B%m%b:%B%~%b] %# "/' -i '' /root/.cshrc
+sed -e 's/\(PS1=\).*$/\1"[\\u@\\h:\\w] \\\\$ "/' -i '' /root/.shrc
+sed -e 's/\(set prompt =\).*$/\1 "[%B%n%b@%B%m%b:%B%~%b] %# "/' -i '' /usr/share/skel/dot.cshrc
+sed -e 's/\(PS1=\).*$/\1"[\\u@\\h:\\w] \\\\$ "/' -i '' /usr/share/skel/dot.shrc
 
 # Set root shell to /bin/tcsh
-chsh -s /bin/tcsh root
+pw useradd -D -g '' -M 0700 -s tcsh -w no
+pw usermod -n root -s tcsh -w none
 ```
 
 ## Systemsicherheit verstärken
@@ -318,7 +323,7 @@ sed -e 's|^#\(Port\).*$|\1 22|' \
     -e 's|^\(Subsystem.*\)$|#\1|' \
     -i '' /etc/ssh/sshd_config
 
-cat >> /etc/ssh/sshd_config << "EOF"
+cat << "EOF" >> /etc/ssh/sshd_config
 
 Subsystem sftp internal-sftp -u 0027
 
@@ -330,7 +335,7 @@ Match User root
 
 Match Group admin
     ChrootDirectory none
-    PasswordAuthentication no
+    PasswordAuthentication yes
 
 Match Group sshusers
     ChrootDirectory none
@@ -361,17 +366,15 @@ ssh-keygen -l -f "/etc/ssh/ssh_host_ecdsa_key.pub"
 ssh-keygen -q -t ed25519 -f "/etc/ssh/ssh_host_ed25519_key" -N ""
 ssh-keygen -l -f "/etc/ssh/ssh_host_ed25519_key.pub"
 
+
 mkdir -p /root/.ssh
 chmod 0700 /root/.ssh
-
-ssh-keygen -t ed25519 -O clear -O permit-pty -f ".ssh/id_ed25519" -N ""
-cat .ssh/id_ed25519.pub >> .ssh/authorized_keys
-
-ssh-keygen -t ecdsa -b 384 -O clear -O permit-pty -f ".ssh/id_ecdsa" -N ""
-cat .ssh/id_ecdsa.pub >> .ssh/authorized_keys
-
-ssh-keygen -t rsa -b 4096 -O clear -O permit-pty -f ".ssh/id_rsa" -N ""
-cat .ssh/id_rsa.pub >> .ssh/authorized_keys
+ssh-keygen -t ed25519 -O clear -O permit-pty -f "/root/.ssh/id_ed25519" -N ""
+cat /root/.ssh/id_ed25519.pub >> /root/.ssh/authorized_keys
+ssh-keygen -t ecdsa -b 384 -O clear -O permit-pty -f "/root/.ssh/id_ecdsa" -N ""
+cat /root/.ssh/id_ecdsa.pub >> /root/.ssh/authorized_keys
+ssh-keygen -t rsa -b 4096 -O clear -O permit-pty -f "/root/.ssh/id_rsa" -N ""
+cat /root/.ssh/id_rsa.pub >> /root/.ssh/authorized_keys
 ```
 
 ### /etc/sysctl.conf anpassen
@@ -379,7 +382,7 @@ cat .ssh/id_rsa.pub >> .ssh/authorized_keys
 In der `sysctl.conf` können die meisten Kernel-Parameter verändert werden. Wir wollen dies nutzen, um unser System etwas robuster und sicherer zu machen.
 
 ``` bash
-cat > /etc/sysctl.conf << "EOF"
+cat << "EOF" >> /etc/sysctl.conf
 kern.ipc.maxsockbuf=16777216
 kern.ipc.soacceptqueue=1024
 kern.ipc.somaxconn=2048
@@ -447,6 +450,7 @@ net.local.stream.sendspace=524288
 net.route.netisr_maxqlen=4096
 security.bsd.see_other_gids=0
 security.bsd.see_other_uids=0
+security.bsd.see_jail_proc=0
 security.bsd.unprivileged_proc_debug=0
 security.bsd.unprivileged_read_msgbuf=0
 security.bsd.hardlink_check_gid=1
@@ -500,7 +504,7 @@ P|Pc|Pc console:\
 Wir passen auch unsere Login-Begrüssung (motd) an.
 
 ``` bash
-cat > /etc/motd.template << "EOF"
+cat << "EOF" > /etc/motd.template
 
 
 
@@ -543,21 +547,39 @@ sed -e 's/^#[[:space:]]*\(root:[[:space:]]*\).*$/\1 admin@example.com/' \
 Die aliases Datenbank für FreeBSDs Sendmail müssen wir mittels `make` anlegen, auch wenn wir später Sendmail gar nicht verwenden möchten.
 
 ``` bash
-cd /etc/mail
-make aliases
-cd /etc
-ln -s mail/aliases.db
-cd /root
+make -C /etc/mail aliases
+cd /etc && ln -s mail/aliases.db && cd /
 ```
 
 ``` bash
-cat >> /etc/nscd.conf << "EOF"
+cat << "EOF" >> /etc/nscd.conf
 keep-hot-count hosts 16384
 "EOF"
 ```
 
 ``` bash
-cat > /etc/resolvconf.conf << "EOF"
+sed -e '/[a-z]*_compat/d' \
+    -e 's/compat/files/g' \
+    -i '' /etc/nsswitch.conf
+```
+
+``` bash
+sed -e 's/^[[:space:]]*\(pool[[:space:]]*0\.freebsd\.pool.*\)$/#\1/' \
+    -e 's/^#[[:space:]]*\(pool[[:space:]]*0\.CC\.pool\)/pool 0.de.pool/' \
+    -i '' /etc/ntp.conf
+```
+
+``` bash
+cat << "EOF" >> /etc/ntp.conf
+#
+interface ignore wildcard
+interface listen 127.0.0.1
+interface listen ::1
+"EOF"
+```
+
+``` bash
+cat << "EOF" > /etc/resolvconf.conf
 resolvconf=NO
 "EOF"
 
@@ -567,7 +589,7 @@ resolvconf -u
 Die `/etc/periodic.conf` legen wir mit folgendem Inhalt an.
 
 ``` bash
-cat > /etc/periodic.conf << "EOF"
+cat << "EOF" >> /etc/periodic.conf
 daily_clean_hoststat_enable="NO"
 daily_clean_tmps_enable="YES"
 daily_status_gmirror_enable="YES"
@@ -576,20 +598,24 @@ daily_status_mail_rejects_enable="NO"
 daily_status_ntpd_enable="YES"
 daily_submit_queuerun="NO"
 weekly_noid_enable="YES"
+daily_backup_pkg_enable="YES"
+daily_status_pkg_changes_enable="YES"
+weekly_status_pkg_enable="YES"
+security_status_pkgaudit_enable="YES"
+security_status_pkgchecksum_enable="YES"
 "EOF"
 ```
 
 Die `/etc/fstab` legen wir entsprechend unserem Partitionslayout an.
 
 ``` bash
-cat > /etc/fstab << "EOF"
-# Device                   Mountpoint              FStype  Options             Dump    Pass
-/dev/mirror/root           /                       ufs     rw                  1       1
-dev                        /dev                    devfs   rw                  0       0
-fdesc                      /dev/fd                 fdescfs rw,late             0       0
-proc                       /proc                   procfs  rw                  0       0
-/dev/mirror/swap           none                    swap    sw                  0       0
-/dev/mirror/data           /data                   ufs     rw                  2       2
+cat << "EOF" > /etc/fstab
+# Device              Mountpoint    FStype     Options      Dump    Pass
+/dev/mirror/rootfs    /             ufs        rw           1       1
+dev                   /dev          devfs      rw           0       0
+proc                  /proc         procfs     rw           0       0
+fdesc                 /dev/fd       fdescfs    rw,late      0       0
+/dev/mirror/swapfs    none          swap       sw           0       0
 "EOF"
 ```
 
@@ -626,6 +652,7 @@ ifconfig_IFACE="inet IPADDR4 netmask NETMASK4"
 
 ##### IPv6
 ### uncomment next 2 lines if you need the simple config
+ipv6_activate_all_interfaces="YES"
 #ipv6_defaultrouter="GATEWAY6"
 #ifconfig_IFACE_ipv6="inet6 IPADDR6 prefixlen PREFLEN6"
 ### the next 4 options may be needed on some isp-networks
@@ -633,7 +660,7 @@ ifconfig_IFACE="inet IPADDR4 netmask NETMASK4"
 #ipv6_route_gateway6="-host -inet6 GATEWAY6 -interface IFACE"
 #ipv6_route_default6="default GATEWAY6"
 #ipv6_static_routes="gateway6 default6"
-#ifconfig_IFACE_ipv6="inet6 IPADDR6 prefixlen PREFLEN6"
+#ifconfig_IFACE_ipv6="inet6 IPADDR6 prefixlen PREFLEN6 accept_rtadv"
 
 ##### Additional IP Addresses
 ### specify additional IPv4 and IPv6 addresses one per line
@@ -643,19 +670,21 @@ ifconfig_IFACE="inet IPADDR4 netmask NETMASK4"
 #        inet6 IPV6 prefixlen PREFLEN \
 #        inet6 IPV6 prefixlen PREFLEN"
 
+pf_enable="YES"
+pf_rules="/etc/pf.conf"
+pflog_enable="YES"
+pflog_logfile="/data/log/pflog"
+pflog_flags="$pflog_flags -d 600 -s 1600"
+
 ##############################################################
 ###  System console options  #################################
 ##############################################################
-keymap="de.kbd"
-font16x32="vgarom-16x32.fnt"
-font8x16="vgarom-8x16.fnt"
-font8x14="vgarom-8x14.fnt"
-font8x8="vgarom-8x8.fnt"
+keymap="de.acc.kbd"
 
 ##############################################################
 ###  Mail Transfer Agent (MTA) options  ######################
 ##############################################################
-sendmail_enable="NO"
+sendmail_enable="NONE"
 sendmail_cert_create="NO"
 sendmail_submit_enable="NO"
 sendmail_outbound_enable="NO"
@@ -682,6 +711,7 @@ resolv_enable="NO"
 ###  System services options  ################################
 ##############################################################
 local_unbound_enable="YES"
+blacklistd_enable="NO"
 sshd_enable="YES"
 "EOF"
 ```
@@ -751,7 +781,7 @@ pw groupadd -n sftponly -g 4000
 Um nicht ständig mit dem root-User arbeiten zu müssen, legen wir uns einen Administrations-User an, den wir praktischerweise "admin" nennen. Diesem User verpassen wir die Standard-Systemgruppe "admin" und nehmen ihn zusätzlich in die Systemgruppe "wheel" auf, damit dieser User später per `su` zum root-User wechseln kann. Das Home-Verzeichnis des admin-Users lassen wir automatisch anlegen und setzen seine Standard-Shell auf `/bin/tcsh`. Ein sicheres Passwort bekommt er selbstverständlich auch noch.
 
 ``` bash
-pw useradd -n admin -u 1000 -g admin -G wheel -c 'Administrator' -m -s /bin/tcsh
+pw useradd -n admin -u 1000 -g admin -G wheel -c 'Administrator' -m -w random
 
 passwd admin
 ```
@@ -761,18 +791,13 @@ Wir richten unserem `admin` noch die Shell und die zum zukünftigen Einloggen zw
 ``` bash
 su - admin
 
-sed -e 's/\(EDITOR[[:space:]]*\)vi[[:space:]]*$/\1ee/' -i '' ~/.cshrc
-sed -e 's/\(set prompt =\).*$/\1 "[%B%n%b@%B%m%b:%B%~%b] %# "/' -i '' ~/.cshrc
-
 mkdir -p .ssh
 chmod 0700 .ssh
 
 ssh-keygen -t ed25519 -O clear -O permit-pty -f ".ssh/id_ed25519" -N ""
 cat .ssh/id_ed25519.pub >> .ssh/authorized_keys
-
 ssh-keygen -t ecdsa -b 384 -O clear -O permit-pty -f ".ssh/id_ecdsa" -N ""
 cat .ssh/id_ecdsa.pub >> .ssh/authorized_keys
-
 ssh-keygen -t rsa -b 4096 -O clear -O permit-pty -f ".ssh/id_rsa" -N ""
 cat .ssh/id_rsa.pub >> .ssh/authorized_keys
 
@@ -782,7 +807,7 @@ exit
 Einen normalen User mit SSH-Zugang legen wir ebenfalls an, ihn nennen wir "joeuser". Diesem User verpassen wir die Standard-Systemgruppe "users" und nehmen ihn zusätzlich in die Systemgruppe "sshusers" auf, damit sich dieser User später per `SSH` einloggen kann. Das Home-Verzeichnis des Users lassen wir automatisch anlegen und setzen seine Standard-Shell auf `/bin/tcsh`. Ein sicheres Passwort bekommt er selbstverständlich auch noch.
 
 ``` bash
-pw useradd -n joeuser -u 2000 -g users -G sshusers -c 'Joe User' -m -s /bin/tcsh
+pw useradd -n joeuser -u 2000 -g users -G sshusers -c 'Joe User' -m -w random
 
 passwd joeuser
 ```
@@ -792,18 +817,13 @@ Wir richten unserem `joeuser` noch die Shell und die zum zukünftigen Einloggen 
 ``` bash
 su - joeuser
 
-sed -e 's/\(EDITOR[[:space:]]*\)vi[[:space:]]*$/\1ee/' -i '' ~/.cshrc
-sed -e 's/\(set prompt =\).*$/\1 "[%B%n%b@%B%m%b:%B%~%b] %# "/' -i '' ~/.cshrc
-
 mkdir -p .ssh
 chmod 0700 .ssh
 
 ssh-keygen -t ed25519 -O clear -O permit-pty -f ".ssh/id_ed25519" -N ""
 cat .ssh/id_ed25519.pub >> .ssh/authorized_keys
-
 ssh-keygen -t ecdsa -b 384 -O clear -O permit-pty -f ".ssh/id_ecdsa" -N ""
 cat .ssh/id_ecdsa.pub >> .ssh/authorized_keys
-
 ssh-keygen -t rsa -b 4096 -O clear -O permit-pty -f ".ssh/id_rsa" -N ""
 cat .ssh/id_rsa.pub >> .ssh/authorized_keys
 
@@ -813,7 +833,7 @@ exit
 ## Buildsystem konfigurieren
 
 ``` bash
-cat > /etc/make.conf << "EOF"
+cat << "EOF" > /etc/make.conf
 KERNCONF?=GENERIC MYKERNEL
 PRINTERDEVICE=ascii
 LICENSES_ACCEPTED+=EULA
@@ -822,7 +842,7 @@ DISABLE_VULNERABILITIES=yes
 ```
 
 ``` bash
-cat > /etc/src.conf << "EOF"
+cat << "EOF" > /etc/src.conf
 WITHOUT_APM=YES
 WITHOUT_ATM=YES
 WITHOUT_BHYVE=YES
@@ -853,6 +873,7 @@ WITHOUT_KERBEROS=YES
 WITH_KERNEL_RETPOLINE=YES
 WITHOUT_LIB32=YES
 WITHOUT_LLVM_TARGET_ALL=YES
+#WITH_LLVM_TARGET_X86=YES
 WITHOUT_LPR=YES
 WITHOUT_MANCOMPRESS=YES
 WITHOUT_NDIS=YES
@@ -879,7 +900,7 @@ WITHOUT_WIRELESS=YES
 Kernel Parameter in `/boot/loader.conf` setzen.
 
 ``` bash
-cat > /boot/loader.conf << "EOF"
+cat << "EOF" >> /boot/loader.conf
 # Loader options
 boot_verbose="YES"
 verbose_loading="YES"
@@ -889,8 +910,9 @@ cpu_microcode_load="YES"
 cpu_microcode_name="/boot/firmware/intel-ucode.bin"
 
 # Kernel selection
-kernel="GENERIC"
-kernels="GENERIC MYKERNEL"
+#kernel="GENERIC"
+#kernels="GENERIC MYKERNEL"
+kernel_options=""
 
 # Kernel modules
 coretemp_load="YES"
@@ -938,7 +960,6 @@ Nun ist es endlich soweit: Wir verlassen das Chroot, unmounten die Partitionen u
 exit
 
 umount /mnt/dev
-umount /mnt/data
 umount /mnt
 
 shutdown -r now
@@ -965,7 +986,7 @@ Nach dem Reboot aktualisieren und entschlacken wir das System.
 Wir installieren als Erstes `pkg`.
 
 ``` bash
-pkg install pkg
+pkg bootstrap -y
 ```
 
 ### Git installieren
@@ -973,7 +994,7 @@ pkg install pkg
 Wir installieren als Nächstes `git` und seine Abhängigkeiten.
 
 ``` bash
-pkg install git
+pkg install -y devel/git
 ```
 
 ### Source Tree auschecken
@@ -1026,7 +1047,7 @@ less /usr/ports/UPDATING
 Wir deinstallieren `git` und seine Abhängigkeiten nun vorerst wieder.
 
 ``` bash
-pkg remove -f \*
+pkg delete -y -a
 ```
 
 ### Konfiguration anpassen
@@ -1066,7 +1087,7 @@ Wenn die eigene Kernel-Konfiguration wie bei uns bereits in der `/etc/make.conf`
 ``` bash
 mkdir -p /root/kernels
 
-cat > /root/kernels/MYKERNEL << "EOF"
+cat << "EOF" > /root/kernels/MYKERNEL
 include         GENERIC
 ident           MYKERNEL
 "EOF"
@@ -1077,7 +1098,9 @@ make -j4 KERNCONF=GENERIC INSTALLKERNEL=GENERIC INSTKERNNAME=GENERIC kernel
 
 make -j4 KERNCONF=MYKERNEL INSTALLKERNEL=MYKERNEL INSTKERNNAME=MYKERNEL kernel
 
-sed -e 's/^\(kernel=\).*$/\1"MYKERNEL"/' -i '' /boot/loader.conf
+sed -e 's/^#*\(kernels=\).*$/\1"MYKERNEL GENERIC"/' -i '' /boot/loader.conf
+sed -e 's/^#*\(kernel=\).*$/\1"MYKERNEL"/' -i '' /boot/loader.conf
+rm -r /boot/kernel /boot/kernel.old
 ```
 
 Normalerweise wäre nun ein Reboot in den Single User Mode an der Reihe. Da sich ein Remote-System in diesem Modus ohne KVM-Lösung aber nicht bedienen lässt, begnügen wir uns damit, das System regulär neu zu starten.
@@ -1110,14 +1133,6 @@ cd /usr/src
 etcupdate -p
 
 make installworld
-```
-
-Da wir den NIS-Support entfernt haben, müssen wir die `/etc/nsswitch.conf` anpassen.
-
-``` bash
-sed -e '/[a-z]*_compat/d' \
-    -e 's/compat/files/g' \
-    -i '' /etc/nsswitch.conf
 ```
 
 Als letzten Schritt müssen nun noch die Neuerungen in den Konfigurationsdateien gemerged werden. Dabei unterstützt uns das Tool `etcupdate`. Wir müssen selbstverständlich darauf achten, dass wir hierbei nicht versehentlich unsere zuvor gemachten Anpassungen an den diversen Konfigurationsdateien wieder rückgängig machen.

@@ -2,7 +2,7 @@
 title: 'MySQL'
 description: 'In diesem HowTo wird step-by-step die Installation des MySQL Datenbanksystem für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-05-02'
+updated: '2023-05-20'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -26,34 +26,34 @@ MySQL unterstützt mehrere Engines, dieses HowTo beschränkt sich allerdings auf
 Wir installieren `databases/mysql80-client` und dessen Abhängigkeiten.
 
 ``` bash
-cat >> /etc/make.conf << "EOF"
+cat << "EOF" >> /etc/make.conf
 #DEFAULT_VERSIONS+=mysql=8.0
 "EOF"
 
 
 mkdir -p /var/db/ports/comms_hidapi
-cat > /var/db/ports/comms_hidapi/options << "EOF"
+cat << "EOF" > /var/db/ports/comms_hidapi/options
 _OPTIONS_READ=hidapi-0.13.1
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
 "EOF"
 
 mkdir -p /var/db/ports/textproc_groff
-cat > /var/db/ports/textproc_groff/options << "EOF"
+cat << "EOF" > /var/db/ports/textproc_groff/options
 _OPTIONS_READ=groff-1.22.4
 _FILE_COMPLETE_OPTIONS_LIST=UCHARDET
 OPTIONS_FILE_SET+=UCHARDET
 "EOF"
 
 mkdir -p /var/db/ports/print_gsfonts
-cat > /var/db/ports/print_gsfonts/options << "EOF"
+cat << "EOF" > /var/db/ports/print_gsfonts/options
 _OPTIONS_READ=gsfonts-8.11
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
 "EOF"
 
 mkdir -p /var/db/ports/databases_mysql80-client
-cat > /var/db/ports/databases_mysql80-client/options << "EOF"
+cat << "EOF" > /var/db/ports/databases_mysql80-client/options
 _OPTIONS_READ=mysql80-client-8.0.32
 _FILE_COMPLETE_OPTIONS_LIST= SASLCLIENT
 OPTIONS_FILE_UNSET+=SASLCLIENT
@@ -68,7 +68,7 @@ Wir installieren `databases/mysql80-server` und dessen Abhängigkeiten.
 
 ``` bash
 mkdir -p /var/db/ports/databases_mysql80-server
-cat > /var/db/ports/databases_mysql80-server/options << "EOF"
+cat << "EOF" > /var/db/ports/databases_mysql80-server/options
 _OPTIONS_READ=mysql80-server-8.0.32
 _FILE_COMPLETE_OPTIONS_LIST= ARCHIVE BLACKHOLE EXAMPLE FEDERATED INNOBASE PARTITION PERFSCHEMA PERFSCHM
 OPTIONS_FILE_UNSET+=ARCHIVE
@@ -104,7 +104,7 @@ sysrc mysql_optfile="/usr/local/etc/mysql/my.cnf"
     Die Konfiguration orientiert sich an diesem [RootForum Community Forenbeitrag](https://www.rootforum.org/forum/viewtopic.php?t=36343){: target="_blank" rel="noopener"}.
 
 ``` bash
-cat > /usr/local/etc/mysql/my.cnf << "EOF"
+cat << "EOF" > /usr/local/etc/mysql/my.cnf
 [client]
 port                            = 3306
 socket                          = /tmp/mysql.sock

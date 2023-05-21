@@ -2,7 +2,7 @@
 title: 'mfsBSD Image'
 description: 'In diesem HowTo wird step-by-step die Erstellung eines mfsBSD Images zur Remote Installation von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-05-02'
+updated: '2023-05-20'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -89,21 +89,25 @@ Wir werden drei Partitionen anlegen, die Erste für den Bootcode, die Zweite als
 sysctl kern.geom.debugflags=0x10
 
 gpart create -s gpt nvd0
-gpart add -t efi          -b 4096 -s 62M -a 4096 nvd0
-gpart add -t freebsd-ufs          -s 56G -a 4096 nvd0
-gpart add -t freebsd-swap         -s  4G -a 4096 nvd0
+
+gpart add -t freebsd-boot  -b      40 -s     216 -l bootfs nvd0
+gpart add -t efi           -b     256 -s    3840 -l uefifs nvd0
+gpart add -t freebsd-swap  -b    4096 -s 8388608 -l swapfs nvd0
+gpart add -t freebsd-ufs   -b 8392704            -l rootfs nvd0
+
+gpart set -a bootme -i 4 nvd0
 ```
 
 Nun müssen wir noch die Systempartition mit "UFS2" und einer 4K-Blockgrösse formatieren und aktivieren auch gleich die "soft-updates".
 
 ``` bash
-newfs -O2 -U -f 4096 /dev/nvd0p2
+newfs -U -l -t /dev/gpt/rootfs
 ```
 
 Die Systempartition mounten wir nach `/mnt` und entpacken darauf ein FreeBSD-Minimalsystem mit dem wir problemlos weiterarbeiten können.
 
 ``` bash
-mount -t ufs /dev/nvd0p2 /mnt
+mount -t ufs /dev/gpt/rootfs /mnt
 
 tar Jxpvf /usr/freebsd-dist/base.txz   -C /mnt/
 tar Jxpvf /usr/freebsd-dist/kernel.txz -C /mnt/
@@ -116,16 +120,16 @@ cp -a /usr/freebsd-dist /mnt/usr/
 Unser System soll natürlich auch von der Festplatte booten können, weshalb wir jetzt den Bootcode und Bootloader in der Bootpartittion installieren.
 
 ``` bash
-newfs_msdos -F 32 -c 1 /dev/nvd0p1
+newfs_msdos /dev/gpt/uefifs
 
-mount -t msdosfs -o longnames /dev/nvd0p1 /mnt/boot/efi
+mount -t msdosfs /dev/gpt/uefifs /mnt/boot/efi
 
 mkdir -p /mnt/boot/efi/EFI/BOOT
 cp /mnt/boot/loader.efi /mnt/boot/efi/EFI/BOOT/BOOTX64.efi
-
+efibootmgr -a -c -l vtbd0p2:/EFI/BOOT/BOOTX64.efi -L FreeBSD
 umount /mnt/boot/efi
 
-gpart set -a bootme -i 2 nvd0
+gpart bootcode -b /mnt/boot/pmbr -p /mnt/boot/gptboot -i 1 nvd0
 ```
 
 Vor dem Wechsel in die Chroot-Umgebung müssen wir noch die `resolv.conf` in die Chroot-Umgebung kopieren und das Device-Filesysteme dorthin mounten.
@@ -149,14 +153,14 @@ cd /root
 Zunächst setzen wir die Systemzeit (CMOS clock) mittels `tzsetup`, hierzu wählen wir zunächst "Europe", dann "Germany" und zum Schluss "CET" beziehungsweise "CEST" aus.
 
 ``` bash
-tzsetup
+/usr/sbin/tzsetup Europe/Berlin
 ```
 
 Unter FreeBSD ist die Tenex C Shell (TCSH) die Standard-Shell. Für Bash-gewohnte Linux-User ist diese Shell etwas gewöhnungsbedürftig, und natürlich kann man sie später auch gegen eine andere Shell austauschen (im Basis-System ist neben der TCSH auch eine ASH enthalten). Skripte würde ich persönlich für die TCSH eher nicht schreiben, aber für die tägliche Administrationsarbeit ist die TCSH ein sehr brauchbares Werkzeug – wenn man sie erst mal etwas umkonfiguriert hat. Dies tun wir jetzt.
 
 ``` bash
 # Colorize console output
-cat >> /etc/csh.cshrc << "EOF"
+cat << "EOF" >> /etc/csh.cshrc
 setenv LSCOLORS "Dxfxcxdxbxegedabagacad"
 alias ls        ls -FGIPTW
 alias l         ls -FGIPTWahl
@@ -164,12 +168,21 @@ alias l         ls -FGIPTWahl
 
 # Use ee instead of vi as standard editor
 sed -e 's/\(EDITOR[[:space:]]*\)vi[[:space:]]*$/\1ee/' -i '' /root/.cshrc
+sed -e 's/\(EDITOR=\)vi;\([[:space:]].*\)$/\1ee;\2/' -i '' /root/.profile
+sed -e 's/\(EDITOR[[:space:]]*\)vi[[:space:]]*$/\1ee/' -i '' /usr/share/skel/dot.cshrc
+sed -e 's/\(set EDITOR=\)vi[[:space:]]*$/\1ee/' -i '' /usr/share/skel/dot.mailrc
+sed -e 's/\(set VISUAL=\)vi[[:space:]]*$/\1ee/' -i '' /usr/share/skel/dot.mailrc
+sed -e 's/\(EDITOR=\)vi;\([[:space:]].*\)$/\1ee;\2/' -i '' /usr/share/skel/dot.profile
 
 # Use meaningfuller prompt
 sed -e 's/\(set prompt =\).*$/\1 "[%B%n%b@%B%m%b:%B%~%b] %# "/' -i '' /root/.cshrc
+sed -e 's/\(PS1=\).*$/\1"[\\u@\\h:\\w] \\\\$ "/' -i '' /root/.shrc
+sed -e 's/\(set prompt =\).*$/\1 "[%B%n%b@%B%m%b:%B%~%b] %# "/' -i '' /usr/share/skel/dot.cshrc
+sed -e 's/\(PS1=\).*$/\1"[\\u@\\h:\\w] \\\\$ "/' -i '' /usr/share/skel/dot.shrc
 
 # Set root shell to /bin/tcsh
-chsh -s /bin/tcsh root
+pw useradd -D -g '' -M 0700 -s tcsh -w no
+pw usermod -n root -s tcsh -w none
 ```
 
 Das Home-Verzeichnis des Users root ist standardmässig leider nicht ausreichend restriktiv in seinen Zugriffsrechten, was wir mit einem entsprechenden Aufruf von `chmod` schnell ändern. Bevor wir es vergessen, setzen wir bei dieser Gelegenheit gleich ein sicheres Passwort für root.
@@ -184,24 +197,28 @@ Die aliases-Datenbank für FreeBSDs Sendmail müssen wir mittels `make` anlegen,
 cd /etc/mail ; make aliases ; cd /root
 ```
 
-Die `fstab` ist bei unserem minimalistischen Partitionslayout zwar nicht zwingend nötig, aber wir möchten später keine unerwarteten Überraschungen erleben, also legen wir sie vorsichtshalber mittels `ee /etc/fstab` mit folgendem Inhalt an.
+Die `fstab` ist bei unserem minimalistischen Partitionslayout zwar nicht zwingend nötig, aber wir möchten später keine unerwarteten Überraschungen erleben, also legen wir sie vorsichtshalber an.
 
 ``` text
-# Device                     Mountpoint              FStype  Options         Dump    Pass
-/dev/nvd0p2                  /                       ufs     rw              1       1
-dev                          /dev                    devfs   rw              0       0
-proc                         /proc                   procfs  rw              0       0
-/dev/nvd0p3                  none                    swap    sw              0       0
+cat << "EOF" > /etc/fstab
+# Device           Mountpoint    FStype     Options      Dump    Pass
+/dev/gpt/rootfs    /             ufs        rw           1       1
+dev                /dev          devfs      rw           0       0
+proc               /proc         procfs     rw           0       0
+fdesc              /dev/fd       fdescfs    rw,late      0       0
+/dev/gpt/swapfs    none          swap       sw           0       0
+"EOF"
 ```
 
 In der `rc.conf` werden diverse Grundeinstellungen für das System und die installierten Dienste vorgenommen. Wir legen sie daher mittela `ee /etc/rc.conf` mit folgendem Inhalt an.
 
 ``` bash
-cat > /etc/rc.conf << "EOF"
+cat << "EOF" >> /etc/rc.conf
 ##############################################################
 ###  Important initial Boot-time options  ####################
 ##############################################################
 fsck_y_enable="YES"
+dmesg_enable="YES"
 dumpdev="AUTO"
 
 ##############################################################
@@ -213,15 +230,12 @@ ifconfig_vtnet0="DHCP"
 ##############################################################
 ###  System console options  #################################
 ##############################################################
-keymap="de.kbd"
-font8x16="vgarom-8x16.fnt"
-font8x14="vgarom-8x14.fnt"
-font8x8="vgarom-8x8.fnt"
+keymap="de.acc.kbd"
 
 ##############################################################
 ###  Mail Transfer Agent (MTA) options  ######################
 ##############################################################
-sendmail_enable="NO"
+sendmail_enable="NONE"
 sendmail_cert_create="NO"
 sendmail_submit_enable="NO"
 sendmail_outbound_enable="NO"
@@ -233,9 +247,11 @@ sendmail_msp_queue_enable="NO"
 syslogd_flags="-ss"
 clear_tmp_enable="YES"
 cron_flags="$cron_flags -j 0 -J 0 -m root"
+update_motd="YES"
 nscd_enable="YES"
 ntpd_enable="YES"
 ntpd_sync_on_start="YES"
+ntp_leapfile_fetch_verbose="YES"
 resolv_enable="NO"
 
 ##############################################################
@@ -246,6 +262,7 @@ resolv_enable="NO"
 ###  System services options  ################################
 ##############################################################
 local_unbound_enable="YES"
+blacklistd_enable="NO"
 sshd_enable="YES"
 "EOF"
 ```
@@ -253,12 +270,60 @@ sshd_enable="YES"
 Da dies lediglich ein lokales temporäres System zum Erzeugen unseres mfsBSD-Images wird, können wir den SSH-Dienst bedenkenlos etwas komfortabler aber dadurch zwangsläufig auch etwas unsicherer konfigurieren, indem wir den Login per Passwort zulassen.
 
 ``` bash
-sed -e 's|^#\(PermitRootLogin\).*$|\1 yes|' \
-    -e 's|^#\(PasswordAuthentication\).*$|\1 yes|' \
+sed -e 's|^#\(Port\).*$|\1 22|' \
+    -e 's|^#\(PermitRootLogin\).*$|\1 prohibit-password|' \
+    -e 's|^#\(PubkeyAuthentication\).*$|\1 yes|' \
+    -e 's|^#\(PasswordAuthentication\).*$|\1 no|' \
+    -e 's|^#\(PermitEmptyPasswords\).*$|\1 no|' \
     -e 's|^#\(KbdInteractiveAuthentication\).*$|\1 no|' \
+    -e 's|^#\(ChallengeResponseAuthentication\).*$|\1 no|' \
     -e 's|^#\(UsePAM\).*$|\1 no|' \
+    -e 's|^#\(AllowAgentForwarding\).*$|\1 no|' \
+    -e 's|^#\(AllowTcpForwarding\).*$|\1 no|' \
+    -e 's|^#\(GatewayPorts\).*$|\1 no|' \
+    -e 's|^#\(X11Forwarding\).*$|\1 no|' \
+    -e 's|^#\(PermitUserEnvironment\).*$|\1 no|' \
+    -e 's|^#\(ClientAliveInterval\).*$|\1 10|' \
+    -e 's|^#\(ClientAliveCountMax\).*$|\1 6|' \
+    -e 's|^#\(PidFile\).*$|\1 /var/run/sshd.pid|' \
+    -e 's|^#\(MaxStartups\).*$|\1 10:30:100|' \
+    -e 's|^#\(PermitTunnel\).*$|\1 no|' \
+    -e 's|^#\(ChrootDirectory\).*$|\1 %h|' \
     -e 's|^#\(UseBlacklist\).*$|\1 no|' \
+    -e 's|^#\(VersionAddendum\).*$|\1 none|' \
+    -e 's|^\(Subsystem.*\)$|#\1|' \
     -i '' /etc/ssh/sshd_config
+
+cat << "EOF" >> /etc/ssh/sshd_config
+
+Subsystem sftp internal-sftp -u 0027
+
+AllowGroups wheel admin sshusers sftponly
+
+Match User root
+    ChrootDirectory none
+    PasswordAuthentication no
+
+Match Group admin
+    ChrootDirectory none
+    PasswordAuthentication yes
+
+Match Group sshusers
+    ChrootDirectory none
+    PasswordAuthentication no
+
+Match Group sftponly
+    ChrootDirectory /home
+    PasswordAuthentication yes
+    ForceCommand internal-sftp -d %u
+
+"EOF"
+
+sed -e '/^# Ciphers and keying/ a\\
+Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com\\
+Macs hmac-sha2-512,hmac-sha2-512-etm@openssh.com,hmac-sha2-256,hmac-sha2-256-etm@openssh.com\\
+KexAlgorithms sntrup761x25519-sha512@openssh.com,curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256\\
+' -i '' /etc/ssh/sshd_config
 
 ssh-keygen -q -t rsa -b 4096 -f "/etc/ssh/ssh_host_rsa_key" -N ""
 ssh-keygen -l -f "/etc/ssh/ssh_host_rsa_key.pub"
@@ -267,17 +332,15 @@ ssh-keygen -l -f "/etc/ssh/ssh_host_ecdsa_key.pub"
 ssh-keygen -q -t ed25519 -f "/etc/ssh/ssh_host_ed25519_key" -N ""
 ssh-keygen -l -f "/etc/ssh/ssh_host_ed25519_key.pub"
 
+
 mkdir -p /root/.ssh
 chmod 0700 /root/.ssh
-
-ssh-keygen -t ed25519 -O clear -O permit-pty -f ".ssh/id_ed25519" -N ""
-cat .ssh/id_ed25519.pub >> .ssh/authorized_keys
-
-ssh-keygen -t ecdsa -b 384 -O clear -O permit-pty -f ".ssh/id_ecdsa" -N ""
-cat .ssh/id_ecdsa.pub >> .ssh/authorized_keys
-
-ssh-keygen -t rsa -b 4096 -O clear -O permit-pty -f ".ssh/id_rsa" -N ""
-cat .ssh/id_rsa.pub >> .ssh/authorized_keys
+ssh-keygen -t ed25519 -O clear -O permit-pty -f "/root/.ssh/id_ed25519" -N ""
+cat /root/.ssh/id_ed25519.pub >> /root/.ssh/authorized_keys
+ssh-keygen -t ecdsa -b 384 -O clear -O permit-pty -f "/root/.ssh/id_ecdsa" -N ""
+cat /root/.ssh/id_ecdsa.pub >> /root/.ssh/authorized_keys
+ssh-keygen -t rsa -b 4096 -O clear -O permit-pty -f "/root/.ssh/id_rsa" -N ""
+cat /root/.ssh/id_rsa.pub >> /root/.ssh/authorized_keys
 ```
 
 Das System ist nun für unsere Zwecke ausreichend konfiguriert, so dass wir das Chroot nun verlassen und die Systempartition unmounten können.

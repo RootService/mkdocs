@@ -2,7 +2,7 @@
 title: 'SpamAssassin'
 description: 'In diesem HowTo wird step-by-step die Installation von SpamAssassin für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-05-02'
+updated: '2023-05-20'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -25,35 +25,35 @@ Wir installieren `mail/spamassassin` und dessen Abhängigkeiten.
 
 ``` bash
 mkdir -p /var/db/ports/devel_p5-Moo
-cat > /var/db/ports/devel_p5-Moo/options << "EOF"
+cat << "EOF" > /var/db/ports/devel_p5-Moo/options
 _OPTIONS_READ=p5-Moo-2.005005
 _FILE_COMPLETE_OPTIONS_LIST=XS
 OPTIONS_FILE_SET+=XS
 "EOF"
 
 mkdir -p /var/db/ports/devel_p5-Class-C3
-cat > /var/db/ports/devel_p5-Class-C3/options << "EOF"
+cat << "EOF" > /var/db/ports/devel_p5-Class-C3/options
 _OPTIONS_READ=p5-Class-C3-0.35
 _FILE_COMPLETE_OPTIONS_LIST=XS
 OPTIONS_FILE_SET+=XS
 "EOF"
 
 mkdir -p /var/db/ports/devel_p5-strictures
-cat > /var/db/ports/devel_p5-strictures/options << "EOF"
+cat << "EOF" > /var/db/ports/devel_p5-strictures/options
 _OPTIONS_READ=p5-strictures-2.000006
 _FILE_COMPLETE_OPTIONS_LIST=STRICTURES_EXTRA
 OPTIONS_FILE_SET+=STRICTURES_EXTRA
 "EOF"
 
 mkdir -p /var/db/ports/devel_p5-Data-Dumper-Concise
-cat > /var/db/ports/devel_p5-Data-Dumper-Concise/options << "EOF"
+cat << "EOF" > /var/db/ports/devel_p5-Data-Dumper-Concise/options
 _OPTIONS_READ=p5-Data-Dumper-Concise-2.023
 _FILE_COMPLETE_OPTIONS_LIST=ARGNAMES
 OPTIONS_FILE_SET+=ARGNAMES
 "EOF"
 
 mkdir -p /var/db/ports/dns_p5-Net-DNS
-cat > /var/db/ports/dns_p5-Net-DNS/options << "EOF"
+cat << "EOF" > /var/db/ports/dns_p5-Net-DNS/options
 _OPTIONS_READ=p5-Net-DNS-1.37
 _FILE_COMPLETE_OPTIONS_LIST=IDN IDN2 IPV6 SSHFP TSIG
 OPTIONS_FILE_UNSET+=IDN
@@ -64,14 +64,14 @@ OPTIONS_FILE_SET+=TSIG
 "EOF"
 
 mkdir -p /var/db/ports/devel_p5-Test-NoWarnings
-cat > /var/db/ports/devel_p5-Test-NoWarnings/options << "EOF"
+cat << "EOF" > /var/db/ports/devel_p5-Test-NoWarnings/options
 _OPTIONS_READ=p5-Test-NoWarnings-1.06
 _FILE_COMPLETE_OPTIONS_LIST=DEVEL_STACKTRACE
 OPTIONS_FILE_UNSET+=DEVEL_STACKTRACE
 "EOF"
 
 mkdir -p /var/db/ports/dns_libidn
-cat > /var/db/ports/dns_libidn/options << "EOF"
+cat << "EOF" > /var/db/ports/dns_libidn/options
 _OPTIONS_READ=libidn-1.38
 _FILE_COMPLETE_OPTIONS_LIST=DOCS NLS
 OPTIONS_FILE_SET+=DOCS
@@ -79,7 +79,7 @@ OPTIONS_FILE_SET+=NLS
 "EOF"
 
 mkdir -p /var/db/ports/devel_re2c
-cat > /var/db/ports/devel_re2c/options << "EOF"
+cat << "EOF" > /var/db/ports/devel_re2c/options
 _OPTIONS_READ=re2c-3.0
 _FILE_COMPLETE_OPTIONS_LIST=DOCS EXAMPLES LIBRE2C RE2GO RE2RUST
 OPTIONS_FILE_SET+=DOCS
@@ -90,7 +90,7 @@ OPTIONS_FILE_SET+=RE2RUST
 "EOF"
 
 mkdir -p /var/db/ports/security_gnupg1
-cat > /var/db/ports/security_gnupg1/options << "EOF"
+cat << "EOF" > /var/db/ports/security_gnupg1/options
 _OPTIONS_READ=gnupg1-1.4.23
 _FILE_COMPLETE_OPTIONS_LIST=CURL DOCS ICONV LDAP LIBUSB NLS SUID_GPG
 OPTIONS_FILE_SET+=CURL
@@ -103,14 +103,14 @@ OPTIONS_FILE_UNSET+=SUID_GPG
 "EOF"
 
 mkdir -p /var/db/ports/dns_p5-Net-DNS-Resolver-Programmable
-cat > /var/db/ports/dns_p5-Net-DNS-Resolver-Programmable/options << "EOF"
+cat << "EOF" > /var/db/ports/dns_p5-Net-DNS-Resolver-Programmable/options
 _OPTIONS_READ=p5-Net-DNS-Resolver-Programmable-0.009
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
 "EOF"
 
 mkdir -p /var/db/ports/mail_spamassassin
-cat > /var/db/ports/mail_spamassassin/options << "EOF"
+cat << "EOF" > /var/db/ports/mail_spamassassin/options
 _OPTIONS_READ=spamassassin-4.0.0
 _FILE_COMPLETE_OPTIONS_LIST=AS_ROOT DOCS SSL GNUPG_NONE GNUPG GNUPG2 MYSQL PGSQL DCC DKIM PYZOR RAZOR RELAY_COUNTRY RLIMIT SPF_QUERY
 OPTIONS_FILE_SET+=AS_ROOT
@@ -143,7 +143,7 @@ Wir installieren `mail/spamass-milter` und dessen Abhängigkeiten.
 
 ``` bash
 mkdir -p /var/db/ports/mail_spamass-milter
-cat > /var/db/ports/mail_spamass-milter/options << "EOF"
+cat << "EOF" > /var/db/ports/mail_spamass-milter/options
 _OPTIONS_READ=spamass-milter-0.4.0
 _FILE_COMPLETE_OPTIONS_LIST=DOCS LDAP MILTER_PORT
 OPTIONS_FILE_SET+=DOCS
@@ -176,7 +176,7 @@ sed -e 's|^#[[:space:]]*\(report_contact\)[[:space:]].*$|\1 postmaster@example.c
     -e 's|^#[[:space:]]*\(report_safe\)[[:space:]].*$|\1 0|g' \
     /usr/local/etc/mail/spamassassin/local.cf.sample > /usr/local/etc/mail/spamassassin/local.cf
 
-cat >> /usr/local/etc/mail/spamassassin/local.cf << "EOF"
+cat << "EOF" >> /usr/local/etc/mail/spamassassin/local.cf
 clear_headers
 add_header all Flag _YESNOCAPS_
 add_header all Level _STARS(*)_
@@ -209,7 +209,7 @@ SpamAssassin Datenbank anlegen.
 SpamAssassin Datenbank updaten.
 
 ``` bash
-cat > /usr/local/sbin/update-spamassassin << "EOF"
+cat << "EOF" > /usr/local/sbin/update-spamassassin
 #!/bin/sh
 
 /usr/local/bin/sa-update --channel updates.spamassassin.org --refreshmirrors --verbose
@@ -228,6 +228,9 @@ chmod 0755 /usr/local/sbin/update-spamassassin
 SpamAssassin kann nun gestartet werden.
 
 ``` bash
+mkdir -p /var/run/spamass-milter
+chown spamd:spamd /var/run/spamass-milter
+
 service sa-spamd start
 service spamass-milter start
 ```

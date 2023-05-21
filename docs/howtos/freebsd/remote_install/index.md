@@ -2,7 +2,7 @@
 title: 'Remote Installation'
 description: 'In diesem HowTo werden step-by-step die Voraussetzungen für die Remote Installation des FreeBSD 64Bit BaseSystem auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-05-02'
+updated: '2023-05-20'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -30,13 +30,14 @@ Unsere BasePorts werden am Ende folgende Dienste umfassen.
 Unsere BaseTools werden am Ende folgende Dienste umfassen.
 
 - Sudo 1.9.13p3
-- cURL 8.0.1
+- cURL 8.1.0
+- wget 1.21.3
 - Bash 5.2.15
 - GIT 2.40.1
-- Portmaster 3.22
+- Portmaster 3.23
 - SMARTmontools 7.3
-- SQLite 3.41.2
 - Nano 7.2
+- SQLite 3.41.2
 - GnuPG 2.3.8
 - Subversion 1.14.2
 

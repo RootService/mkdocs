@@ -2,7 +2,7 @@
 title: 'Dovecot'
 description: 'In diesem HowTo wird step-by-step die Installation des Dovecot Mailservers für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-05-02'
+updated: '2023-05-20'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -25,14 +25,14 @@ Wir installieren `mail/dovecot` und dessen Abhängigkeiten.
 
 ``` bash
 mkdir -p /var/db/ports/textproc_libexttextcat
-cat > /var/db/ports/textproc_libexttextcat/options << "EOF"
+cat << "EOF" > /var/db/ports/textproc_libexttextcat/options
 _OPTIONS_READ=libexttextcat-3.4.6
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
 "EOF"
 
 mkdir -p /var/db/ports/mail_dovecot
-cat > /var/db/ports/mail_dovecot/options << "EOF"
+cat << "EOF" > /var/db/ports/mail_dovecot/options
 _OPTIONS_READ=dovecot-2.3.20
 _FILE_COMPLETE_OPTIONS_LIST=DOCS EXAMPLES LIBSODIUM LIBUNWIND LIBWRAP LUA LZ4 GSSAPI_NONE GSSAPI_BASE GSSAPI_HEIMDAL GSSAPI_MIT CDB LDAP MYSQL PGSQL SQLITE ICU LUCENE SOLR TEXTCAT
 OPTIONS_FILE_SET+=DOCS
@@ -70,7 +70,7 @@ sysrc dovecot_enable=YES
 `dovecot.conf` einrichten.
 
 ``` bash
-cat > /usr/local/etc/dovecot/dovecot.conf << "EOF"
+cat << "EOF" > /usr/local/etc/dovecot/dovecot.conf
 #auth_mechanisms = plain login
 auth_verbose = yes
 first_valid_gid = 5000
@@ -213,7 +213,7 @@ userdb {
 Das Anlegen neuer Mailuser wird mittels Script automatisiert.
 
 ``` bash
-cat > /usr/local/etc/dovecot/create_mailuser.sh << "EOF"
+cat << "EOF" > /usr/local/etc/dovecot/create_mailuser.sh
 #!/bin/sh
 dovecot_user="${1}"
 dovecot_pass="`openssl rand -hex 64 | openssl passwd -1 -stdin | tr -cd '[[:alnum:]]' | cut -c 2-13`"
