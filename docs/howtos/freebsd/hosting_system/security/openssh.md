@@ -13,7 +13,7 @@ author_url: https://github.com/JoeUser78
 
 Unser Hosting System wird folgende Dienste umfassen.
 
-- OpenSSH 9.2p1 (Public-Key-Auth)
+- OpenSSH 9.3p1 (Public-Key-Auth)
 
 ## Voraussetzungen
 
@@ -49,7 +49,7 @@ OPTIONS_FILE_SET+=RRTYPETA
 
 mkdir -p /var/db/ports/security_openssh-portable
 cat << "EOF" > /var/db/ports/security_openssh-portable/options
-_OPTIONS_READ=openssh-portable-9.2.p1
+_OPTIONS_READ=openssh-portable-9.3.p1
 _FILE_COMPLETE_OPTIONS_LIST=BLACKLISTD BSM DOCS FIDO_U2F HPN KERB_GSSAPI LDNS LIBEDIT NONECIPHER PAM TCP_WRAPPERS XMSS MIT HEIMDAL HEIMDAL_BASE
 OPTIONS_FILE_UNSET+=BLACKLISTD
 OPTIONS_FILE_UNSET+=BSM
@@ -138,7 +138,7 @@ Match Group sftponly
 sed -e '/^# Ciphers and keying/ a\\
 Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com\\
 Macs hmac-sha2-512,hmac-sha2-512-etm@openssh.com,hmac-sha2-256,hmac-sha2-256-etm@openssh.com\\
-KexAlgorithms sntrup761x25519-sha512@openssh.com,curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256\\
+KexAlgorithms sntrup761x25519-sha512@openssh.com,curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256\
 ' -i '' /usr/local/etc/ssh/sshd_config
 
 ssh-keygen -q -t rsa -b 4096 -f "/usr/local/etc/ssh/ssh_host_rsa_key" -N ""

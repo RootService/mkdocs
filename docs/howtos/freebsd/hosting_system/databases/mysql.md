@@ -33,7 +33,7 @@ cat << "EOF" >> /etc/make.conf
 
 mkdir -p /var/db/ports/comms_hidapi
 cat << "EOF" > /var/db/ports/comms_hidapi/options
-_OPTIONS_READ=hidapi-0.13.1
+_OPTIONS_READ=hidapi-0.14.0
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
 "EOF"

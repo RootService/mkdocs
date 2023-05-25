@@ -30,7 +30,7 @@ Unsere BasePorts werden am Ende folgende Dienste umfassen.
 Unsere BaseTools werden am Ende folgende Dienste umfassen.
 
 - Sudo 1.9.13p3
-- cURL 8.1.0
+- cURL 8.1.1
 - wget 1.21.3
 - Bash 5.2.15
 - GIT 2.40.1

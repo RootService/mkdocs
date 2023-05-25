@@ -157,7 +157,9 @@ TrustedHosts anlegen.
 cat << "EOF" > /data/db/opendkim/trustedhosts
 ::1
 127.0.0.1
-localhost
+fe80::/10
+ff02::/16
+10.0.0.0/8
 "EOF"
 
 ifconfig `route -n get -inet default | \
@@ -170,6 +172,7 @@ ifconfig `route -n get -inet6 default | \
     >> /data/db/opendkim/trustedhosts
 
 cat << "EOF" >> /data/db/opendkim/trustedhosts
+localhost
 example.com
 *.example.com
 "EOF"

@@ -97,7 +97,11 @@ IgnoreHosts anlegen.
 cat << "EOF" > /data/db/opendmarc/ignorehosts
 ::1
 127.0.0.1
-localhost
+::1
+127.0.0.1
+fe80::/10
+ff02::/16
+10.0.0.0/8
 "EOF"
 
 ifconfig `route -n get -inet default | \
@@ -110,6 +114,7 @@ ifconfig `route -n get -inet6 default | \
     >> /data/db/opendmarc/ignorehosts
 
 cat << "EOF" >> /data/db/opendmarc/ignorehosts
+localhost
 example.com
 *.example.com
 "EOF"

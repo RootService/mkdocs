@@ -16,7 +16,7 @@ In diesem HowTo beschreibe ich step-by-step die Installation einiger Tools (Port
 Unsere BaseTools werden am Ende folgende Dienste umfassen.
 
 - Sudo 1.9.13p3
-- cURL 8.1.0
+- cURL 8.1.1
 - wget 1.21.3
 - Bash 5.2.15
 - GIT 2.40.1
@@ -71,6 +71,26 @@ OPTIONS_FILE_UNSET+=GSSAPI_MIT
 
 cd /usr/ports/security/sudo
 make all install clean-depends clean
+```
+
+Wir konfigurieren `sudo` und erlauben Mitgliedern der Gruppe `wheel` beliebige Kommandos als beliebiger User ohne Passwortabfrage auszuführen.
+
+``` bash
+cat << "EOF" > /usr/local/etc/sudoers.d/00_defaults
+## Uncomment to allow any user to run sudo if they know the password
+## of the user they are running the command as (root by default).
+Defaults targetpw  # Ask for the password of the target user
+ALL ALL=(ALL:ALL) ALL  # WARNING: only use this together with 'Defaults targetpw'
+
+## Uncomment to show on password prompt which users' password is being expected
+Defaults passprompt="%p's password:"
+"EOF"
+chmod 0440 /usr/local/etc/sudoers.d/00_defaults
+
+cat << "EOF" > /usr/local/etc/sudoers.d/01_wheel
+%wheel ALL = (ALL:ALL) NOPASSWD: ALL
+"EOF"
+chmod 0440 /usr/local/etc/sudoers.d/01_wheel
 ```
 
 Wir installieren `ftp/curl` und dessen Abhängigkeiten.
@@ -151,8 +171,8 @@ OPTIONS_FILE_SET+=NLS
 
 mkdir -p /var/db/ports/ftp_curl
 cat << "EOF" > /var/db/ports/ftp_curl/options
-_OPTIONS_READ=curl-8.1.0
-_FILE_COMPLETE_OPTIONS_LIST=ALTSVC BROTLI CA_BUNDLE COOKIES CURL_DEBUG DEBUG DOCS EXAMPLES IDN IPV6 NTLM PROXY PSL STATIC TLS_SRP ZSTD GSSAPI_BASE GSSAPI_HEIMDAL GSSAPI_MIT GSSAPI_NONE CARES THREADED_RESOLVER GNUTLS OPENSSL WOLFSSL DICT FTP GOPHER HTTP HTTP2 IMAP LDAP LDAPS LIBSSH2 MQTT POP3 RTMP RTSP SMB SMTP TELNET TFTP
+_OPTIONS_READ=curl-8.1.1
+_FILE_COMPLETE_OPTIONS_LIST=ALTSVC BROTLI CA_BUNDLE COOKIES CURL_DEBUG DEBUG DOCS EXAMPLES IDN IPV6 NTLM PROXY PSL STATIC TLS_SRP ZSTD GSSAPI_BASE GSSAPI_HEIMDAL GSSAPI_MIT GSSAPI_NONE CARES THREADED_RESOLVER GNUTLS OPENSSL WOLFSSL DICT FTP GOPHER HTTP HTTP2 IMAP LDAP LDAPS LIBSSH LIBSSH2 MQTT POP3 RTMP RTSP SMB SMTP TELNET TFTP WEBSOCKET
 OPTIONS_FILE_SET+=ALTSVC
 OPTIONS_FILE_SET+=BROTLI
 OPTIONS_FILE_SET+=CA_BUNDLE
@@ -186,6 +206,7 @@ OPTIONS_FILE_SET+=HTTP2
 OPTIONS_FILE_SET+=IMAP
 OPTIONS_FILE_UNSET+=LDAP
 OPTIONS_FILE_UNSET+=LDAPS
+OPTIONS_FILE_UNSET+=LIBSSH
 OPTIONS_FILE_SET+=LIBSSH2
 OPTIONS_FILE_UNSET+=MQTT
 OPTIONS_FILE_SET+=POP3
@@ -195,6 +216,7 @@ OPTIONS_FILE_UNSET+=SMB
 OPTIONS_FILE_SET+=SMTP
 OPTIONS_FILE_SET+=TELNET
 OPTIONS_FILE_SET+=TFTP
+OPTIONS_FILE_UNSET+=WEBSOCKET
 "EOF"
 
 
@@ -342,7 +364,7 @@ OPTIONS_FILE_UNSET+=KERBEROS
 
 mkdir -p /var/db/ports/security_p5-IO-Socket-SSL
 cat << "EOF" > /var/db/ports/security_p5-IO-Socket-SSL/options
-_OPTIONS_READ=p5-IO-Socket-SSL-2.081
+_OPTIONS_READ=p5-IO-Socket-SSL-2.083
 _FILE_COMPLETE_OPTIONS_LIST=EXAMPLES IDN IPV6
 OPTIONS_FILE_SET+=EXAMPLES
 OPTIONS_FILE_SET+=IDN
@@ -587,10 +609,9 @@ OPTIONS_FILE_UNSET+=GSSAPI_MIT
 mkdir -p /var/db/ports/devel_subversion
 cat << "EOF" > /var/db/ports/devel_subversion/options
 _OPTIONS_READ=subversion-1.14.2
-_FILE_COMPLETE_OPTIONS_LIST=BDB DOCS FREEBSD_TEMPLATE GPG_AGENT NLS SASL SERF STATIC SVNSERVE_WRAPPER TEST TOOLS
+_FILE_COMPLETE_OPTIONS_LIST=BDB DOCS GPG_AGENT NLS SASL SERF STATIC SVNSERVE_WRAPPER TEST TOOLS
 OPTIONS_FILE_UNSET+=BDB
 OPTIONS_FILE_SET+=DOCS
-OPTIONS_FILE_UNSET+=FREEBSD_TEMPLATE
 OPTIONS_FILE_SET+=GPG_AGENT
 OPTIONS_FILE_SET+=NLS
 OPTIONS_FILE_UNSET+=SASL
@@ -642,15 +663,15 @@ fi
 
 pkg check -Ba -da -sa -ra
 
-portmaster --no-confirm --index-first -d -w -R -a -y
+portmaster --no-confirm --index-first -g -d -w -R -a -y
 
-portmaster --no-confirm --no-term-title --no-index-fetch --index-first --clean-distfiles -y
+#portmaster --no-confirm --no-term-title --no-index-fetch --index-first --clean-distfiles -y
 
-portmaster --no-confirm --no-term-title --no-index-fetch --index-first --clean-packages -y
+#portmaster --no-confirm --no-term-title --no-index-fetch --index-first --clean-packages -y
 
 portmaster --no-confirm --no-term-title --no-index-fetch --index-first --check-depends -y
 
-portmaster --no-confirm --no-term-title --check-port-dbdir -y
+#portmaster --no-confirm --no-term-title --check-port-dbdir -y
 
 exit 0
 "EOF"

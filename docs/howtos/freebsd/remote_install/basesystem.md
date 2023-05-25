@@ -121,7 +121,7 @@ Da jeder Administrator andere Präferenzen an sein Partitionslayout stellt und w
 
 Als Erstes müssen wir die Festplatte partitionieren, was wir mittels `gpart` erledigen werden. Zuvor müssen wir dies aber dem Kernel mittels `sysctl` mitteilen, da er uns andernfalls dazwischenfunken würde.
 
-Wir werden auf beiden Festplatten jeweils vier Partitionen anlegen, die Erste für den Bootcode, die Zweite als Systempartition, die Dritte für unsere Nutzdaten und die Vierte als SWAP. Dabei werden wir die Partitionen auch gleich für modernere Festplatten mit 4K-Sektoren optimieren und statt den veralteten "MBR Partition Tables" die aktuelleren "GUID Partition Tables (GPT)" verwenden.
+Wir werden auf beiden Festplatten jeweils vier Partitionen anlegen, die Erste für den GPT-Bootcode, die Zweite für den EFI-Bootcode, die Dritte als Swap und die Vierte als Systempartition. Dabei werden wir die Partitionen auch gleich für modernere Festplatten mit 4K-Sektoren optimieren und statt den veralteten "MBR Partition Tables" die aktuelleren "GUID Partition Tables (GPT)" verwenden.
 
 ``` bash
 sysctl kern.geom.debugflags=0x10
@@ -239,8 +239,6 @@ Beim Betreten der Chroot-Umgebung setzen wir mittels `/usr/bin/env -i` erstmal a
 
 ``` bash
 chroot /mnt /usr/bin/env -i HOME=/root TERM=$TERM /bin/tcsh
-
-cd /root
 ```
 
 ## Zeitzone einrichten
@@ -567,9 +565,13 @@ sed -e '/[a-z]*_compat/d' \
 sed -e 's/^[[:space:]]*\(pool[[:space:]]*0\.freebsd\.pool.*\)$/#\1/' \
     -e 's/^#[[:space:]]*\(pool[[:space:]]*0\.CC\.pool\)/pool 0.de.pool/' \
     -i '' /etc/ntp.conf
-```
 
-``` bash
+sed -e '/^#server time.my-internal.org iburst/ a\\
+Server ptbtime3.ptb.de iburst\\
+Server ptbtime2.ptb.de iburst\\
+Server ptbtime1.ptb.de iburst\
+' -i '' /etc/ntp.conf
+
 cat << "EOF" >> /etc/ntp.conf
 #
 interface ignore wildcard
@@ -907,12 +909,13 @@ verbose_loading="YES"
 
 # Microcode updates
 cpu_microcode_load="YES"
-cpu_microcode_name="/boot/firmware/intel-ucode.bin"
+#cpu_microcode_name="/boot/firmware/intel-ucode.bin"
+#cpu_microcode_name="/usr/local/share/cpucontrol/microcode_amd.bin"
 
 # Kernel selection
 #kernel="GENERIC"
 #kernels="GENERIC MYKERNEL"
-kernel_options=""
+#kernel_options=""
 
 # Kernel modules
 coretemp_load="YES"
@@ -958,6 +961,10 @@ Nun ist es endlich soweit: Wir verlassen das Chroot, unmounten die Partitionen u
 
 ``` bash
 exit
+
+rm /mnt/root/.history
+rm /mnt/usr/home/*/.history
+chmod 0700 /mnt/root
 
 umount /mnt/dev
 umount /mnt
@@ -1100,6 +1107,7 @@ make -j4 KERNCONF=MYKERNEL INSTALLKERNEL=MYKERNEL INSTKERNNAME=MYKERNEL kernel
 
 sed -e 's/^#*\(kernels=\).*$/\1"MYKERNEL GENERIC"/' -i '' /boot/loader.conf
 sed -e 's/^#*\(kernel=\).*$/\1"MYKERNEL"/' -i '' /boot/loader.conf
+
 rm -r /boot/kernel /boot/kernel.old
 ```
 

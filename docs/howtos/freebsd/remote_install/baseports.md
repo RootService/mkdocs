@@ -81,8 +81,6 @@ cd /usr/ports/sysutils/devcpu-data
 make LICENSES_ACCEPTED=EULA config-recursive all install clean-depends clean
 
 
-sed -e 's/^#\(cpu_microcode_\)/\1/g' -i '' /boot/loader.conf
-
 sysrc microcode_update_enable=YES
 ```
 
@@ -170,7 +168,7 @@ Wir installieren `security/ca_root_nss` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/security_ca_root_nss
 cat << "EOF" > /var/db/ports/security_ca_root_nss/options
-_OPTIONS_READ=ca_root_nss-3.89
+_OPTIONS_READ=ca_root_nss-3.89.1
 _FILE_COMPLETE_OPTIONS_LIST=ETCSYMLINK
 OPTIONS_FILE_SET+=ETCSYMLINK
 "EOF"
@@ -217,7 +215,7 @@ OPTIONS_FILE_SET+=ENCODINGS
 
 mkdir -p /var/db/ports/print_texinfo
 cat << "EOF" > /var/db/ports/print_texinfo/options
-_OPTIONS_READ=texinfo-6.8
+_OPTIONS_READ=texinfo-7.0.3
 _FILE_COMPLETE_OPTIONS_LIST=NLS
 OPTIONS_FILE_SET+=NLS
 "EOF"
@@ -404,7 +402,7 @@ OPTIONS_FILE_SET+=PYGMENTS
 
 mkdir -p /var/db/ports/www_py-requests
 cat << "EOF" > /var/db/ports/www_py-requests/options
-_OPTIONS_READ=py39-requests-2.29.0
+_OPTIONS_READ=py39-requests-2.30
 _FILE_COMPLETE_OPTIONS_LIST=SOCKS
 OPTIONS_FILE_SET+=SOCKS
 "EOF"
@@ -440,13 +438,6 @@ _FILE_COMPLETE_OPTIONS_LIST=PYSTEMMER
 OPTIONS_FILE_SET+=PYSTEMMER
 "EOF"
 
-mkdir -p /var/db/ports/textproc_py-toml
-cat << "EOF" > /var/db/ports/textproc_py-toml/options
-_OPTIONS_READ=py39-toml-0.10.2
-_FILE_COMPLETE_OPTIONS_LIST=DOCS
-OPTIONS_FILE_SET+=DOCS
-"EOF"
-
 mkdir -p /var/db/ports/devel_py-lxml
 cat << "EOF" > /var/db/ports/devel_py-lxml/options
 _OPTIONS_READ=py39-lxml-4.9.2
@@ -456,7 +447,7 @@ OPTIONS_FILE_SET+=DOCS
 
 mkdir -p /var/db/ports/textproc_libxml2
 cat << "EOF" > /var/db/ports/textproc_libxml2/options
-_OPTIONS_READ=libxml2-2.10.3
+_OPTIONS_READ=libxml2-2.10.4
 _FILE_COMPLETE_OPTIONS_LIST=DOCS ICU MEM_DEBUG READLINE STATIC THREAD_ALLOC
 OPTIONS_FILE_SET+=DOCS
 OPTIONS_FILE_SET+=ICU

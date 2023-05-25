@@ -83,7 +83,7 @@ Aus diesem Grund werden wir, wenn der Bootvorgang abgeschlossen ist und wir den 
 
 Als Erstes müssen wir die Festplatte partitionieren, was wir mittels `gpart` erledigen werden. Zuvor müssen wir dies aber dem Kernel mittels `sysctl` mitteilen, da er uns andernfalls dazwischenfunken würde.
 
-Wir werden drei Partitionen anlegen, die Erste für den Bootcode, die Zweite als Systempartition und die Dritte als Swap. Dabei werden wir die Partitionen auch gleich für modernere Festplatten mit 4K-Sektoren optimieren und statt den veralteten "MBR Partition Tables" die aktuelleren "GUID Partition Tables (GPT)" verwenden.
+Wir werden vier Partitionen anlegen, die Erste für den GPT-Bootcode, die Zweite für den EFI-Bootcode, die Dritte als Swap und die Vierte als Systempartition. Dabei werden wir die Partitionen auch gleich für modernere Festplatten mit 4K-Sektoren optimieren und statt den veralteten "MBR Partition Tables" die aktuelleren "GUID Partition Tables (GPT)" verwenden.
 
 ``` bash
 sysctl kern.geom.debugflags=0x10
@@ -145,9 +145,7 @@ mount -t devfs devfs /mnt/dev
 Das neu installierte System selbstverständlich noch konfiguriert werden, bevor wir es nutzen können. Dazu werden wir jetzt in das neue System chrooten und eine minimale Grundkonfiguration vornehmen.
 
 ``` bash
-chroot /mnt
-
-cd /root
+chroot /mnt /usr/bin/env -i HOME=/root TERM=$TERM /bin/tcsh
 ```
 
 Zunächst setzen wir die Systemzeit (CMOS clock) mittels `tzsetup`, hierzu wählen wir zunächst "Europe", dann "Germany" und zum Schluss "CET" beziehungsweise "CEST" aus.
@@ -194,7 +192,8 @@ passwd root
 Die aliases-Datenbank für FreeBSDs Sendmail müssen wir mittels `make` anlegen, auch wenn wir später Sendmail gar nicht verwenden möchten.
 
 ``` bash
-cd /etc/mail ; make aliases ; cd /root
+make -C /etc/mail aliases
+cd /etc && ln -s mail/aliases.db && cd /
 ```
 
 Die `fstab` ist bei unserem minimalistischen Partitionslayout zwar nicht zwingend nötig, aber wir möchten später keine unerwarteten Überraschungen erleben, also legen wir sie vorsichtshalber an.
@@ -322,7 +321,7 @@ Match Group sftponly
 sed -e '/^# Ciphers and keying/ a\\
 Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com\\
 Macs hmac-sha2-512,hmac-sha2-512-etm@openssh.com,hmac-sha2-256,hmac-sha2-256-etm@openssh.com\\
-KexAlgorithms sntrup761x25519-sha512@openssh.com,curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256\\
+KexAlgorithms sntrup761x25519-sha512@openssh.com,curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256\
 ' -i '' /etc/ssh/sshd_config
 
 ssh-keygen -q -t rsa -b 4096 -f "/etc/ssh/ssh_host_rsa_key" -N ""
@@ -378,7 +377,7 @@ putty -ssh -P 2222 root@127.0.0.1
 Wir installieren pkg via pkg.
 
 ``` bash
-pkg install pkg
+pkg bootstrap -y
 ```
 
 ## mfsBSD erzeugen
@@ -386,7 +385,7 @@ pkg install pkg
 Wir werden nun unser mfsBSD-Image erzeugen, um damit später unser eigentliches dediziertes System booten und installieren zu können. Hierzu legen uns zunächst ein Arbeitsverzeichnis an.
 
 ``` bash
-mkdir /usr/local/mfsbsd
+mkdir -p /usr/local/mfsbsd
 ```
 
 Nun fehlt noch das mfsBSD-Buildscript, welches wir jetzt mittels `fetch` in unserem Arbeitsverzeichnis downloaden und dann entpacken.

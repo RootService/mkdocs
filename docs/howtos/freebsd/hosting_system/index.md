@@ -14,7 +14,7 @@ author_url: https://github.com/JoeUser78
 Unser Hosting System wird am Ende folgende Dienste umfassen.
 
 - CertBot 2.6.0 (LetsEncrypt ACME API 2.0)
-- OpenSSH 9.2p1 (Public-Key-Auth)
+- OpenSSH 9.3p1 (Public-Key-Auth)
 - Unbound 1.17.1 (DNScrypt, DNS over TLS)
 - MySQL 8.0.32 (InnoDB, GTID)
 - Dovecot 2.3.20 (IMAP only, 1GB Quota)
