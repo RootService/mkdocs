@@ -2,7 +2,7 @@
 title: 'BaseSystem'
 description: 'In diesem HowTo wird step-by-step die Remote Installation des FreeBSD 64Bit BaseSystem auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-05-20'
+updated: '2023-05-25'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
