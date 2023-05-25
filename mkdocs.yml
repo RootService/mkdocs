@@ -106,7 +106,9 @@ plugins:
 #    - material/privacy:
     - material/search:
     - material/social:
-        cards_font: Roboto
+#        cards_font: Roboto
+        cards_layout_options:
+          font_family: Roboto
     - minify:
 #        minify_html: true
 
