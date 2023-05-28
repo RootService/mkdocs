@@ -20,7 +20,7 @@ Unsere BaseTools werden am Ende folgende Dienste umfassen.
 - wget 1.21.3
 - Bash 5.2.15
 - GIT 2.40.1
-- Portmaster 3.23
+- Portmaster 3.24
 - SMARTmontools 7.3
 - Nano 7.2
 - SQLite 3.41.2
@@ -131,7 +131,7 @@ OPTIONS_FILE_SET+=ZSH
 
 mkdir -p /var/db/ports/archivers_zstd
 cat << "EOF" > /var/db/ports/archivers_zstd/options
-_OPTIONS_READ=zstd-1.5.4
+_OPTIONS_READ=zstd-1.5.5
 _FILE_COMPLETE_OPTIONS_LIST=OPTIMIZED_CFLAGS
 OPTIONS_FILE_UNSET+=OPTIMIZED_CFLAGS
 "EOF"
@@ -404,7 +404,7 @@ Wir installieren `ports-mgmt/portmaster` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/ports-mgmt_portmaster
 cat << "EOF" > /var/db/ports/ports-mgmt_portmaster/options
-_OPTIONS_READ=portmaster-3.23
+_OPTIONS_READ=portmaster-3.24
 _FILE_COMPLETE_OPTIONS_LIST=BASH ZSH
 OPTIONS_FILE_SET+=BASH
 OPTIONS_FILE_SET+=ZSH

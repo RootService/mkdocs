@@ -527,7 +527,7 @@ OPTIONS_FILE_UNSET+=TRIO
 
 mkdir -p /var/db/ports/www_py-httpx
 cat << "EOF" > /var/db/ports/www_py-httpx/options
-_OPTIONS_READ=py39-httpx-0.24.0
+_OPTIONS_READ=py39-httpx-0.24.1
 _FILE_COMPLETE_OPTIONS_LIST=BROTLI CLI HTTP2 SOCKS
 OPTIONS_FILE_SET+=BROTLI
 OPTIONS_FILE_UNSET+=CLI
@@ -537,7 +537,7 @@ OPTIONS_FILE_SET+=SOCKS
 
 mkdir -p /var/db/ports/www_py-httpcore
 cat << "EOF" > /var/db/ports/www_py-httpcore/options
-_OPTIONS_READ=py39-httpcore-0.17.0
+_OPTIONS_READ=py39-httpcore-0.17.2
 _FILE_COMPLETE_OPTIONS_LIST=HTTP2 SOCKS
 OPTIONS_FILE_SET+=HTTP2
 OPTIONS_FILE_SET+=SOCKS

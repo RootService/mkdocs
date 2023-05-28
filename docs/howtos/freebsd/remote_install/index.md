@@ -34,7 +34,7 @@ Unsere BaseTools werden am Ende folgende Dienste umfassen.
 - wget 1.21.3
 - Bash 5.2.15
 - GIT 2.40.1
-- Portmaster 3.23
+- Portmaster 3.24
 - SMARTmontools 7.3
 - Nano 7.2
 - SQLite 3.41.2
