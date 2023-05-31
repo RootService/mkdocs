@@ -2,7 +2,7 @@
 title: 'BasePorts'
 description: 'In diesem HowTo wird step-by-step die Installation einiger BasePorts für ein FreeBSD 64Bit BaseSystem auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-05-25'
+updated: '2023-05-31'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -16,7 +16,7 @@ In diesem HowTo beschreibe ich step-by-step die Installation einiger Ports (Pack
 Unsere BasePorts werden am Ende folgende Dienste umfassen.
 
 - Perl 5.32.1
-- OpenSSL 1.1.1t
+- OpenSSL 1.1.1u
 - LUA 5.4.4
 - TCL 8.6.13
 - Python 3.9.16
@@ -122,7 +122,7 @@ DEFAULT_VERSIONS+=ssl=openssl
 
 mkdir -p /var/db/ports/security_openssl
 cat << "EOF" > /var/db/ports/security_openssl/options
-_OPTIONS_READ=openssl-1.1.1t
+_OPTIONS_READ=openssl-1.1.1u
 _FILE_COMPLETE_OPTIONS_LIST=ASYNC CT KTLS MAN3 RFC3779 SHARED ZLIB ARIA DES GOST IDEA SM4 RC2 RC4 RC5 WEAK-SSL-CIPHERS MD2 MD4 MDC2 RMD160 SM2 SM3 ASM SSE2 THREADS EC NEXTPROTONEG SCTP SSL3 TLS1 TLS1_1 TLS1_2
 OPTIONS_FILE_SET+=ASYNC
 OPTIONS_FILE_SET+=CT

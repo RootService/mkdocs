@@ -2,7 +2,7 @@
 title: 'Hosting System'
 description: 'In diesem HowTo werden step-by-step die Voraussetzungen für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-05-25'
+updated: '2023-05-31'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---

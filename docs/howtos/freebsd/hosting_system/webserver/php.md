@@ -2,7 +2,7 @@
 title: 'PHP-FPM'
 description: 'In diesem HowTo wird step-by-step die Installation von PHP-FPM für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-05-25'
+updated: '2023-05-31'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---

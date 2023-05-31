@@ -2,7 +2,7 @@
 title: 'BaseTools'
 description: 'In diesem HowTo wird step-by-step die Installation einiger BaseTools für ein FreeBSD 64Bit BaseSystem auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-05-25'
+updated: '2023-05-31'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -20,10 +20,10 @@ Unsere BaseTools werden am Ende folgende Dienste umfassen.
 - wget 1.21.3
 - Bash 5.2.15
 - GIT 2.40.1
-- Portmaster 3.24
+- Portmaster 3.26
 - SMARTmontools 7.3
 - Nano 7.2
-- SQLite 3.41.2
+- SQLite 3.42.0
 - GnuPG 2.3.8
 - Subversion 1.14.2
 
@@ -145,7 +145,7 @@ OPTIONS_FILE_UNSET+=TEST
 
 mkdir -p /var/db/ports/security_libssh2
 cat << "EOF" > /var/db/ports/security_libssh2/options
-_OPTIONS_READ=libssh2-1.10.0
+_OPTIONS_READ=libssh2-1.11.0
 _FILE_COMPLETE_OPTIONS_LIST=GCRYPT TRACE ZLIB
 OPTIONS_FILE_UNSET+=GCRYPT
 OPTIONS_FILE_UNSET+=TRACE
@@ -404,7 +404,7 @@ Wir installieren `ports-mgmt/portmaster` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/ports-mgmt_portmaster
 cat << "EOF" > /var/db/ports/ports-mgmt_portmaster/options
-_OPTIONS_READ=portmaster-3.24
+_OPTIONS_READ=portmaster-3.26
 _FILE_COMPLETE_OPTIONS_LIST=BASH ZSH
 OPTIONS_FILE_SET+=BASH
 OPTIONS_FILE_SET+=ZSH
@@ -472,7 +472,7 @@ Wir installieren `databases/sqlite3` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/databases_sqlite3
 cat << "EOF" > /var/db/ports/databases_sqlite3/options
-_OPTIONS_READ=sqlite3-3.41.2
+_OPTIONS_READ=sqlite3-3.42.0
 _FILE_COMPLETE_OPTIONS_LIST=ARMOR DBPAGE DBSTAT DIRECT_READ DQS EXAMPLES EXTENSION FTS3_TOKEN FTS4 FTS5 LIKENOTBLOB MEMMAN METADATA NORMALIZE NULL_TRIM RBU SECURE_DELETE SORT_REF STATIC STMT STRIP TCL THREADS TRUSTED_SCHEMA UNKNOWN_SQL UNLOCK_NOTIFY UPDATE_LIMIT URI URI_AUTHORITY TS0 TS1 TS2 TS3 STAT3 STAT4 LIBEDIT READLINE SESSION OFFSET SOUNDEX GEOPOLY RTREE RTREE_INT ICU UNICODE61
 OPTIONS_FILE_UNSET+=ARMOR
 OPTIONS_FILE_SET+=DBPAGE
