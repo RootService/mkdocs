@@ -2,7 +2,7 @@
 title: 'SpamAssassin'
 description: 'In diesem HowTo wird step-by-step die Installation von SpamAssassin für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-05-31'
+updated: '2023-06-10'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -54,7 +54,7 @@ OPTIONS_FILE_SET+=ARGNAMES
 
 mkdir -p /var/db/ports/dns_p5-Net-DNS
 cat << "EOF" > /var/db/ports/dns_p5-Net-DNS/options
-_OPTIONS_READ=p5-Net-DNS-1.38
+_OPTIONS_READ=p5-Net-DNS-1.39
 _FILE_COMPLETE_OPTIONS_LIST=IDN IDN2 IPV6 SSHFP TSIG
 OPTIONS_FILE_UNSET+=IDN
 OPTIONS_FILE_SET+=IDN2

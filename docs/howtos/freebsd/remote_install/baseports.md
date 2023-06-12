@@ -2,7 +2,7 @@
 title: 'BasePorts'
 description: 'In diesem HowTo wird step-by-step die Installation einiger BasePorts für ein FreeBSD 64Bit BaseSystem auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-05-31'
+updated: '2023-06-10'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -17,7 +17,7 @@ Unsere BasePorts werden am Ende folgende Dienste umfassen.
 
 - Perl 5.32.1
 - OpenSSL 1.1.1u
-- LUA 5.4.4
+- LUA 5.4.6
 - TCL 8.6.13
 - Python 3.9.16
 - Ruby 3.1.4
@@ -297,7 +297,7 @@ cat << "EOF" >> /etc/make.conf
 
 mkdir -p /var/db/ports/lang_lua54
 cat << "EOF" > /var/db/ports/lang_lua54/options
-_OPTIONS_READ=lua54-5.4.4
+_OPTIONS_READ=lua54-5.4.6
 _FILE_COMPLETE_OPTIONS_LIST= EDITNONE LIBEDIT_DL LIBEDIT READLINE DOCS ASSERT APICHECK
 OPTIONS_FILE_UNSET+=EDITNONE
 OPTIONS_FILE_SET+=LIBEDIT_DL

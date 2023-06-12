@@ -2,7 +2,7 @@
 title: 'PHP-FPM'
 description: 'In diesem HowTo wird step-by-step die Installation von PHP-FPM für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-05-31'
+updated: '2023-06-10'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -13,7 +13,7 @@ author_url: https://github.com/JoeUser78
 
 Unser Hosting System wird folgende Dienste umfassen.
 
-- PHP 8.1.19 (PHP-FPM, Composer, PEAR)
+- PHP 8.1.20 (PHP-FPM, Composer, PEAR)
 
 ## Voraussetzungen
 
@@ -31,7 +31,7 @@ cat << "EOF" >> /etc/make.conf
 
 mkdir -p /var/db/ports/lang_php81
 cat << "EOF" > /var/db/ports/lang_php81/options
-_OPTIONS_READ=php81-8.1.19
+_OPTIONS_READ=php81-8.1.20
 _FILE_COMPLETE_OPTIONS_LIST=CGI CLI DEBUG DTRACE EMBED FPM IPV6 LINKTHR  MYSQLND PHPDBG ZTS
 OPTIONS_FILE_SET+=CGI
 OPTIONS_FILE_SET+=CLI
@@ -61,7 +61,7 @@ Wir installieren `lang/php81-extensions` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/databases_php81-dba
 cat << "EOF" > /var/db/ports/databases_php81-dba/options
-_OPTIONS_READ=php81-dba-8.1.19
+_OPTIONS_READ=php81-dba-8.1.20
 _FILE_COMPLETE_OPTIONS_LIST=CDB DB4 FLATFILE GDBM INIFILE LMDB QDBM TOKYO
 OPTIONS_FILE_SET+=CDB
 OPTIONS_FILE_UNSET+=DB4
@@ -75,7 +75,7 @@ OPTIONS_FILE_UNSET+=TOKYO
 
 mkdir -p /var/db/ports/graphics_php81-gd
 cat << "EOF" > /var/db/ports/graphics_php81-gd/options
-_OPTIONS_READ=php81-gd-8.1.19
+_OPTIONS_READ=php81-gd-8.1.20
 _FILE_COMPLETE_OPTIONS_LIST=JIS WEBP X11
 OPTIONS_FILE_UNSET+=JIS
 OPTIONS_FILE_SET+=WEBP
@@ -193,7 +193,7 @@ OPTIONS_FILE_UNSET+=HINTING_FULL
 
 mkdir -p /var/db/ports/mail_php81-imap
 cat << "EOF" > /var/db/ports/mail_php81-imap/options
-_OPTIONS_READ=php81-imap-8.1.19
+_OPTIONS_READ=php81-imap-8.1.20
 _FILE_COMPLETE_OPTIONS_LIST= CCLIENT PANDA
 OPTIONS_FILE_UNSET+=CCLIENT
 OPTIONS_FILE_SET+=PANDA
@@ -211,7 +211,7 @@ OPTIONS_FILE_UNSET+=SSL_AND_PLAINTEXT
 
 mkdir -p /var/db/ports/converters_php81-mbstring
 cat << "EOF" > /var/db/ports/converters_php81-mbstring/options
-_OPTIONS_READ=php81-mbstring-8.1.19
+_OPTIONS_READ=php81-mbstring-8.1.20
 _FILE_COMPLETE_OPTIONS_LIST=REGEX
 OPTIONS_FILE_SET+=REGEX
 "EOF"
@@ -226,14 +226,14 @@ OPTIONS_FILE_SET+=EXAMPLES
 
 mkdir -p /var/db/ports/databases_php81-mysqli
 cat << "EOF" > /var/db/ports/databases_php81-mysqli/options
-_OPTIONS_READ=php81-mysqli-8.1.19
+_OPTIONS_READ=php81-mysqli-8.1.20
 _FILE_COMPLETE_OPTIONS_LIST=MYSQLND
 OPTIONS_FILE_SET+=MYSQLND
 "EOF"
 
 mkdir -p /var/db/ports/databases_php81-pdo_mysql
 cat << "EOF" > /var/db/ports/databases_php81-pdo_mysql/options
-_OPTIONS_READ=php81-pdo_mysql-8.1.19
+_OPTIONS_READ=php81-pdo_mysql-8.1.20
 _FILE_COMPLETE_OPTIONS_LIST=MYSQLND
 OPTIONS_FILE_SET+=MYSQLND
 "EOF"

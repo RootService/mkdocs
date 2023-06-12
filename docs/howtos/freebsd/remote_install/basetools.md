@@ -2,7 +2,7 @@
 title: 'BaseTools'
 description: 'In diesem HowTo wird step-by-step die Installation einiger BaseTools für ein FreeBSD 64Bit BaseSystem auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-05-31'
+updated: '2023-06-10'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -16,8 +16,8 @@ In diesem HowTo beschreibe ich step-by-step die Installation einiger Tools (Port
 Unsere BaseTools werden am Ende folgende Dienste umfassen.
 
 - Sudo 1.9.13p3
-- cURL 8.1.1
-- wget 1.21.3
+- cURL 8.1.2
+- wget 1.21.4
 - Bash 5.2.15
 - GIT 2.40.1
 - Portmaster 3.26
@@ -171,7 +171,7 @@ OPTIONS_FILE_SET+=NLS
 
 mkdir -p /var/db/ports/ftp_curl
 cat << "EOF" > /var/db/ports/ftp_curl/options
-_OPTIONS_READ=curl-8.1.1
+_OPTIONS_READ=curl-8.1.2
 _FILE_COMPLETE_OPTIONS_LIST=ALTSVC BROTLI CA_BUNDLE COOKIES CURL_DEBUG DEBUG DOCS EXAMPLES IDN IPV6 NTLM PROXY PSL STATIC TLS_SRP ZSTD GSSAPI_BASE GSSAPI_HEIMDAL GSSAPI_MIT GSSAPI_NONE CARES THREADED_RESOLVER GNUTLS OPENSSL WOLFSSL DICT FTP GOPHER HTTP HTTP2 IMAP LDAP LDAPS LIBSSH LIBSSH2 MQTT POP3 RTMP RTSP SMB SMTP TELNET TFTP WEBSOCKET
 OPTIONS_FILE_SET+=ALTSVC
 OPTIONS_FILE_SET+=BROTLI
@@ -236,7 +236,7 @@ OPTIONS_FILE_SET+=DOCS
 
 mkdir -p /var/db/ports/ftp_wget
 cat << "EOF" > /var/db/ports/ftp_wget/options
-_OPTIONS_READ=wget-1.21.3
+_OPTIONS_READ=wget-1.21.4
 _FILE_COMPLETE_OPTIONS_LIST=DOCS IDN IPV6 MANPAGES METALINK NLS NTLM PSL GNUTLS OPENSSL PCRE1 PCRE2
 OPTIONS_FILE_SET+=DOCS
 OPTIONS_FILE_SET+=IDN

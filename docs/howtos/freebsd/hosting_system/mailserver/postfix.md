@@ -2,7 +2,7 @@
 title: 'Postfix'
 description: 'In diesem HowTo wird step-by-step die Installation des Postfix Mailservers für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-05-31'
+updated: '2023-06-10'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -13,7 +13,7 @@ author_url: https://github.com/JoeUser78
 
 Unser Hosting System wird um folgende Dienste erweitert.
 
-- Postfix 3.8.0 (Dovecot-SASL, postscreen)
+- Postfix 3.8.1 (Dovecot-SASL, postscreen)
 - Python-SPF-Engine 3.0.4 (SPF2)
 
 ## Voraussetzungen
@@ -27,7 +27,7 @@ Wir installieren `mail/postfix` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/mail_postfix
 cat << "EOF" > /var/db/ports/mail_postfix/options
-_OPTIONS_READ=postfix-3.8.0
+_OPTIONS_READ=postfix-3.8.1
 _FILE_COMPLETE_OPTIONS_LIST=BDB BLACKLISTD CDB DOCS EAI INST_BASE LDAP LMDB MYSQL NIS PCRE2 PGSQL SASL SQLITE TEST TLS SASLKMIT SASLKRB5
 OPTIONS_FILE_UNSET+=BDB
 OPTIONS_FILE_UNSET+=BLACKLISTD
@@ -505,7 +505,7 @@ OPTIONS_FILE_SET+=DOCS
 
 mkdir -p /var/db/ports/mail_libmilter
 cat << "EOF" > /var/db/ports/mail_libmilter/options
-_OPTIONS_READ=libmilter-8.17.1
+_OPTIONS_READ=libmilter-8.17.2
 _FILE_COMPLETE_OPTIONS_LIST=IPV6 MILTER_SHARED MILTER_POOL DOCS
 OPTIONS_FILE_SET+=IPV6
 OPTIONS_FILE_SET+=MILTER_SHARED
