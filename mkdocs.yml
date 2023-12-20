@@ -2,7 +2,7 @@ site_name: RootService
 site_url: https://www.rootservice.org/
 site_description: Wir bieten Service, Support, HowTos und andere nützliche Informationen rund um die Administration von FreeBSD und Linux basierten Servern
 site_author: Markus Kohlmeyer
-copyright: Copyright © 2002-2023 RootService Team
+copyright: Copyright © 2002-2024 RootService Team
 repo_name: Documentation
 repo_url: https://github.com/RootService/mkdocs
 edit_uri: blob/main/docs/
@@ -12,8 +12,8 @@ theme:
     name: null
     locale: de
     language: de
-    custom_dir: theme/rootservice
-#    custom_dir: theme/material
+    custom_dir: theme/rootservice/templates
+#    custom_dir: theme/material/templates
     static_templates:
         - 404.html
     include_search_page: false
@@ -24,21 +24,41 @@ theme:
         repo: material/github
         paypal: rootservice/paypal
     favicon: assets/favicons
+#    palette:
+#        - media: "(prefers-color-scheme: dark)"
+#          scheme: slate
+#          primary: amber
+#          accent: indigo
+#          toggle:
+#            icon: material/weather-sunny
+#            name: Switch to light mode
+#        - media: "(prefers-color-scheme: light)"
+#          scheme: default
+#          primary: amber
+#          accent: indigo
+#          toggle:
+#            icon: material/weather-night
+#            name: Switch to dark mode
     palette:
-        - media: "(prefers-color-scheme: dark)"
-          scheme: slate
-          primary: amber
-          accent: indigo
-          toggle:
-            icon: material/weather-sunny
-            name: Switch to light mode
-        - media: "(prefers-color-scheme: light)"
-          scheme: default
-          primary: amber
-          accent: indigo
-          toggle:
-            icon: material/weather-night
-            name: Switch to dark mode
+      - media: "(prefers-color-scheme)"
+        toggle:
+          icon: material/brightness-auto
+          name: Switch to light mode
+      - scheme: default
+        media: "(prefers-color-scheme: light)"
+        toggle:
+          icon: material/brightness-7
+          name: Switch to dark mode
+        primary: 'white'
+        accent: 'indigo'
+      - scheme: slate
+        media: "(prefers-color-scheme: dark)"
+        toggle:
+          icon: material/brightness-4
+          name: Switch to light mode
+        primary: 'black'
+        accent: 'indigo'
+    nav_style: dark
     font:
         text: Roboto Flex
         code: Roboto Mono
@@ -54,9 +74,11 @@ theme:
 #        - navigation.expand
         - navigation.footer
         - navigation.indexes
+        - navigation.instant
+        - navigation.instant.progress
 #        - navigation.instant
 #        - navigation.path
-#        - navigation.prune
+        - navigation.prune
         - navigation.sections
         - navigation.tabs
         - navigation.tabs.sticky
@@ -101,14 +123,20 @@ extra:
         - accept
 
 plugins:
+#    - material/blog:
+#    - material/group:
+#    - material/info:
 #    - material/offline:
-#    - material/optimize:
 #    - material/privacy:
+#        links_attr_map:
+#          target: _blank
+#        links_noopener: true
     - material/search:
     - material/social:
 #        cards_font: Roboto
         cards_layout_options:
           font_family: Roboto
+#    - material/tags:
     - minify:
 #        minify_html: true
 
@@ -142,8 +170,8 @@ markdown_extensions:
 #        mode: view
     - pymdownx.details:
     - pymdownx.emoji:
-        emoji_index: !!python/name:materialx.emoji.twemoji
-        emoji_generator: !!python/name:materialx.emoji.to_svg
+        emoji_index: !!python/name:material.extensions.emoji.twemoji
+        emoji_generator: !!python/name:material.extensions.emoji.to_svg
     - pymdownx.highlight:
         use_pygments: true
         auto_title: true

@@ -1,0 +1,3 @@
+Contact: mailto:admin@rootservice.org
+Expires: 2028-07-31T00:00:00.000Z
+Preferred-Languages: de,en

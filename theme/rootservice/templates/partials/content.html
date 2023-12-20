@@ -1,0 +1,36 @@
+{#-
+  This file was automatically generated - do not edit
+-#}
+{% if "material/tags" in config.plugins and tags %}
+  {% include "partials/tags.html" %}
+{% endif %}
+{% include "partials/actions.html" %}
+{% if "\x3ch1" not in page.content %}
+  <h1>{{ page.title | d(config.site_name, true)}}</h1>
+{% endif %}
+{{ page.content }}
+  {% if page.meta and ( page.meta.hide is not defined or "docinfo" not in page.meta.hide ) %}
+  <hr />
+  <div class="md-source-file">
+    <small>
+      {% if page.meta.author %}
+        <p><strong>Author:</strong> {{ page.meta.author }}</p>
+      {% elif config.site_author %}
+        <p><strong>Author:</strong> {{ config.site_author }}</p>
+      {% endif %}
+      {% if page.meta.updated %}
+        <p><strong>Last updated:</strong> <time datetime="{{ page.meta.updated }}T12:00:00+02:00">{{ page.meta.updated }}</time></p>
+      {% else %}
+        <p><strong>Last updated:</strong> <time datetime="{{ build_date_utc.date() }}T12:00:00+02:00">{{ build_date_utc.date() }}</time></p>
+      {% endif %}
+      {% if page.meta.license_url and page.meta.license_shortname %}
+        <p><strong>License:</strong> <a href="{{ page.meta.license_url }}" target="_blank" rel="license noopener">{{ page.meta.license_shortname }}</a></p>
+      {% elif config.extra.site_license_url and config.extra.site_license_shortname %}
+        <p><strong>License:</strong> <a href="{{ config.extra.site_license_url }}" target="_blank" rel="license noopener">{{ config.extra.site_license_shortname }}</a></p>
+      {% endif %}
+    </small>
+  </div>
+  {% endif %}
+{% include "partials/source-file.html" %}
+{% include "partials/feedback.html" %}
+{% include "partials/comments.html" %}
