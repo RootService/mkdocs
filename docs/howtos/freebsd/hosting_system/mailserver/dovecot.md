@@ -2,7 +2,7 @@
 title: 'Dovecot'
 description: 'In diesem HowTo wird step-by-step die Installation des Dovecot Mailservers für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-06-10'
+updated: '2023-12-22'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -13,7 +13,7 @@ author_url: https://github.com/JoeUser78
 
 Unser Hosting System wird um folgende Dienste erweitert.
 
-- Dovecot 2.3.20 (IMAP only, 1GB Quota)
+- Dovecot 2.3.21 (IMAP only, 1GB Quota)
 
 ## Voraussetzungen
 
@@ -33,7 +33,7 @@ OPTIONS_FILE_SET+=DOCS
 
 mkdir -p /var/db/ports/mail_dovecot
 cat << "EOF" > /var/db/ports/mail_dovecot/options
-_OPTIONS_READ=dovecot-2.3.20
+_OPTIONS_READ=dovecot-2.3.21
 _FILE_COMPLETE_OPTIONS_LIST=DOCS EXAMPLES LIBSODIUM LIBUNWIND LIBWRAP LUA LZ4 GSSAPI_NONE GSSAPI_BASE GSSAPI_HEIMDAL GSSAPI_MIT CDB LDAP MYSQL PGSQL SQLITE ICU LUCENE SOLR TEXTCAT
 OPTIONS_FILE_SET+=DOCS
 OPTIONS_FILE_SET+=EXAMPLES
@@ -85,6 +85,7 @@ lda_original_recipient_header = X-Original-To
 listen = * [::]
 lmtp_client_workarounds = whitespace-before-path mailbox-for-path
 login_log_format_elements = user=<%u> method=%m rip=%r lip=%l mpid=%e %c %k session=<%{session}>
+mail_always_cache_fields = flags date.save imap.envelope
 mail_attribute_dict = file:%h/dovecot-attributes
 mail_home = /data/vmail/%d/%n
 mail_location = maildir:~/Maildir
@@ -107,10 +108,12 @@ namespace inbox {
   mailbox Junk {
     auto = subscribe
     special_use = \Junk
+    autoexpunge = 28 days
   }
   mailbox Trash {
     auto = subscribe
     special_use = \Trash
+    autoexpunge = 14 days
   }
 }
 passdb {
@@ -189,7 +192,6 @@ ssl = required
 ssl_cert = </usr/local/etc/letsencrypt/live/mail.example.com/fullchain.pem
 ssl_cipher_list = "ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256"
 ssl_cipher_suites = "TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384:TLS_AES_128_GCM_SHA256"
-ssl_dh = </usr/local/etc/dovecot/dh.pem
 ssl_key = </usr/local/etc/letsencrypt/live/mail.example.com/privkey.pem
 ssl_min_protocol = TLSv1.2
 ssl_prefer_server_ciphers = yes
@@ -200,12 +202,6 @@ userdb {
   override_fields = uid=5000 gid=5000 home=/data/vmail/%d/%n
 }
 "EOF"
-```
-
-`/usr/local/etc/dovecot/dh.pem` erzeugen.
-
-``` bash
-/usr/local/bin/openssl dhparam 4096 > /usr/local/etc/dovecot/dh.pem
 ```
 
 `/usr/local/etc/dovecot/passwd` einrichten.

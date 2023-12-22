@@ -2,7 +2,7 @@
 title: 'SpamAssassin'
 description: 'In diesem HowTo wird step-by-step die Installation von SpamAssassin für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-06-10'
+updated: '2023-12-22'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -129,6 +129,10 @@ OPTIONS_FILE_SET+=RELAY_COUNTRY
 OPTIONS_FILE_UNSET+=RLIMIT
 OPTIONS_FILE_SET+=SPF_QUERY
 "EOF"
+
+
+cd /usr/ports/net/p5-Socket6
+make all install clean-depends clean
 
 
 cd /usr/ports/mail/spamassassin

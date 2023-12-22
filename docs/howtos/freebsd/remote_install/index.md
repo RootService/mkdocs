@@ -2,7 +2,7 @@
 title: 'Remote Installation'
 description: 'In diesem HowTo werden step-by-step die Voraussetzungen für die Remote Installation des FreeBSD 64Bit BaseSystem auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-06-10'
+updated: '2023-12-22'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -15,30 +15,30 @@ Unser BaseSystem wird am Ende folgende Dienste umfassen.
 
 - FreeBSD 13.2-RELEASE 64Bit
 - OpenSSL 1.1.1t
-- OpenSSH 9.2p1
+- OpenSSH 9.3p1
 - Unbound 1.17.1
 
 Unsere BasePorts werden am Ende folgende Dienste umfassen.
 
-- Perl 5.32.1
-- OpenSSL 1.1.1u
+- Perl 5.36.3
+- OpenSSL 3.0.12
 - LUA 5.4.6
 - TCL 8.6.13
-- Python 3.9.16
+- Python 3.9.18
 - Ruby 3.1.4
 
 Unsere BaseTools werden am Ende folgende Dienste umfassen.
 
-- Sudo 1.9.13p3
-- cURL 8.1.2
+- Sudo 1.9.15p4
+- cURL 8.5.0
 - wget 1.21.4
-- Bash 5.2.15
-- GIT 2.40.1
-- Portmaster 3.26
+- Bash 5.2.21
+- GIT 2.43.0
+- Portmaster 3.29
 - SMARTmontools 7.3
 - Nano 7.2
-- SQLite 3.42.0
-- GnuPG 2.3.8
+- SQLite 3.44.0
+- GnuPG 2.4.3
 - Subversion 1.14.2
 
 Folgende Punkte sind in allen folgenden HowTos zu beachten.

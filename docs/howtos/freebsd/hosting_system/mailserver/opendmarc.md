@@ -2,7 +2,7 @@
 title: 'OpenDMARC'
 description: 'In diesem HowTo wird step-by-step die Installation von OpenDMARC für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-06-10'
+updated: '2023-12-22'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -75,7 +75,7 @@ sed -e 's|^#[[:space:]]\(AuthservID\)[[:space:]].*$|\1 mail.example.com|g' \
     -e 's|^#[[:space:]]\(FailureReportsOnNone\)[[:space:]].*$|\1 true|g' \
     -e 's|^#[[:space:]]\(FailureReportsSentBy\)[[:space:]].*$|\1 postmaster@example.com|g' \
     -e 's|^#[[:space:]]\(HistoryFile\)[[:space:]].*$|\1 /data/db/opendmarc/opendmarc.dat|g' \
-    -e 's|^#[[:space:]]\(IgnoreAuthenticatedClients\)[[:space:]].*$|\1 true|g' \
+    -e 's|^#[[:space:]]\(IgnoreAuthenticatedClients\)[[:space:]].*$|# \1 true|g' \
     -e 's|^#[[:space:]]\(IgnoreHosts\)[[:space:]].*$|\1 /data/db/opendmarc/ignorehosts|g' \
     -e 's|^#[[:space:]]\(PidFile\)[[:space:]].*$|# \1 /var/run/opendmarc/pid|g' \
     -e 's|^#[[:space:]]\(PublicSuffixList\)[[:space:]].*$|\1 /usr/local/share/public_suffix_list/public_suffix_list.dat|g' \

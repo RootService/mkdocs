@@ -2,7 +2,7 @@
 title: 'Hosting System'
 description: 'In diesem HowTo werden step-by-step die Voraussetzungen für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-06-10'
+updated: '2023-12-22'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -13,20 +13,19 @@ author_url: https://github.com/JoeUser78
 
 Unser Hosting System wird am Ende folgende Dienste umfassen.
 
-- CertBot 2.6.0 (LetsEncrypt ACME API 2.0)
-- OpenSSH 9.3p1 (Public-Key-Auth)
-- Unbound 1.17.1 (DNScrypt, DNS over TLS)
-- MySQL 8.0.32 (InnoDB, GTID)
-- Dovecot 2.3.20 (IMAP only, 1GB Quota)
-- Postfix 3.8.1 (Dovecot-SASL, postscreen)
-- Python-SPF-Engine 3.0.4 (SPF2)
+- CertBot 2.7.4 (LetsEncrypt ACME API 2.0)
+- OpenSSH 9.3p2 (Public-Key-Auth)
+- Unbound 1.19.0 (DNScrypt, DNS over TLS)
+- MySQL 8.0.35 (InnoDB, GTID)
+- Dovecot 2.3.21 (IMAP only, 1GB Quota)
+- Postfix 3.8.4 (Dovecot-SASL, postscreen)
 - OpenDKIM 2.10.3 (VBR, 2048 Bit RSA)
 - OpenDMARC 1.4.2 (SPF2, FailureReports)
 - SpamAssassin 4.0.0 (SpamAss-Milter)
-- Apache 2.4.57 (MPM-Event, HTTP/2, mod_brotli)
+- Apache 2.4.58 (MPM-Event, HTTP/2, mod_brotli)
 - NGinx 1.22.1 (HTTP/2, mod_brotli)
-- PHP 8.1.20 (PHP-FPM, Composer, PEAR)
-- NodeJS 18.16.0 (NPM, YARN)
+- PHP 8.2.14 (PHP-FPM, Composer, PEAR)
+- NodeJS 20.10.0 (NPM, YARN)
 
 Folgende Punkte sind in allen folgenden HowTos zu beachten.
 
@@ -58,7 +57,8 @@ Sofern noch nicht geschehen, deaktivieren wir also zuerst das Default-Repository
 
 ``` bash
 mkdir -p /usr/local/etc/pkg/repos
-echo "FreeBSD: { enabled: no }" > /usr/local/etc/pkg/repos/FreeBSD.conf
+sed -e 's|quarterly|latest|g' /etc/pkg/FreeBSD.conf > /usr/local/etc/pkg/repos/FreeBSD.conf
+sed -e 's|\(enabled:\)[[:space:]]*yes|\1 no|g' -i '' /usr/local/etc/pkg/repos/FreeBSD.conf
 ```
 
 Die von uns jeweils gewünschten Build-Optionen der Ports legen wir dabei mittels der `options`-Files des Portkonfigurationsframeworks `OptionsNG` fest.

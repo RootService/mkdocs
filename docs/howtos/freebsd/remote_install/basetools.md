@@ -2,7 +2,7 @@
 title: 'BaseTools'
 description: 'In diesem HowTo wird step-by-step die Installation einiger BaseTools für ein FreeBSD 64Bit BaseSystem auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-06-10'
+updated: '2023-12-22'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -15,16 +15,16 @@ In diesem HowTo beschreibe ich step-by-step die Installation einiger Tools (Port
 
 Unsere BaseTools werden am Ende folgende Dienste umfassen.
 
-- Sudo 1.9.13p3
-- cURL 8.1.2
+- Sudo 1.9.15p4
+- cURL 8.5.0
 - wget 1.21.4
-- Bash 5.2.15
-- GIT 2.40.1
-- Portmaster 3.26
+- Bash 5.2.21
+- GIT 2.43.0
+- Portmaster 3.29
 - SMARTmontools 7.3
 - Nano 7.2
-- SQLite 3.42.0
-- GnuPG 2.3.8
+- SQLite 3.44.0
+- GnuPG 2.4.3
 - Subversion 1.14.2
 
 ## Voraussetzungen
@@ -48,7 +48,7 @@ Wir installieren `security/sudo` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/security_sudo
 cat << "EOF" > /var/db/ports/security_sudo/options
-_OPTIONS_READ=sudo-1.9.13p3
+_OPTIONS_READ=sudo-1.9.15p4
 _FILE_COMPLETE_OPTIONS_LIST=AUDIT DISABLE_AUTH DISABLE_ROOT_SUDO DOCS EXAMPLES INSULTS LDAP NLS NOARGS_SHELL OPIE PAM PYTHON SSSD GSSAPI_BASE GSSAPI_HEIMDAL GSSAPI_MIT
 OPTIONS_FILE_SET+=AUDIT
 OPTIONS_FILE_UNSET+=DISABLE_AUTH
@@ -98,14 +98,14 @@ Wir installieren `ftp/curl` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/archivers_brotli
 cat << "EOF" > /var/db/ports/archivers_brotli/options
-_OPTIONS_READ=brotli-1.0.9
+_OPTIONS_READ=brotli-1.1.0
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
 "EOF"
 
 mkdir -p /var/db/ports/devel_cmake-core
 cat << "EOF" > /var/db/ports/devel_cmake-core/options
-_OPTIONS_READ=cmake-core-3.26.1
+_OPTIONS_READ=cmake-core-3.27.9
 _FILE_COMPLETE_OPTIONS_LIST=CPACK DOCS
 OPTIONS_FILE_SET+=CPACK
 OPTIONS_FILE_SET+=DOCS
@@ -163,7 +163,7 @@ OPTIONS_FILE_UNSET+=IDN2
 
 mkdir -p /var/db/ports/security_rhash
 cat << "EOF" > /var/db/ports/security_rhash/options
-_OPTIONS_READ=rhash-1.4.3
+_OPTIONS_READ=rhash-1.4.4
 _FILE_COMPLETE_OPTIONS_LIST=DOCS NLS
 OPTIONS_FILE_SET+=DOCS
 OPTIONS_FILE_SET+=NLS
@@ -171,7 +171,7 @@ OPTIONS_FILE_SET+=NLS
 
 mkdir -p /var/db/ports/ftp_curl
 cat << "EOF" > /var/db/ports/ftp_curl/options
-_OPTIONS_READ=curl-8.1.2
+_OPTIONS_READ=curl-8.5.0
 _FILE_COMPLETE_OPTIONS_LIST=ALTSVC BROTLI CA_BUNDLE COOKIES CURL_DEBUG DEBUG DOCS EXAMPLES IDN IPV6 NTLM PROXY PSL STATIC TLS_SRP ZSTD GSSAPI_BASE GSSAPI_HEIMDAL GSSAPI_MIT GSSAPI_NONE CARES THREADED_RESOLVER GNUTLS OPENSSL WOLFSSL DICT FTP GOPHER HTTP HTTP2 IMAP LDAP LDAPS LIBSSH LIBSSH2 MQTT POP3 RTMP RTSP SMB SMTP TELNET TFTP WEBSOCKET
 OPTIONS_FILE_SET+=ALTSVC
 OPTIONS_FILE_SET+=BROTLI
@@ -262,7 +262,7 @@ Wir installieren `devel/git` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/shells_bash
 cat << "EOF" > /var/db/ports/shells_bash/options
-_OPTIONS_READ=bash-5.2.15
+_OPTIONS_READ=bash-5.2.21
 _FILE_COMPLETE_OPTIONS_LIST=DOCS FDESCFS HELP NLS PORTS_READLINE STATIC SYSBASHRC SYSLOG
 OPTIONS_FILE_SET+=DOCS
 OPTIONS_FILE_SET+=FDESCFS
@@ -342,7 +342,7 @@ OPTIONS_FILE_SET+=NLS
 
 mkdir -p /var/db/ports/devel_boehm-gc
 cat << "EOF" > /var/db/ports/devel_boehm-gc/options
-_OPTIONS_READ=boehm-gc-8.2.2
+_OPTIONS_READ=boehm-gc-8.2.4
 _FILE_COMPLETE_OPTIONS_LIST=DEBUG DOCS
 OPTIONS_FILE_UNSET+=DEBUG
 OPTIONS_FILE_SET+=DOCS
@@ -357,14 +357,14 @@ OPTIONS_FILE_SET+=DOCS
 
 mkdir -p /var/db/ports/security_p5-Authen-SASL
 cat << "EOF" > /var/db/ports/security_p5-Authen-SASL/options
-_OPTIONS_READ=p5-Authen-SASL-2.16
+_OPTIONS_READ=p5-Authen-SASL-2.17
 _FILE_COMPLETE_OPTIONS_LIST=KERBEROS
 OPTIONS_FILE_UNSET+=KERBEROS
 "EOF"
 
 mkdir -p /var/db/ports/security_p5-IO-Socket-SSL
 cat << "EOF" > /var/db/ports/security_p5-IO-Socket-SSL/options
-_OPTIONS_READ=p5-IO-Socket-SSL-2.083
+_OPTIONS_READ=p5-IO-Socket-SSL-2.084
 _FILE_COMPLETE_OPTIONS_LIST=EXAMPLES IDN IPV6
 OPTIONS_FILE_SET+=EXAMPLES
 OPTIONS_FILE_SET+=IDN
@@ -380,7 +380,7 @@ OPTIONS_FILE_SET+=EXAMPLES
 
 mkdir -p /var/db/ports/devel_git
 cat << "EOF" > /var/db/ports/devel_git/options
-_OPTIONS_READ=git-2.40.1
+_OPTIONS_READ=git-2.43.0
 _FILE_COMPLETE_OPTIONS_LIST=CONTRIB CURL GITWEB HTMLDOCS ICONV NLS PCRE2 PERL SEND_EMAIL SUBTREE
 OPTIONS_FILE_SET+=CONTRIB
 OPTIONS_FILE_SET+=CURL
@@ -404,7 +404,7 @@ Wir installieren `ports-mgmt/portmaster` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/ports-mgmt_portmaster
 cat << "EOF" > /var/db/ports/ports-mgmt_portmaster/options
-_OPTIONS_READ=portmaster-3.26
+_OPTIONS_READ=portmaster-3.29
 _FILE_COMPLETE_OPTIONS_LIST=BASH ZSH
 OPTIONS_FILE_SET+=BASH
 OPTIONS_FILE_SET+=ZSH
@@ -472,7 +472,7 @@ Wir installieren `databases/sqlite3` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/databases_sqlite3
 cat << "EOF" > /var/db/ports/databases_sqlite3/options
-_OPTIONS_READ=sqlite3-3.42.0
+_OPTIONS_READ=sqlite3-3.44.0
 _FILE_COMPLETE_OPTIONS_LIST=ARMOR DBPAGE DBSTAT DIRECT_READ DQS EXAMPLES EXTENSION FTS3_TOKEN FTS4 FTS5 LIKENOTBLOB MEMMAN METADATA NORMALIZE NULL_TRIM RBU SECURE_DELETE SORT_REF STATIC STMT STRIP TCL THREADS TRUSTED_SCHEMA UNKNOWN_SQL UNLOCK_NOTIFY UPDATE_LIMIT URI URI_AUTHORITY TS0 TS1 TS2 TS3 STAT3 STAT4 LIBEDIT READLINE SESSION OFFSET SOUNDEX GEOPOLY RTREE RTREE_INT ICU UNICODE61
 OPTIONS_FILE_UNSET+=ARMOR
 OPTIONS_FILE_SET+=DBPAGE
@@ -551,7 +551,7 @@ OPTIONS_FILE_UNSET+=LIBSECRET
 
 mkdir -p /var/db/ports/security_gnupg
 cat << "EOF" > /var/db/ports/security_gnupg/options
-_OPTIONS_READ=gnupg-2.3.8
+_OPTIONS_READ=gnupg-2.4.3
 _FILE_COMPLETE_OPTIONS_LIST=DOCS GNUTLS LARGE_RSA LDAP NLS SCDAEMON SUID_GPG WKS_SERVER
 OPTIONS_FILE_SET+=DOCS
 OPTIONS_FILE_UNSET+=GNUTLS
@@ -591,14 +591,14 @@ OPTIONS_FILE_UNSET+=SQLITE
 
 mkdir -p /var/db/ports/textproc_utf8proc
 cat << "EOF" > /var/db/ports/textproc_utf8proc/options
-_OPTIONS_READ=utf8proc-2.8.0
+_OPTIONS_READ=utf8proc-2.9.0
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
 "EOF"
 
 mkdir -p /var/db/ports/www_serf
 cat << "EOF" > /var/db/ports/www_serf/options
-_OPTIONS_READ=serf-1.3.9
+_OPTIONS_READ=serf-1.3.10
 _FILE_COMPLETE_OPTIONS_LIST=DOCS GSSAPI_BASE GSSAPI_HEIMDAL GSSAPI_MIT
 OPTIONS_FILE_SET+=DOCS
 OPTIONS_FILE_UNSET+=GSSAPI_BASE

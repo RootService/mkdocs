@@ -2,7 +2,7 @@
 title: 'Postfix'
 description: 'In diesem HowTo wird step-by-step die Installation des Postfix Mailservers für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-06-10'
+updated: '2023-12-22'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -13,8 +13,7 @@ author_url: https://github.com/JoeUser78
 
 Unser Hosting System wird um folgende Dienste erweitert.
 
-- Postfix 3.8.1 (Dovecot-SASL, postscreen)
-- Python-SPF-Engine 3.0.4 (SPF2)
+- Postfix 3.8.4 (Dovecot-SASL, postscreen)
 
 ## Voraussetzungen
 
@@ -27,7 +26,7 @@ Wir installieren `mail/postfix` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/mail_postfix
 cat << "EOF" > /var/db/ports/mail_postfix/options
-_OPTIONS_READ=postfix-3.8.1
+_OPTIONS_READ=postfix-3.8.4
 _FILE_COMPLETE_OPTIONS_LIST=BDB BLACKLISTD CDB DOCS EAI INST_BASE LDAP LMDB MYSQL NIS PCRE2 PGSQL SASL SQLITE TEST TLS SASLKMIT SASLKRB5
 OPTIONS_FILE_UNSET+=BDB
 OPTIONS_FILE_UNSET+=BLACKLISTD
@@ -99,7 +98,6 @@ non_smtpd_milters =
   inet:127.0.0.1:8891
 notify_classes = data protocol resource software
 openssl_path = /usr/local/bin/openssl
-#policyd-spf_time_limit = 3600
 postscreen_access_list =
   permit_mynetworks
   cidr:${config_directory}/postscreen_whitelist.cidr
@@ -169,6 +167,9 @@ smtpd_end_of_data_restrictions =
   permit
 smtpd_etrn_restrictions =
   reject
+smtpd_forbid_bare_newline = yes
+smtpd_forbid_bare_newline_exclusions = $mynetworks
+smtpd_forbid_unauth_pipelining = yes
 smtpd_helo_required = yes
 smtpd_helo_restrictions =
   permit_mynetworks
@@ -178,7 +179,6 @@ smtpd_helo_restrictions =
   permit
 smtpd_milters =
   inet:127.0.0.1:8891
-  inet:127.0.0.1:8893
   inet:127.0.0.1:8895
   unix:/var/run/spamass-milter/spamass-milter.sock
 smtpd_recipient_restrictions =
@@ -214,10 +214,10 @@ smtpd_tls_session_cache_database = lmdb:${data_directory}/smtpd_scache
 strict_rfc821_envelopes = yes
 swap_bangpath = no
 tls_eecdh_auto_curves = X448 X25519 secp384r1 prime256v1 secp521r1
-tls_high_cipherlist = CHACHA20 AESGCM !SSLv3 !TLSv1 !DSS !RSA !PSK !aNULL @STRENGTH
-tls_medium_cipherlist = CHACHA20 AESGCM !SSLv3 !TLSv1 !DSS !RSA !PSK !aNULL @STRENGTH
+tls_high_cipherlist = "TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384:TLS_AES_128_GCM_SHA256:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256"
+tls_medium_cipherlist = "TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384:TLS_AES_128_GCM_SHA256:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256"
 tls_preempt_cipherlist = yes
-tls_ssl_options = NO_COMPRESSION NO_RENEGOTIATION NO_SESSION_RESUMPTION_ON_RENEGOTIATION PRIORITIZE_CHACHA
+tls_ssl_options = NO_RENEGOTIATION NO_SESSION_RESUMPTION_ON_RENEGOTIATION
 virtual_alias_domains = lmdb:${config_directory}/virtual_alias_domains
 virtual_alias_maps = lmdb:${config_directory}/virtual_alias_maps
 virtual_gid_maps = static:5000
@@ -488,21 +488,11 @@ pw useradd -n vmail -u 5000 -g vmail -c 'Virtual Mailuser' -d /nonexistent -s /u
 mkdir -p /data/vmail
 chmod 0750 /data/vmail
 chown vmail:vmail /data/vmail
-
 ```
 
-## Python-SPF-Engine
-
-Wir installieren `mail/py-spf-engine` und dessen Abhängigkeiten.
+Wir installieren `mail/libmilter` und dessen Abhängigkeiten.
 
 ``` bash
-mkdir -p /var/db/ports/mail_py-authres
-cat << "EOF" > /var/db/ports/mail_py-authres/options
-_OPTIONS_READ=py39-authres-1.2.0
-_FILE_COMPLETE_OPTIONS_LIST=DOCS
-OPTIONS_FILE_SET+=DOCS
-"EOF"
-
 mkdir -p /var/db/ports/mail_libmilter
 cat << "EOF" > /var/db/ports/mail_libmilter/options
 _OPTIONS_READ=libmilter-8.17.2
@@ -513,64 +503,9 @@ OPTIONS_FILE_SET+=MILTER_POOL
 OPTIONS_FILE_SET+=DOCS
 "EOF"
 
-mkdir -p /var/db/ports/dns_py-dnspython
-cat << "EOF" > /var/db/ports/dns_py-dnspython/options
-_OPTIONS_READ=py39-dnspython-2.3.0
-_FILE_COMPLETE_OPTIONS_LIST=CURIO DNSSEC DOH EXAMPLES IDNA TRIO
-OPTIONS_FILE_UNSET+=CURIO
-OPTIONS_FILE_SET+=DNSSEC
-OPTIONS_FILE_SET+=DOH
-OPTIONS_FILE_SET+=EXAMPLES
-OPTIONS_FILE_SET+=IDNA
-OPTIONS_FILE_UNSET+=TRIO
-"EOF"
 
-mkdir -p /var/db/ports/www_py-httpx
-cat << "EOF" > /var/db/ports/www_py-httpx/options
-_OPTIONS_READ=py39-httpx-0.24.1
-_FILE_COMPLETE_OPTIONS_LIST=BROTLI CLI HTTP2 SOCKS
-OPTIONS_FILE_SET+=BROTLI
-OPTIONS_FILE_UNSET+=CLI
-OPTIONS_FILE_SET+=HTTP2
-OPTIONS_FILE_SET+=SOCKS
-"EOF"
-
-mkdir -p /var/db/ports/www_py-httpcore
-cat << "EOF" > /var/db/ports/www_py-httpcore/options
-_OPTIONS_READ=py39-httpcore-0.17.2
-_FILE_COMPLETE_OPTIONS_LIST=HTTP2 SOCKS
-OPTIONS_FILE_SET+=HTTP2
-OPTIONS_FILE_SET+=SOCKS
-"EOF"
-
-mkdir -p /var/db/ports/devel_py-anyio
-cat << "EOF" > /var/db/ports/devel_py-anyio/options
-_OPTIONS_READ=py39-anyio-3.6.2
-_FILE_COMPLETE_OPTIONS_LIST=TRIO
-OPTIONS_FILE_UNSET+=TRIO
-"EOF"
-
-mkdir -p /var/db/ports/mail_py-spf-engine
-cat << "EOF" > /var/db/ports/mail_py-spf-engine/options
-_OPTIONS_READ=py39-spf-engine-3.0.4
-_FILE_COMPLETE_OPTIONS_LIST=DOCS
-OPTIONS_FILE_SET+=DOCS
-"EOF"
-
-
-cd /usr/ports/mail/py-spf-engine
+cd /usr/ports/mail/libmilter
 make all install clean-depends clean
-
-
-sysrc pyspf_milter_enable=YES
-```
-
-`py-spf-engine` konfigurieren.
-
-``` bash
-cat << "EOF" >> /usr/local/etc/pyspf-milter/pyspf-milter.conf
-Authserv_Id = mail.example.com
-"EOF"
 ```
 
 Es muss noch ein DNS-Record angelegt werden, sofern er noch nicht existieren, oder entsprechend geändert werden, sofern er bereits existieren.
@@ -584,6 +519,5 @@ example.com.            IN  TXT     ( "v=spf1 a mx -all" )
 Postfix kann nun gestartet werden.
 
 ``` bash
-service pyspf-milter start
 service postfix start
 ```

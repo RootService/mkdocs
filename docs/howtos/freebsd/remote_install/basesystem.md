@@ -2,7 +2,7 @@
 title: 'BaseSystem'
 description: 'In diesem HowTo wird step-by-step die Remote Installation des FreeBSD 64Bit BaseSystem auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-06-10'
+updated: '2023-12-22'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -17,7 +17,7 @@ Unser BaseSystem wird folgende Dienste umfassen.
 
 - FreeBSD 13.2-RELEASE 64Bit
 - OpenSSL 1.1.1t
-- OpenSSH 9.2p1
+- OpenSSH 9.3p1
 - Unbound 1.17.1
 
 ## Voraussetzungen
@@ -393,20 +393,12 @@ kern.randompid=1369
 kern.sched.slice=1
 kern.threads.max_threads_per_proc=4096
 net.inet.icmp.drop_redirect=1
-net.inet.icmp.icmplim=1
-net.inet.icmp.icmplim_output=0
 net.inet.ip.check_interface=1
-net.inet.ip.forwarding=1
-net.inet.ip.intr_queue_maxlen=2048
-net.inet.ip.maxfragpackets=0
-net.inet.ip.maxfragsperpacket=0
-net.inet.ip.process_options=0
+net.inet.ip.forwarding=0
 net.inet.ip.random_id=1
 net.inet.ip.redirect=0
 net.inet.ip.stealth=1
 net.inet.ip.ttl=128
-net.inet.raw.maxdgram=16384
-net.inet.raw.recvspace=16384
 net.inet.sctp.blackhole=2
 net.inet.tcp.abc_l_var=44
 net.inet.tcp.blackhole=2
@@ -414,49 +406,26 @@ net.inet.tcp.cc.abe=1
 net.inet.tcp.cc.algorithm=htcp
 net.inet.tcp.cc.htcp.adaptive_backoff=1
 net.inet.tcp.cc.htcp.rtt_scaling=1
-net.inet.tcp.delacktime=20
-#net.inet.tcp.delayed_ack=0
 net.inet.tcp.drop_synfin=1
 net.inet.tcp.ecn.enable=1
 net.inet.tcp.fast_finwait2_recycle=1
-net.inet.tcp.fastopen.client_enable=0
-net.inet.tcp.fastopen.server_enable=0
-net.inet.tcp.finwait2_timeout=5000
-net.inet.tcp.icmp_may_rst=0
 net.inet.tcp.initcwnd_segments=44
-net.inet.tcp.isn_reseed_interval=4500
 net.inet.tcp.keepcnt=2
-net.inet.tcp.keepidle=62000
-net.inet.tcp.keepintvl=5000
 net.inet.tcp.minmss=536
 net.inet.tcp.msl=2500
 net.inet.tcp.mssdflt=1460
 net.inet.tcp.nolocaltimewait=1
-net.inet.tcp.path_mtu_discovery=0
-net.inet.tcp.recvbuf_inc=65536
-net.inet.tcp.recvbuf_max=4194304
-net.inet.tcp.recvspace=655536
-net.inet.tcp.rfc6675_pipe=1
-net.inet.tcp.sendbuf_inc=65536
-net.inet.tcp.sendbuf_max=4194304
-net.inet.tcp.sendspace=655536
-net.inet.tcp.syncache.rexmtlimit=0
 net.inet.tcp.syncookies=0
 net.inet.tcp.syncookies_only=1
 net.inet.tcp.tso=0
 net.inet.udp.blackhole=1
-net.inet.udp.maxdgram=16384
-net.inet.udp.recvspace=1048576
+net.inet6.icmp6.nd6_onlink_ns_rfc4861=1
 net.inet6.icmp6.nodeinfo=0
 net.inet6.icmp6.rediraccept=0
-net.inet6.ip6.forwarding=1
-net.inet6.ip6.maxfragpackets=0
-net.inet6.ip6.maxfrags=0
+net.inet6.ip6.accept_rtadv=1
+net.inet6.ip6.forwarding=0
 net.inet6.ip6.redirect=0
 net.inet6.ip6.stealth=1
-net.local.stream.recvspace=16384
-net.local.stream.sendspace=16384
-net.route.netisr_maxqlen=2048
 security.bsd.hardlink_check_gid=1
 security.bsd.hardlink_check_uid=1
 security.bsd.see_other_gids=0
@@ -654,27 +623,13 @@ dumpdev="AUTO"
 hostname="devnull.example.com"
 
 ##### IPv4
-### uncomment next 2 lines if you need the simple config
 defaultrouter="GATEWAY4"
 ifconfig_IFACE="inet IPADDR4 netmask NETMASK4"
-### the next 4 options may be needed on some isp-networks
-### uncomment next 4 lines if you need the complex config
-#route_gateway4="-host -inet GATEWAY4 -interface IFACE"
-#route_default4="default GATEWAY4"
-#static_routes="gateway4 default4"
-#ifconfig_IFACE="inet IPADDR4 netmask NETMASK4"
 
 ##### IPv6
-### uncomment next 2 lines if you need the simple config
 ipv6_activate_all_interfaces="YES"
-#ipv6_defaultrouter="GATEWAY6"
-#ifconfig_IFACE_ipv6="inet6 IPADDR6 prefixlen PREFLEN6"
-### the next 4 options may be needed on some isp-networks
-### uncomment next 4 lines if you need the complex config
-#ipv6_route_gateway6="-host -inet6 GATEWAY6 -interface IFACE"
-#ipv6_route_default6="default GATEWAY6"
-#ipv6_static_routes="gateway6 default6"
-#ifconfig_IFACE_ipv6="inet6 IPADDR6 prefixlen PREFLEN6 accept_rtadv"
+ipv6_defaultrouter="GATEWAY6"
+ifconfig_IFACE_ipv6="inet6 IPADDR6 prefixlen PREFLEN6 accept_rtadv"
 
 ##### Additional IP Addresses
 ### specify additional IPv4 and IPv6 addresses one per line
@@ -950,18 +905,6 @@ kern.ipc.shmmax="2147483648"
 kern.msgbufsize="2097152"
 kern.random.fortuna.minpoolsize="256"
 kern.sync_on_panic="0"
-#machdep.hyperthreading_allowed="0"
-net.inet.tcp.hostcache.enable="0"
-net.inet.tcp.hostcache.cachelimit="0"
-net.inet.tcp.soreceive_stream="1"
-net.inet.tcp.syncache.hashsize="1024"
-net.inet.tcp.syncache.bucketlimit="100"
-net.inet.tcp.tcbhashsize="524288"
-net.isr.bindthreads="1"
-net.isr.maxthreads="-1"
-net.isr.defaultqlimit="2048"
-net.link.ifqmaxlen="2048"
-net.pf.source_nodes_hashsize="1048576"
 "EOF"
 ```
 

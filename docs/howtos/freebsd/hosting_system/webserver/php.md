@@ -2,7 +2,7 @@
 title: 'PHP-FPM'
 description: 'In diesem HowTo wird step-by-step die Installation von PHP-FPM für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-06-10'
+updated: '2023-12-22'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -13,7 +13,7 @@ author_url: https://github.com/JoeUser78
 
 Unser Hosting System wird folgende Dienste umfassen.
 
-- PHP 8.1.20 (PHP-FPM, Composer, PEAR)
+- PHP 8.2.14 (PHP-FPM, Composer, PEAR)
 
 ## Voraussetzungen
 
@@ -21,17 +21,17 @@ Zu den Voraussetzungen für dieses HowTo siehe bitte: [Hosting System](/howtos/f
 
 ## Installation
 
-Wir installieren `lang/php81` und dessen Abhängigkeiten.
+Wir installieren `lang/php82` und dessen Abhängigkeiten.
 
 ``` bash
 cat << "EOF" >> /etc/make.conf
-#DEFAULT_VERSIONS+=php=8.1
+#DEFAULT_VERSIONS+=php=8.2
 "EOF"
 
 
-mkdir -p /var/db/ports/lang_php81
-cat << "EOF" > /var/db/ports/lang_php81/options
-_OPTIONS_READ=php81-8.1.20
+mkdir -p /var/db/ports/lang_php82
+cat << "EOF" > /var/db/ports/lang_php82/options
+_OPTIONS_READ=php82-8.2.14
 _FILE_COMPLETE_OPTIONS_LIST=CGI CLI DEBUG DTRACE EMBED FPM IPV6 LINKTHR  MYSQLND PHPDBG ZTS
 OPTIONS_FILE_SET+=CGI
 OPTIONS_FILE_SET+=CLI
@@ -47,7 +47,7 @@ OPTIONS_FILE_SET+=ZTS
 "EOF"
 
 
-cd /usr/ports/lang/php81
+cd /usr/ports/lang/php82
 make all install clean-depends clean
 
 
@@ -56,12 +56,12 @@ sysrc php_fpm_enable=YES
 
 ## PHP-Extensions installieren
 
-Wir installieren `lang/php81-extensions` und dessen Abhängigkeiten.
+Wir installieren `lang/php82-extensions` und dessen Abhängigkeiten.
 
 ``` bash
-mkdir -p /var/db/ports/databases_php81-dba
-cat << "EOF" > /var/db/ports/databases_php81-dba/options
-_OPTIONS_READ=php81-dba-8.1.20
+mkdir -p /var/db/ports/databases_php82-dba
+cat << "EOF" > /var/db/ports/databases_php82-dba/options
+_OPTIONS_READ=php82-dba-8.2.14
 _FILE_COMPLETE_OPTIONS_LIST=CDB DB4 FLATFILE GDBM INIFILE LMDB QDBM TOKYO
 OPTIONS_FILE_SET+=CDB
 OPTIONS_FILE_UNSET+=DB4
@@ -73,9 +73,9 @@ OPTIONS_FILE_UNSET+=QDBM
 OPTIONS_FILE_UNSET+=TOKYO
 "EOF"
 
-mkdir -p /var/db/ports/graphics_php81-gd
-cat << "EOF" > /var/db/ports/graphics_php81-gd/options
-_OPTIONS_READ=php81-gd-8.1.20
+mkdir -p /var/db/ports/graphics_php82-gd
+cat << "EOF" > /var/db/ports/graphics_php82-gd/options
+_OPTIONS_READ=php82-gd-8.2.14
 _FILE_COMPLETE_OPTIONS_LIST=JIS WEBP X11
 OPTIONS_FILE_UNSET+=JIS
 OPTIONS_FILE_SET+=WEBP
@@ -191,9 +191,9 @@ OPTIONS_FILE_UNSET+=HINTING_MEDIUM
 OPTIONS_FILE_UNSET+=HINTING_FULL
 "EOF"
 
-mkdir -p /var/db/ports/mail_php81-imap
-cat << "EOF" > /var/db/ports/mail_php81-imap/options
-_OPTIONS_READ=php81-imap-8.1.20
+mkdir -p /var/db/ports/mail_php82-imap
+cat << "EOF" > /var/db/ports/mail_php82-imap/options
+_OPTIONS_READ=php82-imap-8.2.14
 _FILE_COMPLETE_OPTIONS_LIST= CCLIENT PANDA
 OPTIONS_FILE_UNSET+=CCLIENT
 OPTIONS_FILE_SET+=PANDA
@@ -209,9 +209,9 @@ OPTIONS_FILE_SET+=SSL
 OPTIONS_FILE_UNSET+=SSL_AND_PLAINTEXT
 "EOF"
 
-mkdir -p /var/db/ports/converters_php81-mbstring
-cat << "EOF" > /var/db/ports/converters_php81-mbstring/options
-_OPTIONS_READ=php81-mbstring-8.1.20
+mkdir -p /var/db/ports/converters_php82-mbstring
+cat << "EOF" > /var/db/ports/converters_php82-mbstring/options
+_OPTIONS_READ=php82-mbstring-8.2.14
 _FILE_COMPLETE_OPTIONS_LIST=REGEX
 OPTIONS_FILE_SET+=REGEX
 "EOF"
@@ -224,23 +224,23 @@ OPTIONS_FILE_SET+=DOCS
 OPTIONS_FILE_SET+=EXAMPLES
 "EOF"
 
-mkdir -p /var/db/ports/databases_php81-mysqli
-cat << "EOF" > /var/db/ports/databases_php81-mysqli/options
-_OPTIONS_READ=php81-mysqli-8.1.20
+mkdir -p /var/db/ports/databases_php82-mysqli
+cat << "EOF" > /var/db/ports/databases_php82-mysqli/options
+_OPTIONS_READ=php82-mysqli-8.2.14
 _FILE_COMPLETE_OPTIONS_LIST=MYSQLND
 OPTIONS_FILE_SET+=MYSQLND
 "EOF"
 
-mkdir -p /var/db/ports/databases_php81-pdo_mysql
-cat << "EOF" > /var/db/ports/databases_php81-pdo_mysql/options
-_OPTIONS_READ=php81-pdo_mysql-8.1.20
+mkdir -p /var/db/ports/databases_php82-pdo_mysql
+cat << "EOF" > /var/db/ports/databases_php82-pdo_mysql/options
+_OPTIONS_READ=php82-pdo_mysql-8.2.14
 _FILE_COMPLETE_OPTIONS_LIST=MYSQLND
 OPTIONS_FILE_SET+=MYSQLND
 "EOF"
 
-mkdir -p /var/db/ports/lang_php81-extensions
-cat << "EOF" > /var/db/ports/lang_php81-extensions/options
-_OPTIONS_READ=php81-extensions-1.1
+mkdir -p /var/db/ports/lang_php82-extensions
+cat << "EOF" > /var/db/ports/lang_php82-extensions/options
+_OPTIONS_READ=php82-extensions-1.1
 _FILE_COMPLETE_OPTIONS_LIST=BCMATH BZ2 CALENDAR CTYPE CURL DBA DOM ENCHANT EXIF FFI FILEINFO FILTER FTP GD GETTEXT GMP ICONV IMAP INTL LDAP MBSTRING MYSQLI ODBC OPCACHE PCNTL PDO PDO_DBLIB PDO_FIREBIRD PDO_MYSQL PDO_ODBC PDO_PGSQL PDO_SQLITE PGSQL PHAR POSIX PSPELL READLINE SESSION SHMOP SIMPLEXML SNMP SOAP SOCKETS SODIUM SQLITE3 SYSVMSG SYSVSEM SYSVSHM TIDY TOKENIZER XML XMLREADER XMLWRITER XSL ZIP ZLIB
 OPTIONS_FILE_SET+=BCMATH
 OPTIONS_FILE_SET+=BZ2
@@ -301,7 +301,7 @@ OPTIONS_FILE_SET+=ZLIB
 "EOF"
 
 
-cd /usr/ports/lang/php81-extensions
+cd /usr/ports/lang/php82-extensions
 make all install clean-depends clean
 ```
 
@@ -419,7 +419,7 @@ Wir installieren `devel/php-composer2` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/devel_php-composer2
 cat << "EOF" > /var/db/ports/devel_php-composer2/options
-_OPTIONS_READ=php81-composer2-2.5.5
+_OPTIONS_READ=php82-composer2-2.5.5
 _FILE_COMPLETE_OPTIONS_LIST=CURL
 OPTIONS_FILE_SET+=CURL
 "EOF"
@@ -436,7 +436,7 @@ Wir installieren `devel/pear` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/devel_pear
 cat << "EOF" > /var/db/ports/devel_pear/options
-_OPTIONS_READ=php81-pear-1.10.13
+_OPTIONS_READ=php82-pear-1.10.13
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
 "EOF"

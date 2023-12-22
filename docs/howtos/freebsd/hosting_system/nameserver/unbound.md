@@ -2,7 +2,7 @@
 title: 'Unbound'
 description: 'In diesem HowTo wird step-by-step die Installation von Unbound für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-06-10'
+updated: '2023-12-22'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -13,7 +13,7 @@ author_url: https://github.com/JoeUser78
 
 Unser Hosting System wird folgende Dienste umfassen.
 
-- Unbound 1.17.1 (DNScrypt, DNS over TLS)
+- Unbound 1.19.0 (DNScrypt, DNS over TLS)
 
 ## Voraussetzungen
 
@@ -41,7 +41,7 @@ OPTIONS_FILE_SET+=THREADS
 
 mkdir -p /var/db/ports/dns_unbound
 cat << "EOF" > /var/db/ports/dns_unbound/options
-_OPTIONS_READ=unbound-1.17.1
+_OPTIONS_READ=unbound-1.19.0
 _FILE_COMPLETE_OPTIONS_LIST=DEP-RSA1024 DNSCRYPT DNSTAP DOCS DOH DYNLIB ECDSA EVAPI FILTER_AAAA GOST HIREDIS LIBEVENT MUNIN_PLUGIN PYTHON SUBNET TFOCL TFOSE THREADS
 OPTIONS_FILE_UNSET+=DEP-RSA1024
 OPTIONS_FILE_SET+=DNSCRYPT

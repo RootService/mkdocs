@@ -2,7 +2,7 @@
 title: 'Apache'
 description: 'In diesem HowTo wird step-by-step die Installation des Apache Webservers für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-06-10'
+updated: '2023-12-22'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -13,7 +13,7 @@ author_url: https://github.com/JoeUser78
 
 Unser Hosting System wird um folgende Dienste erweitert.
 
-- Apache 2.4.57 (MPM-Event, HTTP/2, mod_brotli)
+- Apache 2.4.58 (MPM-Event, HTTP/2, mod_brotli)
 
 ## Voraussetzungen
 
@@ -31,7 +31,7 @@ cat << "EOF" >> /etc/make.conf
 
 mkdir -p /var/db/ports/www_apache24
 cat << "EOF" > /var/db/ports/www_apache24/options
-_OPTIONS_READ=apache24-2.4.57
+_OPTIONS_READ=apache24-2.4.58
 _FILE_COMPLETE_OPTIONS_LIST=ACCESS_COMPAT ACTIONS ALIAS ALLOWMETHODS ASIS AUTHNZ_FCGI AUTHNZ_LDAP AUTHN_ANON AUTHN_CORE AUTHN_DBD AUTHN_DBM AUTHN_FILE AUTHN_SOCACHE AUTHZ_CORE AUTHZ_DBD AUTHZ_DBM AUTHZ_GROUPFILE AUTHZ_HOST AUTHZ_OWNER AUTHZ_USER AUTH_BASIC AUTH_DIGEST AUTH_FORM AUTOINDEX BROTLI BUFFER CACHE CACHE_DISK CACHE_SOCACHE CERN_META CGI CGID CHARSET_LITE DATA DAV DAV_FS DAV_LOCK DBD DEFLATE DIALUP DIR DOCS DUMPIO ENV EXPIRES EXT_FILTER FILE_CACHE FILTER HEADERS HEARTBEAT HEARTMONITOR HTTP2 IDENT IMAGEMAP INCLUDE INFO IPV4_MAPPED LBMETHOD_BYBUSYNESS LBMETHOD_BYREQUESTS LBMETHOD_BYTRAFFIC LBMETHOD_HEARTBEAT LDAP LOGIO LOG_DEBUG LOG_FORENSIC LUA LUAJIT MACRO MD MIME MIME_MAGIC NEGOTIATION PROXY RATELIMIT REFLECTOR REMOTEIP REQTIMEOUT REQUEST REWRITE SED SESSION SETENVIF SLOTMEM_PLAIN SLOTMEM_SHM SOCACHE_DBM SOCACHE_DC SOCACHE_MEMCACHE SOCACHE_REDIS SOCACHE_SHMCB SPELING SSL STATUS SUBSTITUTE SUEXEC SUEXEC_SYSLOG UNIQUE_ID USERDIR USERTRACK VERSION VHOST_ALIAS WATCHDOG XML2ENC MPM_PREFORK MPM_WORKER MPM_EVENT MPM_SHARED PROXY_AJP PROXY_BALANCER PROXY_CONNECT PROXY_EXPRESS PROXY_FCGI  PROXY_HTTP2 PROXY_FDPASS PROXY_FTP PROXY_HCHECK PROXY_HTML PROXY_HTTP  PROXY_SCGI PROXY_UWSGI PROXY_WSTUNNEL  SESSION_COOKIE SESSION_CRYPTO SESSION_DBD  BUCKETEER CASE_FILTER CASE_FILTER_IN ECHO EXAMPLE_HOOKS EXAMPLE_IPC  OPTIONAL_FN_EXPORT OPTIONAL_FN_IMPORT OPTIONAL_HOOK_EXPORT  OPTIONAL_HOOK_IMPORT
 OPTIONS_FILE_SET+=ACCESS_COMPAT
 OPTIONS_FILE_SET+=ACTIONS
@@ -372,7 +372,7 @@ LoadModule rewrite_module libexec/apache24/mod_rewrite.so
 TraceEnable off
 HttpProtocolOptions Strict LenientMethods Require1.0
 <IfModule http2_module>
-    Protocols h2 h2c http/1.1
+    Protocols h2 http/1.1
     ProtocolsHonorOrder On
     H2Padding 2
     H2EarlyHints On
@@ -663,14 +663,15 @@ FileETag None
     Header set Access-Control-Max-Age "600"
     Header set Content-Security-Policy "\
 upgrade-insecure-requests; \
+base-uri 'self'; \
 default-src 'self'; \
 child-src 'self'; \
 connect-src 'self' https:; \
 font-src 'self' https:; \
 frame-src 'self'; \
-img-src 'self' https:; \
+img-src 'self' https: data:; \
 manifest-src 'self'; \
-media-src 'self'; \
+media-src 'self' https:; \
 object-src 'none'; \
 script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' https:; \
 style-src 'self' 'unsafe-inline' 'unsafe-eval' https:; \
@@ -678,9 +679,9 @@ worker-src 'self'; \
 form-action 'self' https:; \
 frame-ancestors 'self'; \
 sandbox allow-downloads allow-forms allow-modals allow-orientation-lock allow-pointer-lock allow-popups allow-popups-to-escape-sandbox allow-presentation allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation"
-    Header set Cross-Origin-Opener-Policy "same-origin"
-    Header set Cross-Origin-Embedder-Policy "require-corp"
-    Header set Cross-Origin-Resource-Policy "same-origin"
+    Header set Cross-Origin-Opener-Policy "same-origin-allow-popups"
+    Header set Cross-Origin-Embedder-Policy "credentialless"
+    Header set Cross-Origin-Resource-Policy "cross-origin"
     Header set Referrer-Policy "strict-origin-when-cross-origin"
     Header set Timing-Allow-Origin "*"
     Header set X-Content-Type-Options "nosniff"
@@ -716,7 +717,7 @@ Include "etc/apache24/vhosts.conf"
     SSLCipherSuite TLSv1.3 "TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384:TLS_AES_128_GCM_SHA256"
     SSLProxyCipherSuite "ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256"
     SSLProxyCipherSuite TLSv1.3 "TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384:TLS_AES_128_GCM_SHA256"
-    SSLOpenSSLConfCmd Curves "X448:X25519:secp384r1:prime256v1"
+    SSLOpenSSLConfCmd Curves "X448:X25519:secp384r1:prime256v1:secp521r1"
     SSLOCSPEnable On
     SSLStaplingFakeTryLater Off
     SSLStaplingResponderTimeout 2
@@ -738,7 +739,7 @@ Include "etc/apache24/vhosts.conf"
     Include "etc/apache24/vhosts-ssl.conf"
     <IfModule headers_module>
         Header set Public-Key-Pins "max-age=0; includeSubdomains"
-        Header set Strict-Transport-Security "max-age=15768000; includeSubdomains; preload"
+        Header set Strict-Transport-Security "max-age=31536000; includeSubdomains; preload"
         Header edit* Set-Cookie "^(.*)(?i:\s*;\s*Secure)(.*)$" "$1$2"
         Header edit Set-Cookie "^(.*)$" "$1; Secure"
     </IfModule>

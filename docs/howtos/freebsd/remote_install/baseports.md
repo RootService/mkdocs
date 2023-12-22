@@ -2,7 +2,7 @@
 title: 'BasePorts'
 description: 'In diesem HowTo wird step-by-step die Installation einiger BasePorts für ein FreeBSD 64Bit BaseSystem auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-06-10'
+updated: '2023-12-22'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -15,11 +15,11 @@ In diesem HowTo beschreibe ich step-by-step die Installation einiger Ports (Pack
 
 Unsere BasePorts werden am Ende folgende Dienste umfassen.
 
-- Perl 5.32.1
-- OpenSSL 1.1.1u
+- Perl 5.36.3
+- OpenSSL 3.0.12
 - LUA 5.4.6
 - TCL 8.6.13
-- Python 3.9.16
+- Python 3.9.18
 - Ruby 3.1.4
 
 ## Voraussetzungen
@@ -50,7 +50,8 @@ Wir deaktivieren also zuerst das Default-Repository von `pkg`, um versehentliche
 
 ``` bash
 mkdir -p /usr/local/etc/pkg/repos
-echo "FreeBSD: { enabled: no }" > /usr/local/etc/pkg/repos/FreeBSD.conf
+sed -e 's|quarterly|latest|g' /etc/pkg/FreeBSD.conf > /usr/local/etc/pkg/repos/FreeBSD.conf
+sed -e 's|\(enabled:\)[[:space:]]*yes|\1 no|g' -i '' /usr/local/etc/pkg/repos/FreeBSD.conf
 ```
 
 So ganz ohne komfortable Tools ist das Basis-System etwas mühselig zu administrieren. Deshalb werden wir aus den Ports nun ein paar etwas häufiger benötigte Anwendungen installiert.
@@ -65,36 +66,36 @@ cat << "EOF" >> /etc/crontab
 "EOF"
 ```
 
-Wir installieren `sysutils/devcpu-data` und dessen Abhängigkeiten.
+Wir installieren `sysutils/cpu-microcode-intel` und dessen Abhängigkeiten.
 
 ``` bash
-mkdir -p /var/db/ports/sysutils_devcpu-data
-cat << "EOF" > /var/db/ports/sysutils_devcpu-data/options
-_OPTIONS_READ=devcpu-data-20230424
-_FILE_COMPLETE_OPTIONS_LIST= AMD INTEL
-OPTIONS_FILE_SET+=AMD
-OPTIONS_FILE_SET+=INTEL
+mkdir -p /var/db/ports/sysutils_cpu-microcode-intel
+cat << "EOF" > /var/db/ports/sysutils_cpu-microcode-intel/options
+_OPTIONS_READ=cpu-microcode-intel-20231114
+_FILE_COMPLETE_OPTIONS_LIST=RC SPLIT
+OPTIONS_FILE_SET+=RC
+OPTIONS_FILE_SET+=SPLIT
 "EOF"
 
 
-cd /usr/ports/sysutils/devcpu-data
+cd /usr/ports/sysutils/cpu-microcode-intel
 make LICENSES_ACCEPTED=EULA config-recursive all install clean-depends clean
 
 
 sysrc microcode_update_enable=YES
 ```
 
-Wir installieren `lang/perl5.32` und dessen Abhängigkeiten.
+Wir installieren `lang/perl5.36` und dessen Abhängigkeiten.
 
 ``` bash
 cat << "EOF" >> /etc/make.conf
-#DEFAULT_VERSIONS+=perl5=5.32
+#DEFAULT_VERSIONS+=perl5=5.36
 "EOF"
 
 
-mkdir -p /var/db/ports/lang_perl5.32
-cat << "EOF" > /var/db/ports/lang_perl5.32/options
-_OPTIONS_READ=perl5-5.32.1
+mkdir -p /var/db/ports/lang_perl5.36
+cat << "EOF" > /var/db/ports/lang_perl5.36/options
+_OPTIONS_READ=perl5-5.36.3
 _FILE_COMPLETE_OPTIONS_LIST=DEBUG DOT_INC DTRACE GDBM MULTIPLICITY PERL_64BITINT PERL_MALLOC SITECUSTOMIZE THREADS
 OPTIONS_FILE_UNSET+=DEBUG
 OPTIONS_FILE_UNSET+=DOT_INC
@@ -108,7 +109,7 @@ OPTIONS_FILE_SET+=THREADS
 "EOF"
 
 
-cd /usr/ports/lang/perl5.32
+cd /usr/ports/lang/perl5.36
 make all install clean-depends clean
 ```
 
@@ -122,8 +123,8 @@ DEFAULT_VERSIONS+=ssl=openssl
 
 mkdir -p /var/db/ports/security_openssl
 cat << "EOF" > /var/db/ports/security_openssl/options
-_OPTIONS_READ=openssl-1.1.1u
-_FILE_COMPLETE_OPTIONS_LIST=ASYNC CT KTLS MAN3 RFC3779 SHARED ZLIB ARIA DES GOST IDEA SM4 RC2 RC4 RC5 WEAK-SSL-CIPHERS MD2 MD4 MDC2 RMD160 SM2 SM3 ASM SSE2 THREADS EC NEXTPROTONEG SCTP SSL3 TLS1 TLS1_1 TLS1_2
+_OPTIONS_READ=openssl-3.0.12
+_FILE_COMPLETE_OPTIONS_LIST=ASYNC CT KTLS MAN3 RFC3779 SHARED ZLIB ARIA DES GOST IDEA SM4 RC2 RC4 RC5 WEAK-SSL-CIPHERS MD2 MD4 MDC2 RMD160 SM2 SM3 FIPS LEGACY ASM SSE2 THREADS EC NEXTPROTONEG SCTP SSL3 TLS1 TLS1_1 TLS1_2
 OPTIONS_FILE_SET+=ASYNC
 OPTIONS_FILE_SET+=CT
 OPTIONS_FILE_SET+=KTLS
@@ -146,6 +147,8 @@ OPTIONS_FILE_UNSET+=MDC2
 OPTIONS_FILE_SET+=RMD160
 OPTIONS_FILE_UNSET+=SM2
 OPTIONS_FILE_UNSET+=SM3
+OPTIONS_FILE_SET+=FIPS
+OPTIONS_FILE_UNSET+=LEGACY
 OPTIONS_FILE_SET+=ASM
 OPTIONS_FILE_SET+=SSE2
 OPTIONS_FILE_SET+=THREADS
@@ -168,7 +171,7 @@ Wir installieren `security/ca_root_nss` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/security_ca_root_nss
 cat << "EOF" > /var/db/ports/security_ca_root_nss/options
-_OPTIONS_READ=ca_root_nss-3.89.1
+_OPTIONS_READ=ca_root_nss-3.93
 _FILE_COMPLETE_OPTIONS_LIST=ETCSYMLINK
 OPTIONS_FILE_SET+=ETCSYMLINK
 "EOF"
@@ -229,7 +232,7 @@ OPTIONS_FILE_SET+=NLS
 
 mkdir -p /var/db/ports/devel_gettext-tools
 cat << "EOF" > /var/db/ports/devel_gettext-tools/options
-_OPTIONS_READ=gettext-tools-0.21.1
+_OPTIONS_READ=gettext-tools-0.22.0
 _FILE_COMPLETE_OPTIONS_LIST=DOCS EXAMPLES THREADS
 OPTIONS_FILE_SET+=DOCS
 OPTIONS_FILE_SET+=EXAMPLES
@@ -238,14 +241,14 @@ OPTIONS_FILE_SET+=THREADS
 
 mkdir -p /var/db/ports/devel_libtextstyle
 cat << "EOF" > /var/db/ports/devel_libtextstyle/options
-_OPTIONS_READ=libtextstyle-0.21.1
+_OPTIONS_READ=libtextstyle-0.22.3
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
 "EOF"
 
 mkdir -p /var/db/ports/devel_gettext-runtime
 cat << "EOF" > /var/db/ports/devel_gettext-runtime/options
-_OPTIONS_READ=gettext-runtime-0.21.1
+_OPTIONS_READ=gettext-runtime-0.22.0
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
 "EOF"
@@ -355,7 +358,7 @@ OPTIONS_FILE_SET+=DOCS
 
 mkdir -p /var/db/ports/devel_readline
 cat << "EOF" > /var/db/ports/devel_readline/options
-_OPTIONS_READ=readline-8.2.1
+_OPTIONS_READ=readline-8.2.7
 _FILE_COMPLETE_OPTIONS_LIST=BRACKETEDPASTE DOCS
 OPTIONS_FILE_SET+=BRACKETEDPASTE
 OPTIONS_FILE_SET+=DOCS
@@ -363,7 +366,7 @@ OPTIONS_FILE_SET+=DOCS
 
 mkdir -p /var/db/ports/lang_python39
 cat << "EOF" > /var/db/ports/lang_python39/options
-_OPTIONS_READ=python39-3.9.16
+_OPTIONS_READ=python39-3.9.18
 _FILE_COMPLETE_OPTIONS_LIST=DEBUG IPV6 LIBMPDEC LTO NLS PYMALLOC FNV SIPHASH
 OPTIONS_FILE_UNSET+=DEBUG
 OPTIONS_FILE_SET+=IPV6
@@ -409,7 +412,7 @@ OPTIONS_FILE_SET+=SOCKS
 
 mkdir -p /var/db/ports/net_py-urllib3
 cat << "EOF" > /var/db/ports/net_py-urllib3/options
-_OPTIONS_READ=py39-urllib3-1.26.16
+_OPTIONS_READ=py39-urllib3-1.26.18
 _FILE_COMPLETE_OPTIONS_LIST=BROTLI SOCKS SSL
 OPTIONS_FILE_SET+=BROTLI
 OPTIONS_FILE_SET+=SOCKS
@@ -426,7 +429,7 @@ OPTIONS_FILE_SET+=EXAMPLES
 
 mkdir -p /var/db/ports/devel_py-babel
 cat << "EOF" > /var/db/ports/devel_py-babel/options
-_OPTIONS_READ=py39-Babel-2.12.1
+_OPTIONS_READ=py39-Babel-2.14.0
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
 "EOF"
@@ -440,7 +443,7 @@ OPTIONS_FILE_SET+=PYSTEMMER
 
 mkdir -p /var/db/ports/devel_py-lxml
 cat << "EOF" > /var/db/ports/devel_py-lxml/options
-_OPTIONS_READ=py39-lxml-4.9.2
+_OPTIONS_READ=py39-lxml-4.9.3
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
 "EOF"
@@ -468,7 +471,7 @@ OPTIONS_FILE_UNSET+=STATIC
 
 mkdir -p /var/db/ports/security_libgcrypt
 cat << "EOF" > /var/db/ports/security_libgcrypt/options
-_OPTIONS_READ=libgcrypt-1.9.4
+_OPTIONS_READ=libgcrypt-1.10.3
 _FILE_COMPLETE_OPTIONS_LIST=DOCS INFO STATIC
 OPTIONS_FILE_SET+=DOCS
 OPTIONS_FILE_UNSET+=INFO
@@ -486,7 +489,7 @@ OPTIONS_FILE_UNSET+=TEST
 
 mkdir -p /var/db/ports/devel_py-yaml
 cat << "EOF" > /var/db/ports/devel_py-yaml/options
-_OPTIONS_READ=py39-yaml-6.0
+_OPTIONS_READ=py39-yaml-6.0.1
 _FILE_COMPLETE_OPTIONS_LIST=EXAMPLES LIBYAML
 OPTIONS_FILE_SET+=EXAMPLES
 OPTIONS_FILE_SET+=LIBYAML
@@ -494,7 +497,7 @@ OPTIONS_FILE_SET+=LIBYAML
 
 mkdir -p /var/db/ports/devel_py-pip
 cat << "EOF" > /var/db/ports/devel_py-pip/options
-_OPTIONS_READ=py39-pip-23.1.2
+_OPTIONS_READ=py39-pip-23.3
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
 "EOF"
@@ -514,7 +517,7 @@ cat << "EOF" >> /etc/make.conf
 
 mkdir -p /var/db/ports/math_gmp
 cat << "EOF" > /var/db/ports/math_gmp/options
-_OPTIONS_READ=gmp-6.2.1
+_OPTIONS_READ=gmp-6.3.0
 _FILE_COMPLETE_OPTIONS_LIST=CPU_OPTS
 OPTIONS_FILE_UNSET+=CPU_OPTS
 "EOF"
@@ -543,7 +546,7 @@ Wir installieren `devel/ruby-gems` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/devel_ruby-gems
 cat << "EOF" > /var/db/ports/devel_ruby-gems/options
-_OPTIONS_READ=ruby31-gems-3.4.13
+_OPTIONS_READ=ruby31-gems-3.4.20
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
 "EOF"
