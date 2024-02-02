@@ -2,7 +2,7 @@
 title: 'PHP-FPM'
 description: 'In diesem HowTo wird step-by-step die Installation von PHP-FPM für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-12-22'
+updated: '2024-02-01'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -13,7 +13,7 @@ author_url: https://github.com/JoeUser78
 
 Unser Hosting System wird folgende Dienste umfassen.
 
-- PHP 8.2.14 (PHP-FPM, Composer, PEAR)
+- PHP 8.2.15 (PHP-FPM, Composer, PEAR)
 
 ## Voraussetzungen
 
@@ -31,7 +31,7 @@ cat << "EOF" >> /etc/make.conf
 
 mkdir -p /var/db/ports/lang_php82
 cat << "EOF" > /var/db/ports/lang_php82/options
-_OPTIONS_READ=php82-8.2.14
+_OPTIONS_READ=php82-8.2.15
 _FILE_COMPLETE_OPTIONS_LIST=CGI CLI DEBUG DTRACE EMBED FPM IPV6 LINKTHR  MYSQLND PHPDBG ZTS
 OPTIONS_FILE_SET+=CGI
 OPTIONS_FILE_SET+=CLI
@@ -61,7 +61,7 @@ Wir installieren `lang/php82-extensions` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/databases_php82-dba
 cat << "EOF" > /var/db/ports/databases_php82-dba/options
-_OPTIONS_READ=php82-dba-8.2.14
+_OPTIONS_READ=php82-dba-8.2.15
 _FILE_COMPLETE_OPTIONS_LIST=CDB DB4 FLATFILE GDBM INIFILE LMDB QDBM TOKYO
 OPTIONS_FILE_SET+=CDB
 OPTIONS_FILE_UNSET+=DB4
@@ -75,7 +75,7 @@ OPTIONS_FILE_UNSET+=TOKYO
 
 mkdir -p /var/db/ports/graphics_php82-gd
 cat << "EOF" > /var/db/ports/graphics_php82-gd/options
-_OPTIONS_READ=php82-gd-8.2.14
+_OPTIONS_READ=php82-gd-8.2.15
 _FILE_COMPLETE_OPTIONS_LIST=JIS WEBP X11
 OPTIONS_FILE_UNSET+=JIS
 OPTIONS_FILE_SET+=WEBP
@@ -110,7 +110,7 @@ OPTIONS_FILE_SET+=SIMD
 
 mkdir -p /var/db/ports/graphics_webp
 cat << "EOF" > /var/db/ports/graphics_webp/options
-_OPTIONS_READ=webp-1.3.0
+_OPTIONS_READ=webp-1.3.2
 _FILE_COMPLETE_OPTIONS_LIST=IMGCONV X11
 OPTIONS_FILE_SET+=IMGCONV
 OPTIONS_FILE_UNSET+=X11
@@ -193,7 +193,7 @@ OPTIONS_FILE_UNSET+=HINTING_FULL
 
 mkdir -p /var/db/ports/mail_php82-imap
 cat << "EOF" > /var/db/ports/mail_php82-imap/options
-_OPTIONS_READ=php82-imap-8.2.14
+_OPTIONS_READ=php82-imap-8.2.15
 _FILE_COMPLETE_OPTIONS_LIST= CCLIENT PANDA
 OPTIONS_FILE_UNSET+=CCLIENT
 OPTIONS_FILE_SET+=PANDA
@@ -211,7 +211,7 @@ OPTIONS_FILE_UNSET+=SSL_AND_PLAINTEXT
 
 mkdir -p /var/db/ports/converters_php82-mbstring
 cat << "EOF" > /var/db/ports/converters_php82-mbstring/options
-_OPTIONS_READ=php82-mbstring-8.2.14
+_OPTIONS_READ=php82-mbstring-8.2.15
 _FILE_COMPLETE_OPTIONS_LIST=REGEX
 OPTIONS_FILE_SET+=REGEX
 "EOF"
@@ -226,14 +226,14 @@ OPTIONS_FILE_SET+=EXAMPLES
 
 mkdir -p /var/db/ports/databases_php82-mysqli
 cat << "EOF" > /var/db/ports/databases_php82-mysqli/options
-_OPTIONS_READ=php82-mysqli-8.2.14
+_OPTIONS_READ=php82-mysqli-8.2.15
 _FILE_COMPLETE_OPTIONS_LIST=MYSQLND
 OPTIONS_FILE_SET+=MYSQLND
 "EOF"
 
 mkdir -p /var/db/ports/databases_php82-pdo_mysql
 cat << "EOF" > /var/db/ports/databases_php82-pdo_mysql/options
-_OPTIONS_READ=php82-pdo_mysql-8.2.14
+_OPTIONS_READ=php82-pdo_mysql-8.2.15
 _FILE_COMPLETE_OPTIONS_LIST=MYSQLND
 OPTIONS_FILE_SET+=MYSQLND
 "EOF"
@@ -419,7 +419,7 @@ Wir installieren `devel/php-composer2` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/devel_php-composer2
 cat << "EOF" > /var/db/ports/devel_php-composer2/options
-_OPTIONS_READ=php82-composer2-2.5.5
+_OPTIONS_READ=php82-composer2-2.6.6
 _FILE_COMPLETE_OPTIONS_LIST=CURL
 OPTIONS_FILE_SET+=CURL
 "EOF"

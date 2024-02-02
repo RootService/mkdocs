@@ -2,7 +2,7 @@
 title: 'BaseTools'
 description: 'In diesem HowTo wird step-by-step die Installation einiger BaseTools für ein FreeBSD 64Bit BaseSystem auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-12-22'
+updated: '2024-02-01'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -15,17 +15,17 @@ In diesem HowTo beschreibe ich step-by-step die Installation einiger Tools (Port
 
 Unsere BaseTools werden am Ende folgende Dienste umfassen.
 
-- Sudo 1.9.15p4
+- Sudo 1.9.15p5
 - cURL 8.5.0
 - wget 1.21.4
-- Bash 5.2.21
+- Bash 5.2.26
 - GIT 2.43.0
 - Portmaster 3.29
 - SMARTmontools 7.3
 - Nano 7.2
-- SQLite 3.44.0
+- SQLite 3.45.0
 - GnuPG 2.4.3
-- Subversion 1.14.2
+- Subversion 1.14.3
 
 ## Voraussetzungen
 
@@ -48,7 +48,7 @@ Wir installieren `security/sudo` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/security_sudo
 cat << "EOF" > /var/db/ports/security_sudo/options
-_OPTIONS_READ=sudo-1.9.15p4
+_OPTIONS_READ=sudo-1.9.15p5
 _FILE_COMPLETE_OPTIONS_LIST=AUDIT DISABLE_AUTH DISABLE_ROOT_SUDO DOCS EXAMPLES INSULTS LDAP NLS NOARGS_SHELL OPIE PAM PYTHON SSSD GSSAPI_BASE GSSAPI_HEIMDAL GSSAPI_MIT
 OPTIONS_FILE_SET+=AUDIT
 OPTIONS_FILE_UNSET+=DISABLE_AUTH
@@ -105,7 +105,7 @@ OPTIONS_FILE_SET+=DOCS
 
 mkdir -p /var/db/ports/devel_cmake-core
 cat << "EOF" > /var/db/ports/devel_cmake-core/options
-_OPTIONS_READ=cmake-core-3.27.9
+_OPTIONS_READ=cmake-core-3.28.1
 _FILE_COMPLETE_OPTIONS_LIST=CPACK DOCS
 OPTIONS_FILE_SET+=CPACK
 OPTIONS_FILE_SET+=DOCS
@@ -262,7 +262,7 @@ Wir installieren `devel/git` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/shells_bash
 cat << "EOF" > /var/db/ports/shells_bash/options
-_OPTIONS_READ=bash-5.2.21
+_OPTIONS_READ=bash-5.2.26
 _FILE_COMPLETE_OPTIONS_LIST=DOCS FDESCFS HELP NLS PORTS_READLINE STATIC SYSBASHRC SYSLOG
 OPTIONS_FILE_SET+=DOCS
 OPTIONS_FILE_SET+=FDESCFS
@@ -472,7 +472,7 @@ Wir installieren `databases/sqlite3` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/databases_sqlite3
 cat << "EOF" > /var/db/ports/databases_sqlite3/options
-_OPTIONS_READ=sqlite3-3.44.0
+_OPTIONS_READ=sqlite3-3.45.0
 _FILE_COMPLETE_OPTIONS_LIST=ARMOR DBPAGE DBSTAT DIRECT_READ DQS EXAMPLES EXTENSION FTS3_TOKEN FTS4 FTS5 LIKENOTBLOB MEMMAN METADATA NORMALIZE NULL_TRIM RBU SECURE_DELETE SORT_REF STATIC STMT STRIP TCL THREADS TRUSTED_SCHEMA UNKNOWN_SQL UNLOCK_NOTIFY UPDATE_LIMIT URI URI_AUTHORITY TS0 TS1 TS2 TS3 STAT3 STAT4 LIBEDIT READLINE SESSION OFFSET SOUNDEX GEOPOLY RTREE RTREE_INT ICU UNICODE61
 OPTIONS_FILE_UNSET+=ARMOR
 OPTIONS_FILE_SET+=DBPAGE
@@ -608,7 +608,7 @@ OPTIONS_FILE_UNSET+=GSSAPI_MIT
 
 mkdir -p /var/db/ports/devel_subversion
 cat << "EOF" > /var/db/ports/devel_subversion/options
-_OPTIONS_READ=subversion-1.14.2
+_OPTIONS_READ=subversion-1.14.3
 _FILE_COMPLETE_OPTIONS_LIST=BDB DOCS GPG_AGENT NLS SASL SERF STATIC SVNSERVE_WRAPPER TEST TOOLS
 OPTIONS_FILE_UNSET+=BDB
 OPTIONS_FILE_SET+=DOCS

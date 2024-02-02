@@ -2,7 +2,7 @@
 title: 'OpenDKIM'
 description: 'In diesem HowTo wird step-by-step die Installation von OpenDKIM für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-12-22'
+updated: '2024-02-01'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -187,7 +187,7 @@ Es muss noch ein DNS-Record angelegt werden, sofern er noch nicht existiert, ode
 ``` bash
 /usr/local/bin/openssl pkey -pubout -outform pem -in /data/db/opendkim/keys/example.com/20230520.private | \
     awk '\!/^-----/ {printf $0}' | awk 'BEGIN{n=1}\
-        {printf "\n20230520._domainkey.example.com.    IN  TXT    ( \"v=DKIM1; h=sha256; k=rsa; s=email; p=\"";\
+        {printf "\n20230520._domainkey.example.com.    IN  TXT    ( \"v=DKIM1; h=shs256; k=rsa; s=*; t=s; p=\"";\
             while(substr($0,n,98)){printf "\n        \"" substr($0,n,98) "\"";n+=98};printf " )\n"}'
 ```
 
@@ -199,7 +199,7 @@ Es muss noch ein DNS-Record angelegt werden, sofern er noch nicht existiert, ode
 #       If you use a DNS-Provider to publish your records, then use their free-text fields
 #       to insert the record into their form
 #
-20230520._domainkey.example.com.    IN  TXT    ( "v=DKIM1; h=sha256; k=rsa; s=email; p="
+20230520._domainkey.example.com.    IN  TXT    ( "v=DKIM1; h=shs256; k=rsa; s=*; t=s; p="
         "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1Up5Z0TkPpE0mNAc9lf7Uug7P/n28Kk6fXC1V8m93dE+NPgsTKp4k+"
         "t2S3EujANO7J8WyBppE+aTbyQjU5TtaIPC8TS3sBg/6JX/QAw73+Hv03lieutmZ0GO4uuvj+QbOuDqNwHR/DZih3BrV7Mtit4F"
         "bILcz+V1QbJ7YssRQRaZ/LTGZ0Q6QLGr6BG9h3Ro4g1bTirFIuvbaVUuzDK/KxHKRAuAhIB7mmrpPRDQlFjgva9vQYsQUcQtVh"

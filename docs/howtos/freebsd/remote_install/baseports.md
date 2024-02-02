@@ -2,7 +2,7 @@
 title: 'BasePorts'
 description: 'In diesem HowTo wird step-by-step die Installation einiger BasePorts für ein FreeBSD 64Bit BaseSystem auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-12-22'
+updated: '2024-02-01'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -16,7 +16,7 @@ In diesem HowTo beschreibe ich step-by-step die Installation einiger Ports (Pack
 Unsere BasePorts werden am Ende folgende Dienste umfassen.
 
 - Perl 5.36.3
-- OpenSSL 3.0.12
+- OpenSSL 3.0.13
 - LUA 5.4.6
 - TCL 8.6.13
 - Python 3.9.18
@@ -123,7 +123,7 @@ DEFAULT_VERSIONS+=ssl=openssl
 
 mkdir -p /var/db/ports/security_openssl
 cat << "EOF" > /var/db/ports/security_openssl/options
-_OPTIONS_READ=openssl-3.0.12
+_OPTIONS_READ=openssl-3.0.13
 _FILE_COMPLETE_OPTIONS_LIST=ASYNC CT KTLS MAN3 RFC3779 SHARED ZLIB ARIA DES GOST IDEA SM4 RC2 RC4 RC5 WEAK-SSL-CIPHERS MD2 MD4 MDC2 RMD160 SM2 SM3 FIPS LEGACY ASM SSE2 THREADS EC NEXTPROTONEG SCTP SSL3 TLS1 TLS1_1 TLS1_2
 OPTIONS_FILE_SET+=ASYNC
 OPTIONS_FILE_SET+=CT
@@ -186,7 +186,7 @@ Wir installieren `devel/pcre2` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/devel_pkgconf
 cat << "EOF" > /var/db/ports/devel_pkgconf/options
-_OPTIONS_READ=pkgconf-1.8.1
+_OPTIONS_READ=pkgconf-2.0.3
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
 "EOF"
@@ -391,7 +391,7 @@ Wir installieren `devel/py-pip` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/www_py-beautifulsoup
 cat << "EOF" > /var/db/ports/www_py-beautifulsoup/options
-_OPTIONS_READ=py39-beautifulsoup-4.12.2
+_OPTIONS_READ=py39-beautifulsoup-4.12.3
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
 "EOF"
@@ -421,7 +421,7 @@ OPTIONS_FILE_SET+=SSL
 
 mkdir -p /var/db/ports/devel_py-Jinja2
 cat << "EOF" > /var/db/ports/devel_py-Jinja2/options
-_OPTIONS_READ=py39-Jinja2-3.1.2
+_OPTIONS_READ=py39-Jinja2-3.1.3
 _FILE_COMPLETE_OPTIONS_LIST=BABEL EXAMPLES
 OPTIONS_FILE_SET+=BABEL
 OPTIONS_FILE_SET+=EXAMPLES
@@ -497,7 +497,7 @@ OPTIONS_FILE_SET+=LIBYAML
 
 mkdir -p /var/db/ports/devel_py-pip
 cat << "EOF" > /var/db/ports/devel_py-pip/options
-_OPTIONS_READ=py39-pip-23.3
+_OPTIONS_READ=py39-pip-23.3.2
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_SET+=DOCS
 "EOF"

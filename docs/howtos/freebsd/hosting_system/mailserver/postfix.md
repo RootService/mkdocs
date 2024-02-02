@@ -2,7 +2,7 @@
 title: 'Postfix'
 description: 'In diesem HowTo wird step-by-step die Installation des Postfix Mailservers für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-12-22'
+updated: '2024-02-01'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -13,7 +13,7 @@ author_url: https://github.com/JoeUser78
 
 Unser Hosting System wird um folgende Dienste erweitert.
 
-- Postfix 3.8.4 (Dovecot-SASL, postscreen)
+- Postfix 3.8.5 (Dovecot-SASL, postscreen)
 
 ## Voraussetzungen
 
@@ -26,7 +26,7 @@ Wir installieren `mail/postfix` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/mail_postfix
 cat << "EOF" > /var/db/ports/mail_postfix/options
-_OPTIONS_READ=postfix-3.8.4
+_OPTIONS_READ=postfix-3.8.5
 _FILE_COMPLETE_OPTIONS_LIST=BDB BLACKLISTD CDB DOCS EAI INST_BASE LDAP LMDB MYSQL NIS PCRE2 PGSQL SASL SQLITE TEST TLS SASLKMIT SASLKRB5
 OPTIONS_FILE_UNSET+=BDB
 OPTIONS_FILE_UNSET+=BLACKLISTD
@@ -163,11 +163,12 @@ smtpd_data_restrictions =
   reject_unauth_pipelining
   reject_multi_recipient_bounce
   permit
+smtpd_discard_ehlo_keywords = chunking, silent-discard
 smtpd_end_of_data_restrictions =
   permit
 smtpd_etrn_restrictions =
   reject
-smtpd_forbid_bare_newline = yes
+smtpd_forbid_bare_newline = normalize
 smtpd_forbid_bare_newline_exclusions = $mynetworks
 smtpd_forbid_unauth_pipelining = yes
 smtpd_helo_required = yes
@@ -511,7 +512,7 @@ make all install clean-depends clean
 Es muss noch ein DNS-Record angelegt werden, sofern er noch nicht existieren, oder entsprechend geändert werden, sofern er bereits existieren.
 
 ``` dns-zone
-example.com.            IN  TXT     ( "v=spf1 a mx -all" )
+example.com.            IN  TXT     ( "v=spf1 a mx ~all" )
 ```
 
 ## Abschluss

@@ -2,7 +2,7 @@
 title: 'BaseSystem'
 description: 'In diesem HowTo wird step-by-step die Remote Installation des FreeBSD 64Bit BaseSystem auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2023-12-22'
+updated: '2024-02-01'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -31,9 +31,9 @@ Um unser [mfsBSD Image](/howtos/freebsd/mfsbsd_image/) installieren zu können, 
 ``` powershell
 cd "${Env:USERPROFILE}\VirtualBox VMs\FreeBSD"
 
-curl -o "systemrescue-10.00-amd64.iso" -L "https://sourceforge.net/projects/systemrescuecd/files/sysresccd-x86/10.00/systemrescue-10.00-amd64.iso/download"
+curl -o "systemrescue-11.00-amd64.iso" -L "https://fastly-cdn.system-rescue.org/releases/11.00/systemrescue-11.00-amd64.iso"
 
-& "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" storageattach "FreeBSD" --storagectl "AHCI Controller" --port 0 --device 0 --type dvddrive --medium "systemrescue-10.00-amd64.iso"
+& "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" storageattach "FreeBSD" --storagectl "AHCI Controller" --port 0 --device 0 --type dvddrive --medium "systemrescue-11.00-amd64.iso"
 ```
 
 Wir können das RescueSystem jetzt booten.
