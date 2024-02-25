@@ -114,6 +114,15 @@ Falls wir auf Seiten verweisen sollten, deren Inhalt Anlass zur Beanstandung gib
 
 Wir behalten uns das Recht vor, ohne vorherige Ankündigung die bereitgestellten Informationen zu ändern, zu ergänzen oder zu entfernen.
 
+## Weiteres
+
+**Alle Rechte vorbehalten.**
+Jegliche Vervielfältigung oder Weiterverbreitung in jedem Medium als Ganzes oder in Teilen bedarf der schriftlichen Zustimmung des oben genannten Verantwortlichen. Für den Erwerb einer entsprechenden Nutzungslizenz wenden Sie sich bitte an «joeuser[at]rootservice.org».
+
+**Text- und Data-Mining:** Die oben genannten Verantwortlichen behälten sich eine Nutzung ihrer Inhalte für kommerzielles Text- und Data-Mining im Sinne von § 44b UrhG ausdrücklich vor. Für den Erwerb einer entsprechenden Nutzungslizenz wenden Sie sich bitte an «joeuser[at]rootservice.org».
+
+**Haftungshinweis:** Trotz sorgfältiger inhaltlicher Kontrolle übernehmen wir keine Haftung für die Inhalte externer Links. Für den Inhalt der verlinkten Seiten sind ausschließlich deren Betreiber verantwortlich.
+
 ## Aktueller Stand
 
 Die rasante Entwicklung des Internet macht von Zeit zu Zeit Anpassungen in unseren Nutzungsbedingungen erforderlich. Sie werden an dieser Stelle über die Neuerungen informiert.
