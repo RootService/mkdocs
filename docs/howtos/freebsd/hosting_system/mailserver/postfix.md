@@ -2,7 +2,7 @@
 title: 'Postfix'
 description: 'In diesem HowTo wird step-by-step die Installation des Postfix Mailservers für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2024-02-01'
+updated: '2024-05-24'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -13,7 +13,7 @@ author_url: https://github.com/JoeUser78
 
 Unser Hosting System wird um folgende Dienste erweitert.
 
-- Postfix 3.8.5 (Dovecot-SASL, postscreen)
+- Postfix 3.9.0 (Dovecot-SASL, postscreen)
 
 ## Voraussetzungen
 
@@ -25,17 +25,18 @@ Wir installieren `mail/postfix` und dessen Abhängigkeiten.
 
 ``` bash
 mkdir -p /var/db/ports/mail_postfix
-cat << "EOF" > /var/db/ports/mail_postfix/options
-_OPTIONS_READ=postfix-3.8.5
-_FILE_COMPLETE_OPTIONS_LIST=BDB BLACKLISTD CDB DOCS EAI INST_BASE LDAP LMDB MYSQL NIS PCRE2 PGSQL SASL SQLITE TEST TLS SASLKMIT SASLKRB5
+cat <<'EOF' > /var/db/ports/mail_postfix/options
+_OPTIONS_READ=postfix-3.9.0
+_FILE_COMPLETE_OPTIONS_LIST=BDB BLACKLISTD CDB DOCS EAI INST_BASE LDAP LMDB MONGO MYSQL NIS PCRE2 PGSQL SASL SQLITE TEST TLS SASLKMIT SASLKRB5
 OPTIONS_FILE_UNSET+=BDB
 OPTIONS_FILE_UNSET+=BLACKLISTD
 OPTIONS_FILE_SET+=CDB
-OPTIONS_FILE_SET+=DOCS
+OPTIONS_FILE_UNSET+=DOCS
 OPTIONS_FILE_SET+=EAI
 OPTIONS_FILE_UNSET+=INST_BASE
 OPTIONS_FILE_UNSET+=LDAP
 OPTIONS_FILE_SET+=LMDB
+OPTIONS_FILE_UNSET+=MONGO
 OPTIONS_FILE_UNSET+=MYSQL
 OPTIONS_FILE_UNSET+=NIS
 OPTIONS_FILE_SET+=PCRE2
@@ -46,7 +47,7 @@ OPTIONS_FILE_UNSET+=TEST
 OPTIONS_FILE_SET+=TLS
 OPTIONS_FILE_UNSET+=SASLKMIT
 OPTIONS_FILE_UNSET+=SASLKRB5
-"EOF"
+EOF
 
 
 cd /usr/ports/mail/postfix
@@ -65,7 +66,7 @@ install -m 0644 /usr/local/share/postfix/mailer.conf.postfix /usr/local/etc/mail
 `main.cf` einrichten.
 
 ``` bash
-cat << "EOF" > /usr/local/etc/postfix/main.cf
+cat <<'EOF' > /usr/local/etc/postfix/main.cf
 address_verify_map = lmdb:${data_directory}/verify_cache
 alias_database = lmdb:/etc/aliases
 alias_maps = lmdb:/etc/aliases
@@ -229,13 +230,13 @@ virtual_mailbox_maps = lmdb:${config_directory}/virtual_mailbox_maps
 virtual_minimum_uid = 5000
 virtual_transport = lmtp:unix:private/dovecot-lmtp
 virtual_uid_maps = static:5000
-"EOF"
+EOF
 ```
 
 `master.cf` einrichten.
 
 ``` bash
-cat << "EOF" > /usr/local/etc/postfix/master.cf
+cat <<'EOF' > /usr/local/etc/postfix/master.cf
 #
 # Postfix master process configuration file.  For details on the format
 # of the file, see the master(5) manual page (command: "man 5 master" or
@@ -388,31 +389,31 @@ postlog   unix-dgram n  -       n       -       1       postlogd
 dovecot   unix  -       n       n       -       -       pipe
   flags=DRXhu user=vmail:vmail argv=/usr/local/libexec/dovecot/dovecot-lda
   -f ${sender} -a ${recipient} -d ${user}@${nexthop}
-"EOF"
+EOF
 ```
 
 `/usr/local/etc/postfix/virtual_*` einrichten.
 
 ``` bash
-cat << "EOF" > /usr/local/etc/postfix/virtual_alias_domains
-"EOF"
+cat <<'EOF' > /usr/local/etc/postfix/virtual_alias_domains
+EOF
 
-cat << "EOF" > /usr/local/etc/postfix/virtual_alias_maps
+cat <<'EOF' > /usr/local/etc/postfix/virtual_alias_maps
 root@example.com          admin@example.com
 postmaster@example.com    admin@example.com
 hostmaster@example.com    admin@example.com
 abuse@example.com         admin@example.com
 security@example.com      admin@example.com
 webmaster@example.com     admin@example.com
-"EOF"
+EOF
 
-cat << "EOF" > /usr/local/etc/postfix/virtual_mailbox_domains
+cat <<'EOF' > /usr/local/etc/postfix/virtual_mailbox_domains
 example.com               OK
-"EOF"
+EOF
 
-cat << "EOF" > /usr/local/etc/postfix/virtual_mailbox_maps
+cat <<'EOF' > /usr/local/etc/postfix/virtual_mailbox_maps
 admin@example.com         example.com/admin/
-"EOF"
+EOF
 
 postmap lmdb:/usr/local/etc/postfix/virtual_alias_domains
 postmap lmdb:/usr/local/etc/postfix/virtual_alias_maps
@@ -423,8 +424,8 @@ postmap lmdb:/usr/local/etc/postfix/virtual_mailbox_maps
 Transport map einrichten.
 
 ``` bash
-cat << "EOF" >> /usr/local/etc/postfix/transport
-"EOF"
+cat <<'EOF' >> /usr/local/etc/postfix/transport
+EOF
 
 postmap lmdb:/usr/local/etc/postfix/transport
 ```
@@ -432,7 +433,7 @@ postmap lmdb:/usr/local/etc/postfix/transport
 Restriktionen einrichten.
 
 ``` bash
-cat << "EOF" > /usr/local/etc/postfix/recipient_checks.pcre
+cat <<'EOF' > /usr/local/etc/postfix/recipient_checks.pcre
 /^\@/                 550 Invalid address format.
 /[!%\@].*\@/          550 This server disallows weird address syntax.
 /^postmaster\@/       OK
@@ -440,12 +441,12 @@ cat << "EOF" > /usr/local/etc/postfix/recipient_checks.pcre
 /^security\@/         OK
 /^abuse\@/            OK
 /^admin\@/            OK
-"EOF"
+EOF
 
-cat << "EOF" > /usr/local/etc/postfix/postscreen_whitelist.cidr
-"EOF"
+cat <<'EOF' > /usr/local/etc/postfix/postscreen_whitelist.cidr
+EOF
 
-cat << "EOF" > /usr/local/etc/postfix/mx_access
+cat <<'EOF' > /usr/local/etc/postfix/mx_access
 0.0.0.0/8                REJECT MX in RFC 1122 Broadcast Network
 10.0.0.0/8               REJECT MX in RFC 1918 Private Network
 100.64.0.0/10            REJECT MX in RFC 6598 Shared Address Space
@@ -473,7 +474,7 @@ cat << "EOF" > /usr/local/etc/postfix/mx_access
 fc00::/7                 REJECT MX in RFC 4193 Unique-Local Network
 fe80::/10                REJECT MX in RFC 4291 Linked-Scoped Unicast Network
 ff00::/8                 REJECT MX in RFC 4291 Multicast Network
-"EOF"
+EOF
 
 postmap lmdb:/usr/local/etc/postfix/mx_access
 ```
@@ -495,14 +496,14 @@ Wir installieren `mail/libmilter` und dessen Abhängigkeiten.
 
 ``` bash
 mkdir -p /var/db/ports/mail_libmilter
-cat << "EOF" > /var/db/ports/mail_libmilter/options
-_OPTIONS_READ=libmilter-8.17.2
+cat <<'EOF' > /var/db/ports/mail_libmilter/options
+_OPTIONS_READ=libmilter-8.18.1
 _FILE_COMPLETE_OPTIONS_LIST=IPV6 MILTER_SHARED MILTER_POOL DOCS
 OPTIONS_FILE_SET+=IPV6
 OPTIONS_FILE_SET+=MILTER_SHARED
 OPTIONS_FILE_SET+=MILTER_POOL
-OPTIONS_FILE_SET+=DOCS
-"EOF"
+OPTIONS_FILE_UNSET+=DOCS
+EOF
 
 
 cd /usr/ports/mail/libmilter

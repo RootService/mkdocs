@@ -2,7 +2,7 @@
 title: 'Unbound'
 description: 'In diesem HowTo wird step-by-step die Installation von Unbound für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2024-02-01'
+updated: '2024-05-24'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -13,7 +13,7 @@ author_url: https://github.com/JoeUser78
 
 Unser Hosting System wird folgende Dienste umfassen.
 
-- Unbound 1.19.0 (DNScrypt, DNS over TLS)
+- Unbound 1.20.0 (DNScrypt, DNS over TLS)
 
 ## Voraussetzungen
 
@@ -25,28 +25,28 @@ Wir installieren `dns/unbound` und dessen Abhängigkeiten.
 
 ``` bash
 mkdir -p /var/db/ports/security_libsodium
-cat << "EOF" > /var/db/ports/security_libsodium/options
-_OPTIONS_READ=libsodium-1.0.18
+cat <<'EOF' > /var/db/ports/security_libsodium/options
+_OPTIONS_READ=libsodium-1.0.19
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
-OPTIONS_FILE_SET+=DOCS
-"EOF"
+OPTIONS_FILE_UNSET+=DOCS
+EOF
 
 mkdir -p /var/db/ports/devel_libevent
-cat << "EOF" > /var/db/ports/devel_libevent/options
+cat <<'EOF' > /var/db/ports/devel_libevent/options
 _OPTIONS_READ=libevent-2.1.12
 _FILE_COMPLETE_OPTIONS_LIST=OPENSSL THREADS
 OPTIONS_FILE_SET+=OPENSSL
 OPTIONS_FILE_SET+=THREADS
-"EOF"
+EOF
 
 mkdir -p /var/db/ports/dns_unbound
-cat << "EOF" > /var/db/ports/dns_unbound/options
-_OPTIONS_READ=unbound-1.19.0
+cat <<'EOF' > /var/db/ports/dns_unbound/options
+_OPTIONS_READ=unbound-1.20.0
 _FILE_COMPLETE_OPTIONS_LIST=DEP-RSA1024 DNSCRYPT DNSTAP DOCS DOH DYNLIB ECDSA EVAPI FILTER_AAAA GOST HIREDIS LIBEVENT MUNIN_PLUGIN PYTHON SUBNET TFOCL TFOSE THREADS
 OPTIONS_FILE_UNSET+=DEP-RSA1024
 OPTIONS_FILE_SET+=DNSCRYPT
 OPTIONS_FILE_UNSET+=DNSTAP
-OPTIONS_FILE_SET+=DOCS
+OPTIONS_FILE_UNSET+=DOCS
 OPTIONS_FILE_SET+=DOH
 OPTIONS_FILE_SET+=DYNLIB
 OPTIONS_FILE_SET+=ECDSA
@@ -61,13 +61,14 @@ OPTIONS_FILE_SET+=SUBNET
 OPTIONS_FILE_SET+=TFOCL
 OPTIONS_FILE_SET+=TFOSE
 OPTIONS_FILE_SET+=THREADS
-"EOF"
+EOF
 
 
 cd /usr/ports/dns/unbound
 make all install clean-depends clean
 
 
+sysrc local_unbound_enable=NO
 sysrc unbound_enable=YES
 ```
 
@@ -76,7 +77,7 @@ sysrc unbound_enable=YES
 Wir konfigurieren Unbound:
 
 ``` bash
-cat << "EOF" > /usr/local/etc/unbound/unbound.conf
+cat <<'EOF' > /usr/local/etc/unbound/unbound.conf
 server:
   verbosity: 1
   num-threads: 4
@@ -182,7 +183,7 @@ remote-control:
   server-cert-file: "/usr/local/etc/unbound/unbound_server.pem"
   control-key-file: "/usr/local/etc/unbound/unbound_control.key"
   control-cert-file: "/usr/local/etc/unbound/unbound_control.pem"
-"EOF"
+EOF
 
 
 curl -o "/usr/local/etc/unbound/root.hints" -L "https://www.internic.net/domain/named.root"
@@ -195,14 +196,14 @@ sudo -u unbound unbound-anchor -a "/usr/local/etc/unbound/root.key"
 sudo -u unbound unbound-control-setup
 
 
-cat << "EOF" > /etc/resolv.conf
+cat <<'EOF' > /etc/resolv.conf
 nameserver 127.0.0.1
 options edns0 ndots:1 timeout:0.3 attempts:1 rotate
-"EOF"
+EOF
 
-cat << "EOF" > /etc/resolvconf.conf
+cat <<'EOF' > /etc/resolvconf.conf
 resolvconf=NO
-"EOF"
+EOF
 
 resolvconf -u
 ```

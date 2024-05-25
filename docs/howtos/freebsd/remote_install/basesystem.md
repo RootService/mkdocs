@@ -2,7 +2,7 @@
 title: 'BaseSystem'
 description: 'In diesem HowTo wird step-by-step die Remote Installation des FreeBSD 64Bit BaseSystem auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2024-02-01'
+updated: '2024-05-24'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -15,10 +15,10 @@ In diesem HowTo beschreibe ich step-by-step die Remote Installation des [FreeBSD
 
 Unser BaseSystem wird folgende Dienste umfassen.
 
-- FreeBSD 13.2-RELEASE 64Bit
-- OpenSSL 1.1.1t
-- OpenSSH 9.3p1
-- Unbound 1.17.1
+- FreeBSD 14.1-RELEASE 64Bit
+- OpenSSL 3.0.13
+- OpenSSH 9.7p1
+- Unbound 1.20.0
 
 ## Voraussetzungen
 
@@ -31,9 +31,9 @@ Um unser [mfsBSD Image](/howtos/freebsd/mfsbsd_image/) installieren zu können, 
 ``` powershell
 cd "${Env:USERPROFILE}\VirtualBox VMs\FreeBSD"
 
-curl -o "systemrescue-11.00-amd64.iso" -L "https://fastly-cdn.system-rescue.org/releases/11.00/systemrescue-11.00-amd64.iso"
+curl -o "systemrescue-11.01-amd64.iso" -L "https://fastly-cdn.system-rescue.org/releases/11.00/systemrescue-11.01-amd64.iso"
 
-& "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" storageattach "FreeBSD" --storagectl "AHCI Controller" --port 0 --device 0 --type dvddrive --medium "systemrescue-11.00-amd64.iso"
+& "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" storageattach "FreeBSD" --storagectl "AHCI Controller" --port 0 --device 0 --type dvddrive --medium "systemrescue-11.01-amd64.iso"
 ```
 
 Wir können das RescueSystem jetzt booten.
@@ -68,7 +68,7 @@ Um unsere umfangreichen Vorbereitungen nun abzuschliessen, müssen wir nur noch 
 Als Erstes kopieren wir mittels PuTTYs SCP-Client (`pscp`) das mfsBSD Image in das RescueSystem.
 
 ``` powershell
-pscp -P 2222 "${Env:USERPROFILE}\VirtualBox VMs\mfsBSD\mfsbsd-13.2-RELEASE-amd64.img" root@127.0.0.1:/tmp/mfsbsd-13.2-RELEASE-amd64.img
+pscp -P 2222 "${Env:USERPROFILE}\VirtualBox VMs\mfsBSD\mfsbsd-14.1-RELEASE-amd64.img" root@127.0.0.1:/tmp/mfsbsd-14.1-RELEASE-amd64.img
 ```
 
 Jetzt können wir das mfsBSD Image mittels `dd` auf der ersten Festplatte (`/dev/nvme0n1`) unserer virtuellen Maschine installieren und uns anschliessend wieder aus dem RescueSystem ausloggen.
@@ -76,7 +76,7 @@ Jetzt können wir das mfsBSD Image mittels `dd` auf der ersten Festplatte (`/dev
 ``` bash
 dd if=/dev/zero of=/dev/nvme0n1 count=512 bs=1M
 
-dd if=/tmp/mfsbsd-13.2-RELEASE-amd64.img of=/dev/nvme0n1 bs=1M
+dd if=/tmp/mfsbsd-14.1-RELEASE-amd64.img of=/dev/nvme0n1 bs=1M
 
 exit
 ```
@@ -181,8 +181,8 @@ mkdir -p /mnt/data
 Auf die gemounteten Partitionen entpacken wir ein FreeBSD Basesystem mit dem wir problemlos weiterarbeiten können. Je nach Auslastung des FreeBSD FTP-Servers kann dies ein wenig dauern, bitte nicht ungeduldig werden.
 
 ``` bash
-fetch -4 -q -o - --no-verify-peer "https://download.freebsd.org/releases/amd64/13.2-RELEASE/base.txz"   | tar Jxpvf - -C /mnt/
-fetch -4 -q -o - --no-verify-peer "https://download.freebsd.org/releases/amd64/13.2-RELEASE/kernel.txz" | tar Jxpvf - -C /mnt/
+fetch -4 -q -o - --no-verify-peer "https://download.freebsd.org/releases/amd64/14.1-RELEASE/base.txz"   | tar Jxpvf - -C /mnt/
+fetch -4 -q -o - --no-verify-peer "https://download.freebsd.org/releases/amd64/14.1-RELEASE/kernel.txz" | tar Jxpvf - -C /mnt/
 
 cp -a /mnt/boot/kernel /mnt/boot/GENERIC
 ```
@@ -243,49 +243,94 @@ chroot /mnt /usr/bin/env -i HOME=/root TERM=$TERM /bin/tcsh
 
 ## Zeitzone einrichten
 
-Zunächst setzen wir die Systemzeit (CMOS clock) mittels `tzsetup` auf die "Region" Europe, das "Country" auf Germany und "Most of Germany", die vorgegebene Zeitzone stimmt im Regelfall bereits und kann bestätigt werden.
+Zunächst setzen wir die Systemzeit (CMOS clock) mittels `tzsetup` auf "UTC" (Universal Time Code).
 
 ``` bash
-/usr/sbin/tzsetup Europe/Berlin
+/usr/sbin/tzsetup UTC
 ```
 
 Cronjob zur regelmässigen Syncronisation mit einem Zeitserver einrichten.
 
 ``` bash
-cat >> /etc/crontab << "EOF"
+cat <<'EOF' >> /etc/crontab
 59      */4     *       *       *       root    /usr/sbin/sntp -S ptbtime3.ptb.de >/dev/null 2>&1
-"EOF"
+EOF
 ```
 
 ## Shell einrichten
 
-Unter FreeBSD ist die Tenex C Shell (TCSH) die Standard-Shell. Für Bash-gewohnte Linux-User ist diese Shell etwas gewöhnungsbedürftig, und natürlich kann man sie später auch gegen eine andere Shell austauschen (im Basis-System ist neben der TCSH auch eine ASH enthalten). Skripte würde ich persönlich für die TCSH eher nicht schreiben, aber für die tägliche Administrationsarbeit ist die TCSH ein sehr brauchbares Werkzeug – wenn man sie erst mal etwas umkonfiguriert hat. Dies tun wir jetzt.
+This version of sh was rewritten in 1989 under the BSD license after the Bourne shell from AT&T System V Release 4 UNIX.
 
 ``` bash
 # Colorize console output
-cat << "EOF" >> /etc/csh.cshrc
+cat <<'EOF' >> /etc/csh.cshrc
 setenv LSCOLORS "Dxfxcxdxbxegedabagacad"
+EOF
+
+sed -e '/export PAGER/ a\
+CLICOLORS="YES";                             export CLICOLOR\
+LSCOLORS="Dxfxcxdxbxegedabagacad";           export LSCOLORS\
+COLORFGBG="15;0";                            export COLORFGBG\
+COLORTERM=truecolor;                         export COLORTERM\
+TERM=${TERM:-xterm-256color};                export TERM\
+MANCOLOR="1";                                export MANCOLOR\
+MANWIDTH=tty;                                export MANWIDTH\
+' -i '' /usr/share/skel/dot.profile
+
+sed -e '/export PAGER/ a\
+CLICOLORS="YES";                             export CLICOLOR\
+LSCOLORS="Dxfxcxdxbxegedabagacad";           export LSCOLORS\
+COLORFGBG="15;0";                            export COLORFGBG\
+COLORTERM=truecolor;                         export COLORTERM\
+TERM=${TERM:-xterm-256color};                export TERM\
+MANCOLOR="1";                                export MANCOLOR\
+MANWIDTH=tty;                                export MANWIDTH\
+' -i '' /root/.profile
+
+
+# Some useful aliases
+cat <<'EOF' >> /etc/csh.cshrc
 alias ls        ls -FGIPTW
 alias l         ls -FGIPTWahl
-"EOF"
+EOF
+
+sed -e '/some useful aliases/ a\
+alias ls="ls -FGIPTW"\
+alias l="ls -FGIPTWahl"\
+' -i '' /usr/share/skel/dot.shrc
+
+sed -e '/some useful aliases/ a\
+alias ls="ls -FGIPTW"\
+alias l="ls -FGIPTWahl"\
+' -i '' /root/.shrc
+
 
 # Use ee instead of vi as standard editor
-sed -e 's/\(EDITOR[[:space:]]*\)vi[[:space:]]*$/\1ee/' -i '' /root/.cshrc
-sed -e 's/\(EDITOR=\)vi;\([[:space:]].*\)$/\1ee;\2/' -i '' /root/.profile
 sed -e 's/\(EDITOR[[:space:]]*\)vi[[:space:]]*$/\1ee/' -i '' /usr/share/skel/dot.cshrc
 sed -e 's/\(set EDITOR=\)vi[[:space:]]*$/\1ee/' -i '' /usr/share/skel/dot.mailrc
 sed -e 's/\(set VISUAL=\)vi[[:space:]]*$/\1ee/' -i '' /usr/share/skel/dot.mailrc
 sed -e 's/\(EDITOR=\)vi;\([[:space:]].*\)$/\1ee;\2/' -i '' /usr/share/skel/dot.profile
 
+sed -e 's/\(EDITOR[[:space:]]*\)vi[[:space:]]*$/\1ee/' -i '' /root/.cshrc
+sed -e 's/\(EDITOR=\)vi;\([[:space:]].*\)$/\1ee;\2/' -i '' /root/.profile
+
+
 # Use meaningfuller prompt
 sed -e 's/\(set prompt =\).*$/\1 "[%B%n%b@%B%m%b:%B%~%b] %# "/' -i '' /root/.cshrc
-sed -e 's/\(PS1=\).*$/\1"[\\u@\\h:\\w] \\\\$ "/' -i '' /root/.shrc
-sed -e 's/\(set prompt =\).*$/\1 "[%B%n%b@%B%m%b:%B%~%b] %# "/' -i '' /usr/share/skel/dot.cshrc
-sed -e 's/\(PS1=\).*$/\1"[\\u@\\h:\\w] \\\\$ "/' -i '' /usr/share/skel/dot.shrc
+sed -e 's/\(PS1=\).*$/\1"\\[\\e[1;36m\\][\\[\\e[1;33m\\]\\u@\\h:\\[\\e[1;36m\\]\\w] \\\\$ \\[\\e[0m\\]"/' -i '' /root/.shrc
 
-# Set root shell to /bin/tcsh
-pw useradd -D -g '' -M 0700 -s tcsh -w no
-pw usermod -n root -s tcsh -w none
+sed -e 's/\(set prompt =\).*$/\1 "[%B%n%b@%B%m%b:%B%~%b] %# "/' -i '' /usr/share/skel/dot.cshrc
+sed -e 's/\(PS1=\).*$/\1"\\[\\e[1;36m\\][\\[\\e[1;33m\\]\\u@\\h:\\[\\e[1;36m\\]\\w] \\\\$ \\[\\e[0m\\]"/' -i '' /usr/share/skel/dot.shrc
+
+
+# Set missing ENV
+sed -e 's#\(setenv=BLOCKSIZE=K\)#\1,OPENSSL_CONF=/usr/local/openssl/openssl.cnf,CRYPTOGRAPHY_OPENSSL_NO_LEGACY=1#' -i '' /etc/login.conf
+cap_mkdb /etc/login.conf
+
+
+# Set root shell to /bin/sh
+pw useradd -D -g '' -M 0700 -s sh -w no
+pw usermod -n root -s sh -w none
 ```
 
 ## Systemsicherheit verstärken
@@ -303,7 +348,6 @@ sed -e 's|^#\(Port\).*$|\1 22|' \
     -e 's|^#\(PasswordAuthentication\).*$|\1 no|' \
     -e 's|^#\(PermitEmptyPasswords\).*$|\1 no|' \
     -e 's|^#\(KbdInteractiveAuthentication\).*$|\1 no|' \
-    -e 's|^#\(ChallengeResponseAuthentication\).*$|\1 no|' \
     -e 's|^#\(UsePAM\).*$|\1 no|' \
     -e 's|^#\(AllowAgentForwarding\).*$|\1 no|' \
     -e 's|^#\(AllowTcpForwarding\).*$|\1 no|' \
@@ -321,7 +365,7 @@ sed -e 's|^#\(Port\).*$|\1 22|' \
     -e 's|^\(Subsystem.*\)$|#\1|' \
     -i '' /etc/ssh/sshd_config
 
-cat << "EOF" >> /etc/ssh/sshd_config
+cat <<'EOF' >> /etc/ssh/sshd_config
 
 Subsystem sftp internal-sftp -u 0027
 
@@ -344,17 +388,17 @@ Match Group sftponly
     PasswordAuthentication yes
     ForceCommand internal-sftp -d %u
 
-"EOF"
+EOF
 
 # Ciphers: ssh -Q cipher
 # MACs: ssh -Q mac
 # KexAlgorithms: ssh -Q kex
 # PubkeyAcceptedKeyTypes: ssh -Q key
 
-sed -e '/^# Ciphers and keying/ a\\
-Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com\\
-Macs hmac-sha2-512,hmac-sha2-512-etm@openssh.com,hmac-sha2-256,hmac-sha2-256-etm@openssh.com\\
-KexAlgorithms sntrup761x25519-sha512@openssh.com,curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256\\
+sed -e '/^# Ciphers and keying/ a\
+Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com\
+Macs hmac-sha2-512,hmac-sha2-512-etm@openssh.com,hmac-sha2-256,hmac-sha2-256-etm@openssh.com\
+KexAlgorithms sntrup761x25519-sha512@openssh.com,curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256\
 ' -i '' /etc/ssh/sshd_config
 
 ssh-keygen -q -t rsa -b 4096 -f "/etc/ssh/ssh_host_rsa_key" -N ""
@@ -380,7 +424,7 @@ cat /root/.ssh/id_rsa.pub >> /root/.ssh/authorized_keys
 In der `sysctl.conf` können die meisten Kernel-Parameter verändert werden. Wir wollen dies nutzen, um unser System etwas robuster und sicherer zu machen.
 
 ``` bash
-cat << "EOF" >> /etc/sysctl.conf
+cat <<'EOF' >> /etc/sysctl.conf
 kern.ipc.maxsockbuf=16777216
 kern.ipc.shm_use_phys=1
 kern.ipc.soacceptqueue=1024
@@ -393,12 +437,20 @@ kern.randompid=1369
 kern.sched.slice=1
 kern.threads.max_threads_per_proc=4096
 net.inet.icmp.drop_redirect=1
+net.inet.icmp.icmplim=1
+net.inet.icmp.icmplim_output=0
 net.inet.ip.check_interface=1
-net.inet.ip.forwarding=0
+net.inet.ip.forwarding=1
+net.inet.ip.intr_queue_maxlen=2048
+net.inet.ip.maxfragpackets=0
+net.inet.ip.maxfragsperpacket=0
+net.inet.ip.process_options=0
 net.inet.ip.random_id=1
 net.inet.ip.redirect=0
 net.inet.ip.stealth=1
 net.inet.ip.ttl=128
+net.inet.raw.maxdgram=16384
+net.inet.raw.recvspace=16384
 net.inet.sctp.blackhole=2
 net.inet.tcp.abc_l_var=44
 net.inet.tcp.blackhole=2
@@ -406,26 +458,49 @@ net.inet.tcp.cc.abe=1
 net.inet.tcp.cc.algorithm=htcp
 net.inet.tcp.cc.htcp.adaptive_backoff=1
 net.inet.tcp.cc.htcp.rtt_scaling=1
+net.inet.tcp.delacktime=20
+#net.inet.tcp.delayed_ack=0
 net.inet.tcp.drop_synfin=1
 net.inet.tcp.ecn.enable=1
 net.inet.tcp.fast_finwait2_recycle=1
+net.inet.tcp.fastopen.client_enable=0
+net.inet.tcp.fastopen.server_enable=0
+net.inet.tcp.finwait2_timeout=5000
+net.inet.tcp.icmp_may_rst=0
 net.inet.tcp.initcwnd_segments=44
+net.inet.tcp.isn_reseed_interval=4500
 net.inet.tcp.keepcnt=2
+net.inet.tcp.keepidle=62000
+net.inet.tcp.keepintvl=5000
 net.inet.tcp.minmss=536
 net.inet.tcp.msl=2500
 net.inet.tcp.mssdflt=1460
 net.inet.tcp.nolocaltimewait=1
+net.inet.tcp.path_mtu_discovery=0
+net.inet.tcp.recvbuf_inc=65536
+net.inet.tcp.recvbuf_max=4194304
+net.inet.tcp.recvspace=655536
+net.inet.tcp.rfc6675_pipe=1
+net.inet.tcp.sendbuf_inc=65536
+net.inet.tcp.sendbuf_max=4194304
+net.inet.tcp.sendspace=655536
+net.inet.tcp.syncache.rexmtlimit=0
 net.inet.tcp.syncookies=0
 net.inet.tcp.syncookies_only=1
 net.inet.tcp.tso=0
 net.inet.udp.blackhole=1
-net.inet6.icmp6.nd6_onlink_ns_rfc4861=1
+net.inet.udp.maxdgram=16384
+net.inet.udp.recvspace=1048576
 net.inet6.icmp6.nodeinfo=0
 net.inet6.icmp6.rediraccept=0
-net.inet6.ip6.accept_rtadv=1
-net.inet6.ip6.forwarding=0
+net.inet6.ip6.forwarding=1
+net.inet6.ip6.maxfragpackets=0
+net.inet6.ip6.maxfrags=0
 net.inet6.ip6.redirect=0
 net.inet6.ip6.stealth=1
+net.local.stream.recvspace=16384
+net.local.stream.sendspace=16384
+net.route.netisr_maxqlen=2048
 security.bsd.hardlink_check_gid=1
 security.bsd.hardlink_check_uid=1
 security.bsd.see_other_gids=0
@@ -437,7 +512,7 @@ security.bsd.unprivileged_read_msgbuf=0
 vfs.read_max=128
 vfs.ufs.dirhash_maxmem=67108864
 vfs.zfs.min_auto_ashift=12
-"EOF"
+EOF
 ```
 
 ### Stärkere Passwort-Hashes verwenden
@@ -483,7 +558,7 @@ P|Pc|Pc console:\
 Wir passen auch unsere Login-Begrüssung (motd) an.
 
 ``` bash
-cat << "EOF" > /etc/motd.template
+cat <<'EOF' > /etc/motd.template
 
 
 
@@ -508,12 +583,12 @@ cat << "EOF" > /etc/motd.template
                                        `--{__________)
 
 
-"EOF"
+EOF
 ```
 
 ## System konfigurieren
 
-Mail alias für `root` einrichten.
+Die aliases-Datenbank für FreeBSDs DMA müssen wir mittels `newaliases` anlegen, auch wenn wir später DMA gar nicht verwenden möchten.
 
 ``` bash
 sed -e 's/^#[[:space:]]*\(root:[[:space:]]*\).*$/\1 admin@example.com/' \
@@ -521,19 +596,14 @@ sed -e 's/^#[[:space:]]*\(root:[[:space:]]*\).*$/\1 admin@example.com/' \
     -e 's/^#[[:space:]]*\(webmaster:[[:space:]]*.*\)$/\1/' \
     -e 's/^#[[:space:]]*\(www:[[:space:]]*.*\)$/\1/' \
     -i '' /etc/mail/aliases
-```
 
-Die aliases Datenbank für FreeBSDs Sendmail müssen wir mittels `make` anlegen, auch wenn wir später Sendmail gar nicht verwenden möchten.
-
-``` bash
-make -C /etc/mail aliases
-cd /etc && ln -s mail/aliases.db && cd /
+newaliases
 ```
 
 ``` bash
-cat << "EOF" >> /etc/nscd.conf
+cat <<'EOF' >> /etc/nscd.conf
 keep-hot-count hosts 16384
-"EOF"
+EOF
 ```
 
 ``` bash
@@ -547,24 +617,24 @@ sed -e 's/^[[:space:]]*\(pool[[:space:]]*0\.freebsd\.pool.*\)$/#\1/' \
     -e 's/^#[[:space:]]*\(pool[[:space:]]*0\.CC\.pool\)/pool 0.de.pool/' \
     -i '' /etc/ntp.conf
 
-sed -e '/^#server time.my-internal.org iburst/ a\\
-Server ptbtime3.ptb.de iburst\\
-Server ptbtime2.ptb.de iburst\\
+sed -e '/^#server time.my-internal.org iburst/ a\
+Server ptbtime3.ptb.de iburst\
+Server ptbtime2.ptb.de iburst\
 Server ptbtime1.ptb.de iburst\
 ' -i '' /etc/ntp.conf
 
-cat << "EOF" >> /etc/ntp.conf
+cat <<'EOF' >> /etc/ntp.conf
 #
 interface ignore wildcard
 interface listen 127.0.0.1
 interface listen ::1
-"EOF"
+EOF
 ```
 
 ``` bash
-cat << "EOF" > /etc/resolvconf.conf
+cat <<'EOF' > /etc/resolvconf.conf
 resolvconf=NO
-"EOF"
+EOF
 
 resolvconf -u
 ```
@@ -572,7 +642,7 @@ resolvconf -u
 Die `/etc/periodic.conf` legen wir mit folgendem Inhalt an.
 
 ``` bash
-cat << "EOF" >> /etc/periodic.conf
+cat <<'EOF' >> /etc/periodic.conf
 daily_clean_hoststat_enable="NO"
 daily_clean_tmps_enable="YES"
 daily_status_gmirror_enable="YES"
@@ -586,26 +656,25 @@ daily_status_pkg_changes_enable="YES"
 weekly_status_pkg_enable="YES"
 security_status_pkgaudit_enable="YES"
 security_status_pkgchecksum_enable="YES"
-"EOF"
+EOF
 ```
 
 Die `/etc/fstab` legen wir entsprechend unserem Partitionslayout an.
 
 ``` bash
-cat << "EOF" > /etc/fstab
-# Device              Mountpoint    FStype     Options      Dump    Pass
-/dev/mirror/rootfs    /             ufs        rw           1       1
-dev                   /dev          devfs      rw           0       0
-proc                  /proc         procfs     rw           0       0
-fdesc                 /dev/fd       fdescfs    rw,late      0       0
-/dev/mirror/swapfs    none          swap       sw           0       0
-"EOF"
+cat <<'EOF' > /etc/fstab
+# Device           Mountpoint    FStype     Options      Dump    Pass
+# Custom /etc/fstab for FreeBSD VM images
+/dev/gpt/rootfs    /             ufs        rw           1       1
+/dev/gpt/swapfs    none          swap       sw           0       0
+/dev/gpt/efiesp    /boot/efi     msdosfs    rw           2       2
+EOF
 ```
 
 In der `/etc/rc.conf` werden diverse Grundeinstellungen für das System und die installierten Dienste vorgenommen.
 
 ``` bash
-cat > /etc/rc.conf << "EOF"
+cat > /etc/rc.conf
 ##############################################################
 ###  Important initial Boot-time options  ####################
 ##############################################################
@@ -613,8 +682,11 @@ cat > /etc/rc.conf << "EOF"
 #kern_securelevel="1"
 kld_list="accf_data accf_http accf_dns cc_htcp"
 fsck_y_enable="YES"
+growfs_enable="YES"
 dmesg_enable="YES"
 zfs_enable="YES"
+zpool_reguid="zroot"
+zpool_upgrade="zroot"
 dumpdev="AUTO"
 
 ##############################################################
@@ -633,16 +705,19 @@ ifconfig_IFACE_ipv6="inet6 IPADDR6 prefixlen PREFLEN6 accept_rtadv"
 
 ##### Additional IP Addresses
 ### specify additional IPv4 and IPv6 addresses one per line
-#ifconfig_IFACE_aliases="\
-#        inet IPV4 netmask NETMASK \
-#        inet IPV4 netmask NETMASK \
-#        inet6 IPV6 prefixlen PREFLEN \
+#ifconfig_IFACE_aliases="\\
+#        inet IPV4 netmask NETMASK \\
+#        inet IPV4 netmask NETMASK \\
+#        inet6 IPV6 prefixlen PREFLEN \\
 #        inet6 IPV6 prefixlen PREFLEN"
 
+##############################################################
+###  Paketfilter (PF) options  ###############################
+##############################################################
 pf_enable="YES"
 pf_rules="/etc/pf.conf"
 pflog_enable="YES"
-pflog_logfile="/data/log/pflog"
+pflog_logfile="/var/log/pflog"
 pflog_flags="$pflog_flags -d 600 -s 1600"
 
 ##############################################################
@@ -658,6 +733,8 @@ sendmail_cert_create="NO"
 sendmail_submit_enable="NO"
 sendmail_outbound_enable="NO"
 sendmail_msp_queue_enable="NO"
+sendmail_rebuild_aliases="NO"
+dma_flushq_enable="YES"
 
 ##############################################################
 ###  Miscellaneous administrative options  ###################
@@ -669,7 +746,6 @@ update_motd="YES"
 nscd_enable="YES"
 ntpd_enable="YES"
 ntpd_sync_on_start="YES"
-ntp_leapfile_fetch_verbose="YES"
 resolv_enable="NO"
 
 ##############################################################
@@ -680,9 +756,10 @@ resolv_enable="NO"
 ###  System services options  ################################
 ##############################################################
 local_unbound_enable="YES"
+local_unbound_tls="NO"
 blacklistd_enable="NO"
 sshd_enable="YES"
-"EOF"
+EOF
 ```
 
 Es folgt ein wenig Voodoo, um die Netzwerkkonfiguration in der `/etc/rc.conf` zu vervollständigen.
@@ -802,18 +879,17 @@ exit
 ## Buildsystem konfigurieren
 
 ``` bash
-cat << "EOF" > /etc/make.conf
+cat <<'EOF' > /etc/make.conf
 KERNCONF?=GENERIC MYKERNEL
 PRINTERDEVICE=ascii
 LICENSES_ACCEPTED+=EULA
 DISABLE_VULNERABILITIES=yes
-"EOF"
+EOF
 ```
 
 ``` bash
-cat << "EOF" > /etc/src.conf
+cat <<'EOF' > /etc/src.conf
 WITHOUT_APM=YES
-WITHOUT_ATM=YES
 WITHOUT_BHYVE=YES
 WITH_BIND_NOW=YES
 WITHOUT_BLUETOOTH=YES
@@ -827,7 +903,7 @@ WITH_CLANG_EXTRAS=YES
 WITH_CLANG_FORMAT=YES
 WITHOUT_CUSE=YES
 WITHOUT_DEBUG_FILES=YES
-WITHOUT_DMAGENT=YES
+WITH_DETECT_TZ_CHANGES=YES
 WITHOUT_DOCCOMPRESS=YES
 WITHOUT_FINGER=YES
 WITHOUT_FLOPPY=YES
@@ -842,17 +918,17 @@ WITHOUT_KERBEROS=YES
 WITH_KERNEL_RETPOLINE=YES
 WITHOUT_LIB32=YES
 WITHOUT_LLVM_TARGET_ALL=YES
-#WITH_LLVM_TARGET_X86=YES
+WITH_LLVM_TARGET_AARCH64=YES
+WITH_LLVM_TARGET_ARM=YES
+WITH_LLVM_TARGET_X86=YES
 WITHOUT_LPR=YES
 WITHOUT_MANCOMPRESS=YES
-WITHOUT_NDIS=YES
 WITHOUT_NIS=YES
 WITHOUT_PMC=YES
 WITHOUT_PPP=YES
-WITHOUT_PROFILE=YES
 WITHOUT_RADIUS_SUPPORT=YES
 WITHOUT_RBOOTD=YES
-WITHOUT_RCMDS=YES
+WITH_REPRODUCIBLE_BUILD=YES
 WITH_RETPOLINE=YES
 WITHOUT_SENDMAIL=YES
 WITHOUT_SHAREDOCS=YES
@@ -861,7 +937,8 @@ WITHOUT_TALK=YES
 WITHOUT_TESTS=YES
 WITHOUT_TFTP=YES
 WITHOUT_WIRELESS=YES
-"EOF"
+WITH_ZONEINFO_LEAPSECONDS_SUPPORT=YES
+EOF
 ```
 
 ## Kernel konfigurieren
@@ -869,27 +946,28 @@ WITHOUT_WIRELESS=YES
 Kernel Parameter in `/boot/loader.conf` setzen.
 
 ``` bash
-cat << "EOF" >> /boot/loader.conf
+cat <<'EOF' >> /boot/loader.conf
 # Loader options
 boot_verbose="YES"
 verbose_loading="YES"
 
 # Microcode updates
-cpu_microcode_load="YES"
+#cpu_microcode_load="YES"
 #cpu_microcode_name="/boot/firmware/intel-ucode.bin"
 #cpu_microcode_name="/usr/local/share/cpucontrol/microcode_amd.bin"
 
 # Kernel selection
 #kernel="GENERIC"
-#kernels="GENERIC MYKERNEL"
-#kernel_options=""
+#kernels="GENERIC ROOTSERVICE"
+#kernel_options="ds=nocloud s=file://data/cloud-init/"
 
 # Kernel modules
+#coretemp_load="YES"
 geom_mirror_load="YES"
 zfs_load="YES"
 
 # Kernel parameters
-debug.acpi.disabled="thermal"
+#debug.acpi.disabled="thermal"
 security.bsd.stack_guard_page="1"
 security.bsd.allow_destructive_dtrace="0"
 kern.geom.label.disk_ident.enable="0"
@@ -905,7 +983,19 @@ kern.ipc.shmmax="2147483648"
 kern.msgbufsize="2097152"
 kern.random.fortuna.minpoolsize="256"
 kern.sync_on_panic="0"
-"EOF"
+#machdep.hyperthreading_allowed="0"
+net.inet.tcp.hostcache.enable="0"
+net.inet.tcp.hostcache.cachelimit="0"
+net.inet.tcp.soreceive_stream="1"
+net.inet.tcp.syncache.hashsize="1024"
+net.inet.tcp.syncache.bucketlimit="100"
+net.inet.tcp.tcbhashsize="524288"
+net.isr.bindthreads="1"
+net.isr.maxthreads="-1"
+net.isr.defaultqlimit="2048"
+net.link.ifqmaxlen="2048"
+net.pf.source_nodes_hashsize="1048576"
+EOF
 ```
 
 ## Abschluss der Installation
@@ -913,7 +1003,7 @@ kern.sync_on_panic="0"
 Um uns künftig mit unserem Arbeitsuser einloggen zu können, müssen wir uns dessen SSH-Key (id_ed25519) auf unser lokales System kopieren und ihn dann mit Hilfe der [PuTTYgen Dokumentation](https://the.earth.li/~sgtatham/putty/latest/htmldoc/Chapter8.html){: target="_blank" rel="noopener"} in einen für PuTTY lesbaren Private Key umwandeln (id_ed25519.ppk).
 
 ``` powershell
-pscp -P 2222 -r root@127.0.0.1:/mnt/usr/home/admin/.ssh "${Env:USERPROFILE}\VirtualBox VMs\FreeBSD\ssh"
+pscp -P 2222 -r root@127.0.0.1:/mnt/home/admin/.ssh "${Env:USERPROFILE}\VirtualBox VMs\FreeBSD\ssh"
 
 puttygen "${Env:USERPROFILE}\VirtualBox VMs\FreeBSD\ssh\id_ed25519"
 ```
@@ -923,8 +1013,8 @@ Nun ist es endlich soweit: Wir verlassen das Chroot, unmounten die Partitionen u
 ``` bash
 exit
 
-rm /mnt/root/.history
-rm /mnt/usr/home/*/.history
+rm /mnt/root/.sh_history
+rm /mnt/home/*/.sh_history
 chmod 0700 /mnt/root
 
 umount /mnt/dev
@@ -1055,10 +1145,10 @@ Wenn die eigene Kernel-Konfiguration wie bei uns bereits in der `/etc/make.conf`
 ``` bash
 mkdir -p /root/kernels
 
-cat << "EOF" > /root/kernels/MYKERNEL
+cat <<'EOF' > /root/kernels/MYKERNEL
 include         GENERIC
 ident           MYKERNEL
-"EOF"
+EOF
 
 ln -s /root/kernels/MYKERNEL /usr/src/sys/amd64/conf/
 

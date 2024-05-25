@@ -2,7 +2,7 @@
 title: 'OpenDMARC'
 description: 'In diesem HowTo wird step-by-step die Installation von OpenDMARC für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2024-02-01'
+updated: '2024-05-24'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -25,26 +25,26 @@ Wir installieren `mail/opendmarc` und dessen Abhängigkeiten.
 
 ``` bash
 mkdir -p /var/db/ports/databases_p5-DBI
-cat << "EOF" > /var/db/ports/databases_p5-DBI/options
+cat <<'EOF' > /var/db/ports/databases_p5-DBI/options
 _OPTIONS_READ=p5-DBI-1.643
 _FILE_COMPLETE_OPTIONS_LIST=PROXY
 OPTIONS_FILE_SET+=PROXY
-"EOF"
+EOF
 
 mkdir -p /var/db/ports/databases_p5-DBD-mysql
-cat << "EOF" > /var/db/ports/databases_p5-DBD-mysql/options
-_OPTIONS_READ=p5-DBD-mysql-4.050
+cat <<'EOF' > /var/db/ports/databases_p5-DBD-mysql/options
+_OPTIONS_READ=p5-DBD-mysql-5.004
 _FILE_COMPLETE_OPTIONS_LIST=SSL
 OPTIONS_FILE_SET+=SSL
-"EOF"
+EOF
 
 mkdir -p /var/db/ports/mail_opendmarc
-cat << "EOF" > /var/db/ports/mail_opendmarc/options
+cat <<'EOF' > /var/db/ports/mail_opendmarc/options
 _OPTIONS_READ=opendmarc-1.4.2
 _FILE_COMPLETE_OPTIONS_LIST=DOCS SPF
-OPTIONS_FILE_SET+=DOCS
+OPTIONS_FILE_UNSET+=DOCS
 OPTIONS_FILE_SET+=SPF
-"EOF"
+EOF
 
 
 cd /usr/ports/mail/opendmarc
@@ -94,7 +94,7 @@ sed -e 's|^#[[:space:]]\(AuthservID\)[[:space:]].*$|\1 mail.example.com|g' \
 IgnoreHosts anlegen.
 
 ``` bash
-cat << "EOF" > /data/db/opendmarc/ignorehosts
+cat <<'EOF' > /data/db/opendmarc/ignorehosts
 ::1
 127.0.0.1
 ::1
@@ -102,7 +102,7 @@ cat << "EOF" > /data/db/opendmarc/ignorehosts
 fe80::/10
 ff02::/16
 10.0.0.0/8
-"EOF"
+EOF
 
 ifconfig `route -n get -inet default | \
     awk '/interface/ {print $2}'` inet | \
@@ -113,11 +113,11 @@ ifconfig `route -n get -inet6 default | \
     awk '/inet6 / {if(substr($2,1,1)!="f") print $2}' \
     >> /data/db/opendmarc/ignorehosts
 
-cat << "EOF" >> /data/db/opendmarc/ignorehosts
+cat <<'EOF' >> /data/db/opendmarc/ignorehosts
 localhost
 example.com
 *.example.com
-"EOF"
+EOF
 ```
 
 ``` bash

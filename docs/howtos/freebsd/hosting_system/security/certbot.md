@@ -2,7 +2,7 @@
 title: 'CertBot'
 description: 'In diesem HowTo wird step-by-step die Installation von CertBot für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2024-02-01'
+updated: '2024-05-24'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -13,7 +13,7 @@ author_url: https://github.com/JoeUser78
 
 Unser Hosting System wird folgende Dienste umfassen.
 
-- CertBot 2.8.0 (LetsEncrypt ACME API 2.0)
+- CertBot 2.10.0 (LetsEncrypt ACME API 2.0)
 
 ## Voraussetzungen
 
@@ -25,20 +25,20 @@ Wir installieren `security/py-certbot` und dessen Abhängigkeiten.
 
 ``` bash
 mkdir -p /var/db/ports/security_py-certbot
-cat << "EOF" > /var/db/ports/security_py-certbot/options
-_OPTIONS_READ=py39-certbot-2.8.0
+cat <<'EOF' > /var/db/ports/security_py-certbot/options
+_OPTIONS_READ=py39-certbot-2.10.0
 _FILE_COMPLETE_OPTIONS_LIST=MANPAGES
 OPTIONS_FILE_SET+=MANPAGES
-"EOF"
+EOF
 
 
 cd /usr/ports/security/py-certbot
 make all install clean-depends clean
 
 
-cat << "EOF" >> /etc/periodic.conf
+cat <<'EOF' >> /etc/periodic.conf
 weekly_certbot_enable="YES"
-"EOF"
+EOF
 ```
 
 ## Konfiguration
@@ -64,7 +64,7 @@ Wir konfigurieren CertBot für den Bezug unserer Zertifikate:
 
 ``` bash
 mkdir -p /usr/local/etc/letsencrypt
-cat << "EOF" > /usr/local/etc/letsencrypt/cli.ini
+cat <<'EOF' > /usr/local/etc/letsencrypt/cli.ini
 key-type = ecdsa
 elliptic-curve = secp384r1
 rsa-key-size = 4096
@@ -75,7 +75,7 @@ server = https://acme-v02.api.letsencrypt.org/directory
 text = true
 agree-tos = true
 preferred-challenges = http
-"EOF"
+EOF
 ```
 
 ## Abschluss

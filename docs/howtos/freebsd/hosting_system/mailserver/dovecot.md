@@ -2,7 +2,7 @@
 title: 'Dovecot'
 description: 'In diesem HowTo wird step-by-step die Installation des Dovecot Mailservers für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2024-02-01'
+updated: '2024-05-24'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -25,18 +25,18 @@ Wir installieren `mail/dovecot` und dessen Abhängigkeiten.
 
 ``` bash
 mkdir -p /var/db/ports/textproc_libexttextcat
-cat << "EOF" > /var/db/ports/textproc_libexttextcat/options
+cat <<'EOF' > /var/db/ports/textproc_libexttextcat/options
 _OPTIONS_READ=libexttextcat-3.4.6
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
-OPTIONS_FILE_SET+=DOCS
-"EOF"
+OPTIONS_FILE_UNSET+=DOCS
+EOF
 
 mkdir -p /var/db/ports/mail_dovecot
-cat << "EOF" > /var/db/ports/mail_dovecot/options
+cat <<'EOF' > /var/db/ports/mail_dovecot/options
 _OPTIONS_READ=dovecot-2.3.21
 _FILE_COMPLETE_OPTIONS_LIST=DOCS EXAMPLES LIBSODIUM LIBUNWIND LIBWRAP LUA LZ4 GSSAPI_NONE GSSAPI_BASE GSSAPI_HEIMDAL GSSAPI_MIT CDB LDAP MYSQL PGSQL SQLITE ICU LUCENE SOLR TEXTCAT
-OPTIONS_FILE_SET+=DOCS
-OPTIONS_FILE_SET+=EXAMPLES
+OPTIONS_FILE_UNSET+=DOCS
+OPTIONS_FILE_UNSET+=EXAMPLES
 OPTIONS_FILE_SET+=LIBSODIUM
 OPTIONS_FILE_UNSET+=LIBUNWIND
 OPTIONS_FILE_SET+=LIBWRAP
@@ -55,7 +55,7 @@ OPTIONS_FILE_SET+=ICU
 OPTIONS_FILE_UNSET+=LUCENE
 OPTIONS_FILE_UNSET+=SOLR
 OPTIONS_FILE_SET+=TEXTCAT
-"EOF"
+EOF
 
 
 cd /usr/ports/mail/dovecot
@@ -70,7 +70,7 @@ sysrc dovecot_enable=YES
 `dovecot.conf` einrichten.
 
 ``` bash
-cat << "EOF" > /usr/local/etc/dovecot/dovecot.conf
+cat <<'EOF' > /usr/local/etc/dovecot/dovecot.conf
 #auth_mechanisms = plain login
 auth_verbose = yes
 first_valid_gid = 5000
@@ -201,7 +201,7 @@ userdb {
   driver = passwd-file
   override_fields = uid=5000 gid=5000 home=/data/vmail/%d/%n
 }
-"EOF"
+EOF
 ```
 
 `/usr/local/etc/dovecot/passwd` einrichten.
@@ -209,7 +209,7 @@ userdb {
 Das Anlegen neuer Mailuser wird mittels Script automatisiert.
 
 ``` bash
-cat << "EOF" > /usr/local/etc/dovecot/create_mailuser.sh
+cat <<'EOF' > /usr/local/etc/dovecot/create_mailuser.sh
 #!/bin/sh
 dovecot_user="${1}"
 dovecot_pass="`openssl rand -hex 64 | openssl passwd -1 -stdin | tr -cd '[[:alnum:]]' | cut -c 2-13`"
@@ -217,7 +217,7 @@ dovecot_hash="`echo ${dovecot_pass} | xargs -I % doveadm pw -s ARGON2ID -p %`"
 echo "Password for ${dovecot_user} is: ${dovecot_pass}"
 echo "${dovecot_user}:${dovecot_hash}:5000:5000::/data/vmail/%d/%n::" >> /usr/local/etc/dovecot/passwd
 exit 0
-"EOF"
+EOF
 
 chmod 0755 /usr/local/etc/dovecot/create_mailuser.sh
 

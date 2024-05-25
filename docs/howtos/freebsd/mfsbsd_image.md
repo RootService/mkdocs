@@ -2,7 +2,7 @@
 title: 'mfsBSD Image'
 description: 'In diesem HowTo wird step-by-step die Erstellung eines mfsBSD Images zur Remote Installation von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2024-02-01'
+updated: '2024-05-24'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -58,9 +58,9 @@ Als nächstes benötigen wir die FreeBSD 64Bit Installations-CD, welche wir mitt
 ``` powershell
 cd "${Env:USERPROFILE}\VirtualBox VMs\mfsBSD"
 
-curl -o "FreeBSD-13.2-RELEASE-amd64-disc1.iso" -L "https://download.freebsd.org/releases/ISO-IMAGES/13.2/FreeBSD-13.2-RELEASE-amd64-disc1.iso"
+curl -o "FreeBSD-14.1-RELEASE-amd64-disc1.iso" -L "https://download.freebsd.org/releases/ISO-IMAGES/14.1/FreeBSD-14.1-RELEASE-amd64-disc1.iso"
 
-& "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" storageattach "mfsBSD" --storagectl "AHCI Controller" --port 0 --device 0 --type dvddrive --medium "FreeBSD-13.2-RELEASE-amd64-disc1.iso"
+& "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" storageattach "mfsBSD" --storagectl "AHCI Controller" --port 0 --device 0 --type dvddrive --medium "FreeBSD-14.1-RELEASE-amd64-disc1.iso"
 ```
 
 Nachdem die virtuelle Maschine nun fertig konfiguriert ist, wird es Zeit diese zu booten.
@@ -148,39 +148,84 @@ Das neu installierte System selbstverständlich noch konfiguriert werden, bevor 
 chroot /mnt /usr/bin/env -i HOME=/root TERM=$TERM /bin/tcsh
 ```
 
-Zunächst setzen wir die Systemzeit (CMOS clock) mittels `tzsetup`, hierzu wählen wir zunächst "Europe", dann "Germany" und zum Schluss "CET" beziehungsweise "CEST" aus.
+Zunächst setzen wir die Systemzeit (CMOS clock) mittels `tzsetup` auf "UTC" (Universal Time Code).
 
 ``` bash
-/usr/sbin/tzsetup Europe/Berlin
+/usr/sbin/tzsetup UTC
 ```
 
-Unter FreeBSD ist die Tenex C Shell (TCSH) die Standard-Shell. Für Bash-gewohnte Linux-User ist diese Shell etwas gewöhnungsbedürftig, und natürlich kann man sie später auch gegen eine andere Shell austauschen (im Basis-System ist neben der TCSH auch eine ASH enthalten). Skripte würde ich persönlich für die TCSH eher nicht schreiben, aber für die tägliche Administrationsarbeit ist die TCSH ein sehr brauchbares Werkzeug – wenn man sie erst mal etwas umkonfiguriert hat. Dies tun wir jetzt.
+This version of sh was rewritten in 1989 under the BSD license after the Bourne shell from AT&T System V Release 4 UNIX.
 
 ``` bash
 # Colorize console output
-cat << "EOF" >> /etc/csh.cshrc
+cat <<'EOF' >> /etc/csh.cshrc
 setenv LSCOLORS "Dxfxcxdxbxegedabagacad"
+EOF
+
+sed -e '/export PAGER/ a\
+CLICOLORS="YES";                             export CLICOLOR\
+LSCOLORS="Dxfxcxdxbxegedabagacad";           export LSCOLORS\
+COLORFGBG="15;0";                            export COLORFGBG\
+COLORTERM=truecolor;                         export COLORTERM\
+TERM=${TERM:-xterm-256color};                export TERM\
+MANCOLOR="1";                                export MANCOLOR\
+MANWIDTH=tty;                                export MANWIDTH\
+' -i '' /usr/share/skel/dot.profile
+
+sed -e '/export PAGER/ a\
+CLICOLORS="YES";                             export CLICOLOR\
+LSCOLORS="Dxfxcxdxbxegedabagacad";           export LSCOLORS\
+COLORFGBG="15;0";                            export COLORFGBG\
+COLORTERM=truecolor;                         export COLORTERM\
+TERM=${TERM:-xterm-256color};                export TERM\
+MANCOLOR="1";                                export MANCOLOR\
+MANWIDTH=tty;                                export MANWIDTH\
+' -i '' /root/.profile
+
+
+# Some useful aliases
+cat <<'EOF' >> /etc/csh.cshrc
 alias ls        ls -FGIPTW
 alias l         ls -FGIPTWahl
-"EOF"
+EOF
+
+sed -e '/some useful aliases/ a\
+alias ls="ls -FGIPTW"\
+alias l="ls -FGIPTWahl"\
+' -i '' /usr/share/skel/dot.shrc
+
+sed -e '/some useful aliases/ a\
+alias ls="ls -FGIPTW"\
+alias l="ls -FGIPTWahl"\
+' -i '' /root/.shrc
+
 
 # Use ee instead of vi as standard editor
-sed -e 's/\(EDITOR[[:space:]]*\)vi[[:space:]]*$/\1ee/' -i '' /root/.cshrc
-sed -e 's/\(EDITOR=\)vi;\([[:space:]].*\)$/\1ee;\2/' -i '' /root/.profile
 sed -e 's/\(EDITOR[[:space:]]*\)vi[[:space:]]*$/\1ee/' -i '' /usr/share/skel/dot.cshrc
 sed -e 's/\(set EDITOR=\)vi[[:space:]]*$/\1ee/' -i '' /usr/share/skel/dot.mailrc
 sed -e 's/\(set VISUAL=\)vi[[:space:]]*$/\1ee/' -i '' /usr/share/skel/dot.mailrc
 sed -e 's/\(EDITOR=\)vi;\([[:space:]].*\)$/\1ee;\2/' -i '' /usr/share/skel/dot.profile
 
+sed -e 's/\(EDITOR[[:space:]]*\)vi[[:space:]]*$/\1ee/' -i '' /root/.cshrc
+sed -e 's/\(EDITOR=\)vi;\([[:space:]].*\)$/\1ee;\2/' -i '' /root/.profile
+
+
 # Use meaningfuller prompt
 sed -e 's/\(set prompt =\).*$/\1 "[%B%n%b@%B%m%b:%B%~%b] %# "/' -i '' /root/.cshrc
-sed -e 's/\(PS1=\).*$/\1"[\\u@\\h:\\w] \\\\$ "/' -i '' /root/.shrc
-sed -e 's/\(set prompt =\).*$/\1 "[%B%n%b@%B%m%b:%B%~%b] %# "/' -i '' /usr/share/skel/dot.cshrc
-sed -e 's/\(PS1=\).*$/\1"[\\u@\\h:\\w] \\\\$ "/' -i '' /usr/share/skel/dot.shrc
+sed -e 's/\(PS1=\).*$/\1"\\[\\e[1;36m\\][\\[\\e[1;33m\\]\\u@\\h:\\[\\e[1;36m\\]\\w] \\\\$ \\[\\e[0m\\]"/' -i '' /root/.shrc
 
-# Set root shell to /bin/tcsh
-pw useradd -D -g '' -M 0700 -s tcsh -w no
-pw usermod -n root -s tcsh -w none
+sed -e 's/\(set prompt =\).*$/\1 "[%B%n%b@%B%m%b:%B%~%b] %# "/' -i '' /usr/share/skel/dot.cshrc
+sed -e 's/\(PS1=\).*$/\1"\\[\\e[1;36m\\][\\[\\e[1;33m\\]\\u@\\h:\\[\\e[1;36m\\]\\w] \\\\$ \\[\\e[0m\\]"/' -i '' /usr/share/skel/dot.shrc
+
+
+# Set missing ENV
+sed -e 's#\(setenv=BLOCKSIZE=K\)#\1,OPENSSL_CONF=/usr/local/openssl/openssl.cnf,CRYPTOGRAPHY_OPENSSL_NO_LEGACY=1#' -i '' /etc/login.conf
+cap_mkdb /etc/login.conf
+
+
+# Set root shell to /bin/sh
+pw useradd -D -g '' -M 0700 -s sh -w no
+pw usermod -n root -s sh -w none
 ```
 
 Das Home-Verzeichnis des Users root ist standardmässig leider nicht ausreichend restriktiv in seinen Zugriffsrechten, was wir mit einem entsprechenden Aufruf von `chmod` schnell ändern. Bevor wir es vergessen, setzen wir bei dieser Gelegenheit gleich ein sicheres Passwort für root.
@@ -189,35 +234,46 @@ Das Home-Verzeichnis des Users root ist standardmässig leider nicht ausreichend
 passwd root
 ```
 
-Die aliases-Datenbank für FreeBSDs Sendmail müssen wir mittels `make` anlegen, auch wenn wir später Sendmail gar nicht verwenden möchten.
+Die aliases-Datenbank für FreeBSDs DMA müssen wir mittels `newaliases` anlegen, auch wenn wir später DMA gar nicht verwenden möchten.
 
 ``` bash
-make -C /etc/mail aliases
-cd /etc && ln -s mail/aliases.db && cd /
+sed -e 's/^#[[:space:]]*\(root:[[:space:]]*\).*$/\1 admin@example.com/' \
+    -e 's/^#[[:space:]]*\(hostmaster:[[:space:]]*.*\)$/\1/' \
+    -e 's/^#[[:space:]]*\(webmaster:[[:space:]]*.*\)$/\1/' \
+    -e 's/^#[[:space:]]*\(www:[[:space:]]*.*\)$/\1/' \
+    -i '' /etc/mail/aliases
+
+newaliases
 ```
 
 Die `fstab` ist bei unserem minimalistischen Partitionslayout zwar nicht zwingend nötig, aber wir möchten später keine unerwarteten Überraschungen erleben, also legen wir sie vorsichtshalber an.
 
 ``` text
-cat << "EOF" > /etc/fstab
+cat <<'EOF' > /etc/fstab
 # Device           Mountpoint    FStype     Options      Dump    Pass
+# Custom /etc/fstab for FreeBSD VM images
 /dev/gpt/rootfs    /             ufs        rw           1       1
-dev                /dev          devfs      rw           0       0
-proc               /proc         procfs     rw           0       0
-fdesc              /dev/fd       fdescfs    rw,late      0       0
 /dev/gpt/swapfs    none          swap       sw           0       0
-"EOF"
+/dev/gpt/efiesp    /boot/efi     msdosfs    rw           2       2
+EOF
 ```
 
 In der `rc.conf` werden diverse Grundeinstellungen für das System und die installierten Dienste vorgenommen. Wir legen sie daher mittela `ee /etc/rc.conf` mit folgendem Inhalt an.
 
 ``` bash
-cat << "EOF" >> /etc/rc.conf
+cat <<'EOF' >> /etc/rc.conf
 ##############################################################
 ###  Important initial Boot-time options  ####################
 ##############################################################
+#kern_securelevel_enable="YES"
+#kern_securelevel="1"
+kld_list="accf_data accf_http accf_dns cc_htcp"
 fsck_y_enable="YES"
+growfs_enable="YES"
 dmesg_enable="YES"
+zfs_enable="YES"
+zpool_reguid="zroot"
+zpool_upgrade="zroot"
 dumpdev="AUTO"
 
 ##############################################################
@@ -239,6 +295,8 @@ sendmail_cert_create="NO"
 sendmail_submit_enable="NO"
 sendmail_outbound_enable="NO"
 sendmail_msp_queue_enable="NO"
+sendmail_rebuild_aliases="NO"
+dma_flushq_enable="YES"
 
 ##############################################################
 ###  Miscellaneous administrative options  ###################
@@ -250,7 +308,6 @@ update_motd="YES"
 nscd_enable="YES"
 ntpd_enable="YES"
 ntpd_sync_on_start="YES"
-ntp_leapfile_fetch_verbose="YES"
 resolv_enable="NO"
 
 ##############################################################
@@ -261,9 +318,10 @@ resolv_enable="NO"
 ###  System services options  ################################
 ##############################################################
 local_unbound_enable="YES"
+local_unbound_tls="NO"
 blacklistd_enable="NO"
 sshd_enable="YES"
-"EOF"
+EOF
 ```
 
 Da dies lediglich ein lokales temporäres System zum Erzeugen unseres mfsBSD-Images wird, können wir den SSH-Dienst bedenkenlos etwas komfortabler aber dadurch zwangsläufig auch etwas unsicherer konfigurieren, indem wir den Login per Passwort zulassen.
@@ -293,7 +351,7 @@ sed -e 's|^#\(Port\).*$|\1 22|' \
     -e 's|^\(Subsystem.*\)$|#\1|' \
     -i '' /etc/ssh/sshd_config
 
-cat << "EOF" >> /etc/ssh/sshd_config
+cat <<'EOF' >> /etc/ssh/sshd_config
 
 Subsystem sftp internal-sftp -u 0027
 
@@ -316,11 +374,11 @@ Match Group sftponly
     PasswordAuthentication yes
     ForceCommand internal-sftp -d %u
 
-"EOF"
+EOF
 
-sed -e '/^# Ciphers and keying/ a\\
-Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com\\
-Macs hmac-sha2-512,hmac-sha2-512-etm@openssh.com,hmac-sha2-256,hmac-sha2-256-etm@openssh.com\\
+sed -e '/^# Ciphers and keying/ a\
+Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com\
+Macs hmac-sha2-512,hmac-sha2-512-etm@openssh.com,hmac-sha2-256,hmac-sha2-256-etm@openssh.com\
 KexAlgorithms sntrup761x25519-sha512@openssh.com,curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256\
 ' -i '' /etc/ssh/sshd_config
 
@@ -409,13 +467,13 @@ sed -e 's/^#\(mfsbsd.rootpw=\).*$/\1"mfsroot"/' conf/loader.conf.sample > conf/l
 Für unsere Zwecke reicht die Standardkonfiguration des mfsBSD-Buildscripts aus, so dass wir unser mfsBSD-Image direkt erzeugen können.
 
 ``` bash
-make BASE=/usr/freebsd-dist RELEASE=13.2-RELEASE ARCH=amd64 PKG_STATIC=/usr/local/sbin/pkg-static MFSROOT_MAXSIZE=120m
+make BASE=/usr/freebsd-dist RELEASE=14.1-RELEASE ARCH=amd64 PKG_STATIC=/usr/local/sbin/pkg-static MFSROOT_MAXSIZE=120m
 ```
 
-Anschliessend liegt unter `/usr/local/mfsbsd/mfsbsd-master/mfsbsd-13.2-RELEASE-amd64.img` unser fertiges mfsBSD-Image. Dieses kopieren wir nun per PuTTY auf den Windows Host.
+Anschliessend liegt unter `/usr/local/mfsbsd/mfsbsd-master/mfsbsd-14.1-RELEASE-amd64.img` unser fertiges mfsBSD-Image. Dieses kopieren wir nun per PuTTY auf den Windows Host.
 
 ``` powershell
-pscp -P 2222 root@127.0.0.1:/usr/local/mfsbsd/mfsbsd-master/mfsbsd-13.2-RELEASE-amd64.img "${Env:USERPROFILE}\VirtualBox VMs\mfsBSD\mfsbsd-13.2-RELEASE-amd64.img"
+pscp -P 2222 root@127.0.0.1:/usr/local/mfsbsd/mfsbsd-master/mfsbsd-14.1-RELEASE-amd64.img "${Env:USERPROFILE}\VirtualBox VMs\mfsBSD\mfsbsd-14.1-RELEASE-amd64.img"
 ```
 
 Die virtuelle Maschine können wir an dieser Stelle nun beenden.

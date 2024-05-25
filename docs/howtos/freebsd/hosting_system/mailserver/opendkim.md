@@ -2,7 +2,7 @@
 title: 'OpenDKIM'
 description: 'In diesem HowTo wird step-by-step die Installation von OpenDKIM für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2024-02-01'
+updated: '2024-05-24'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -25,7 +25,7 @@ Wir installieren `mail/opendkim` und dessen Abhängigkeiten.
 
 ``` bash
 mkdir -p /var/db/ports/mail_opendkim
-cat << "EOF" > /var/db/ports/mail_opendkim/options
+cat <<'EOF' > /var/db/ports/mail_opendkim/options
 _OPTIONS_READ=opendkim-2.10.3
 _FILE_COMPLETE_OPTIONS_LIST=FILTER CURL GNUTLS JANSSON LDNS LMDB LUA MEMCACHED  BDB_BASE OPENDBX OPENLDAP POPAUTH QUERY_CACHE SASL DOCS STOCK_RESOLVER UNBOUND ALLSYMBOLS CODECOVERAGE DEBUG ADSP_LISTS ATPS DB_HANDLE_POOLS  DEFAULT_SENDER DIFFHEADERS IDENTITY_HEADER  LDAP_CACHING POSTGRES_RECONNECT_HACK  RATE_LIMIT RBL REPLACE_RULES REPRRD  REPUTATION RESIGN SENDER_MACRO  SOCKETDB STATS STATSEXT VBR
 OPTIONS_FILE_SET+=FILTER
@@ -42,7 +42,7 @@ OPTIONS_FILE_UNSET+=OPENLDAP
 OPTIONS_FILE_UNSET+=POPAUTH
 OPTIONS_FILE_UNSET+=QUERY_CACHE
 OPTIONS_FILE_UNSET+=SASL
-OPTIONS_FILE_SET+=DOCS
+OPTIONS_FILE_UNSET+=DOCS
 OPTIONS_FILE_UNSET+=STOCK_RESOLVER
 OPTIONS_FILE_SET+=UNBOUND
 OPTIONS_FILE_UNSET+=ALLSYMBOLS
@@ -67,7 +67,7 @@ OPTIONS_FILE_UNSET+=SOCKETDB
 OPTIONS_FILE_UNSET+=STATS
 OPTIONS_FILE_UNSET+=STATSEXT
 OPTIONS_FILE_UNSET+=VBR
-"EOF"
+EOF
 
 
 cd /usr/ports/mail/opendkim
@@ -137,30 +137,30 @@ chmod 0600 /data/db/opendkim/keys/*/*.private
 KeyTable anlegen.
 
 ``` bash
-cat << "EOF" > /data/db/opendkim/keytable
+cat <<'EOF' > /data/db/opendkim/keytable
 20230520._domainkey.example.com    example.com:20230520:/data/db/opendkim/keys/example.com/20230520.private
-"EOF"
+EOF
 ```
 
 SingingTable anlegen.
 
 ``` bash
-cat << "EOF" > /data/db/opendkim/signingtable
+cat <<'EOF' > /data/db/opendkim/signingtable
 *@example.com      20230520._domainkey.example.com
 *@*.example.com    20230520._domainkey.example.com
-"EOF"
+EOF
 ```
 
 TrustedHosts anlegen.
 
 ``` bash
-cat << "EOF" > /data/db/opendkim/trustedhosts
+cat <<'EOF' > /data/db/opendkim/trustedhosts
 ::1
 127.0.0.1
 fe80::/10
 ff02::/16
 10.0.0.0/8
-"EOF"
+EOF
 
 ifconfig `route -n get -inet default | \
     awk '/interface/ {print $2}'` inet | \
@@ -171,11 +171,11 @@ ifconfig `route -n get -inet6 default | \
     awk '/inet6 / {if(substr($2,1,1)!="f") print $2}' \
     >> /data/db/opendkim/trustedhosts
 
-cat << "EOF" >> /data/db/opendkim/trustedhosts
+cat <<'EOF' >> /data/db/opendkim/trustedhosts
 localhost
 example.com
 *.example.com
-"EOF"
+EOF
 ```
 
 ``` bash

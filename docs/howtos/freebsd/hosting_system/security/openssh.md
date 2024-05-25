@@ -2,7 +2,7 @@
 title: 'OpenSSH'
 description: 'In diesem HowTo wird step-by-step die Installation von OpenSSH für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2024-02-01'
+updated: '2024-05-24'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -13,7 +13,7 @@ author_url: https://github.com/JoeUser78
 
 Unser Hosting System wird folgende Dienste umfassen.
 
-- OpenSSH 9.6p1 (Public-Key-Auth)
+- OpenSSH 9.7p1 (Public-Key-Auth)
 
 ## Voraussetzungen
 
@@ -25,35 +25,35 @@ Wir installieren `security/openssh-portable` und dessen Abhängigkeiten.
 
 ``` bash
 mkdir -p /var/db/ports/security_libfido2
-cat << "EOF" > /var/db/ports/security_libfido2/options
-_OPTIONS_READ=libfido2-1.13.0
+cat <<'EOF' > /var/db/ports/security_libfido2/options
+_OPTIONS_READ=libfido2-1.14.0
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
-OPTIONS_FILE_SET+=DOCS
-"EOF"
+OPTIONS_FILE_UNSET+=DOCS
+EOF
 
 mkdir -p /var/db/ports/dns_ldns
-cat << "EOF" > /var/db/ports/dns_ldns/options
+cat <<'EOF' > /var/db/ports/dns_ldns/options
 _OPTIONS_READ=ldns-1.8.3
 _FILE_COMPLETE_OPTIONS_LIST=DANETAUSAGE DOXYGEN DRILL EXAMPLES GOST RRTYPEAMTRELAY RRTYPEAVC RRTYPENINFO RRTYPERKEY RRTYPETA
 OPTIONS_FILE_SET+=DANETAUSAGE
 OPTIONS_FILE_UNSET+=DOXYGEN
 OPTIONS_FILE_SET+=DRILL
-OPTIONS_FILE_SET+=EXAMPLES
+OPTIONS_FILE_UNSET+=EXAMPLES
 OPTIONS_FILE_SET+=GOST
 OPTIONS_FILE_UNSET+=RRTYPEAMTRELAY
 OPTIONS_FILE_UNSET+=RRTYPEAVC
 OPTIONS_FILE_UNSET+=RRTYPENINFO
 OPTIONS_FILE_UNSET+=RRTYPERKEY
 OPTIONS_FILE_SET+=RRTYPETA
-"EOF"
+EOF
 
 mkdir -p /var/db/ports/security_openssh-portable
-cat << "EOF" > /var/db/ports/security_openssh-portable/options
-_OPTIONS_READ=openssh-portable-9.6.p1
+cat <<'EOF' > /var/db/ports/security_openssh-portable/options
+_OPTIONS_READ=openssh-portable-9.7.p1
 _FILE_COMPLETE_OPTIONS_LIST=BLACKLISTD BSM DOCS FIDO_U2F HPN KERB_GSSAPI LDNS LIBEDIT NONECIPHER PAM TCP_WRAPPERS XMSS MIT HEIMDAL HEIMDAL_BASE
 OPTIONS_FILE_UNSET+=BLACKLISTD
 OPTIONS_FILE_UNSET+=BSM
-OPTIONS_FILE_SET+=DOCS
+OPTIONS_FILE_UNSET+=DOCS
 OPTIONS_FILE_SET+=FIDO_U2F
 OPTIONS_FILE_UNSET+=HPN
 OPTIONS_FILE_UNSET+=KERB_GSSAPI
@@ -66,7 +66,7 @@ OPTIONS_FILE_UNSET+=XMSS
 OPTIONS_FILE_UNSET+=MIT
 OPTIONS_FILE_UNSET+=HEIMDAL
 OPTIONS_FILE_UNSET+=HEIMDAL_BASE
-"EOF"
+EOF
 
 
 cd /usr/ports/security/openssh-portable
@@ -81,13 +81,12 @@ sysrc openssh_enable=YES
 Wir konfigurieren Unbound:
 
 ``` bash
-sed -e 's|^#\(Port\).*$|\1 22222|' \
+sed -e 's|^#\(Port\).*$|\1 2222|' \
     -e 's|^#\(PermitRootLogin\).*$|\1 prohibit-password|' \
     -e 's|^#\(PubkeyAuthentication\).*$|\1 yes|' \
     -e 's|^#\(PasswordAuthentication\).*$|\1 no|' \
     -e 's|^#\(PermitEmptyPasswords\).*$|\1 no|' \
     -e 's|^#\(KbdInteractiveAuthentication\).*$|\1 no|' \
-    -e 's|^#\(ChallengeResponseAuthentication\).*$|\1 no|' \
     -e 's|^#\(UsePAM\).*$|\1 no|' \
     -e 's|^#\(AllowAgentForwarding\).*$|\1 no|' \
     -e 's|^#\(AllowTcpForwarding\).*$|\1 no|' \
@@ -105,7 +104,7 @@ sed -e 's|^#\(Port\).*$|\1 22222|' \
     -e 's|^\(Subsystem.*\)$|#\1|' \
     -i '' /usr/local/etc/ssh/sshd_config
 
-cat << "EOF" >> /usr/local/etc/ssh/sshd_config
+cat <<'EOF' >> /usr/local/etc/ssh/sshd_config
 
 Subsystem sftp internal-sftp -u 0027
 
@@ -128,16 +127,16 @@ Match Group sftponly
     PasswordAuthentication yes
     ForceCommand internal-sftp -d %u
 
-"EOF"
+EOF
 
 # Ciphers: ssh -Q cipher
 # MACs: ssh -Q mac
 # KexAlgorithms: ssh -Q kex
 # PubkeyAcceptedKeyTypes: ssh -Q key
 
-sed -e '/^# Ciphers and keying/ a\\
-Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com\\
-Macs hmac-sha2-512,hmac-sha2-512-etm@openssh.com,hmac-sha2-256,hmac-sha2-256-etm@openssh.com\\
+sed -e '/^# Ciphers and keying/ a\
+Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com\
+Macs hmac-sha2-512,hmac-sha2-512-etm@openssh.com,hmac-sha2-256,hmac-sha2-256-etm@openssh.com\
 KexAlgorithms sntrup761x25519-sha512@openssh.com,curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256\
 ' -i '' /usr/local/etc/ssh/sshd_config
 

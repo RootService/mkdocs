@@ -2,7 +2,7 @@
 title: 'Apache'
 description: 'In diesem HowTo wird step-by-step die Installation des Apache Webservers für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2024-02-01'
+updated: '2024-05-24'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -13,7 +13,7 @@ author_url: https://github.com/JoeUser78
 
 Unser Hosting System wird um folgende Dienste erweitert.
 
-- Apache 2.4.58 (MPM-Event, HTTP/2, mod_brotli)
+- Apache 2.4.59 (MPM-Event, HTTP/2, mod_brotli)
 
 ## Voraussetzungen
 
@@ -24,14 +24,14 @@ Zu den Voraussetzungen für dieses HowTo siehe bitte: [Hosting System](/howtos/f
 Wir installieren `www/apache24` und dessen Abhängigkeiten.
 
 ``` bash
-cat << "EOF" >> /etc/make.conf
+cat <<'EOF' >> /etc/make.conf
 #DEFAULT_VERSIONS+=apache=2.4
-"EOF"
+EOF
 
 
 mkdir -p /var/db/ports/www_apache24
-cat << "EOF" > /var/db/ports/www_apache24/options
-_OPTIONS_READ=apache24-2.4.58
+cat <<'EOF' > /var/db/ports/www_apache24/options
+_OPTIONS_READ=apache24-2.4.59
 _FILE_COMPLETE_OPTIONS_LIST=ACCESS_COMPAT ACTIONS ALIAS ALLOWMETHODS ASIS AUTHNZ_FCGI AUTHNZ_LDAP AUTHN_ANON AUTHN_CORE AUTHN_DBD AUTHN_DBM AUTHN_FILE AUTHN_SOCACHE AUTHZ_CORE AUTHZ_DBD AUTHZ_DBM AUTHZ_GROUPFILE AUTHZ_HOST AUTHZ_OWNER AUTHZ_USER AUTH_BASIC AUTH_DIGEST AUTH_FORM AUTOINDEX BROTLI BUFFER CACHE CACHE_DISK CACHE_SOCACHE CERN_META CGI CGID CHARSET_LITE DATA DAV DAV_FS DAV_LOCK DBD DEFLATE DIALUP DIR DOCS DUMPIO ENV EXPIRES EXT_FILTER FILE_CACHE FILTER HEADERS HEARTBEAT HEARTMONITOR HTTP2 IDENT IMAGEMAP INCLUDE INFO IPV4_MAPPED LBMETHOD_BYBUSYNESS LBMETHOD_BYREQUESTS LBMETHOD_BYTRAFFIC LBMETHOD_HEARTBEAT LDAP LOGIO LOG_DEBUG LOG_FORENSIC LUA LUAJIT MACRO MD MIME MIME_MAGIC NEGOTIATION PROXY RATELIMIT REFLECTOR REMOTEIP REQTIMEOUT REQUEST REWRITE SED SESSION SETENVIF SLOTMEM_PLAIN SLOTMEM_SHM SOCACHE_DBM SOCACHE_DC SOCACHE_MEMCACHE SOCACHE_REDIS SOCACHE_SHMCB SPELING SSL STATUS SUBSTITUTE SUEXEC SUEXEC_SYSLOG UNIQUE_ID USERDIR USERTRACK VERSION VHOST_ALIAS WATCHDOG XML2ENC MPM_PREFORK MPM_WORKER MPM_EVENT MPM_SHARED PROXY_AJP PROXY_BALANCER PROXY_CONNECT PROXY_EXPRESS PROXY_FCGI  PROXY_HTTP2 PROXY_FDPASS PROXY_FTP PROXY_HCHECK PROXY_HTML PROXY_HTTP  PROXY_SCGI PROXY_UWSGI PROXY_WSTUNNEL  SESSION_COOKIE SESSION_CRYPTO SESSION_DBD  BUCKETEER CASE_FILTER CASE_FILTER_IN ECHO EXAMPLE_HOOKS EXAMPLE_IPC  OPTIONAL_FN_EXPORT OPTIONAL_FN_IMPORT OPTIONAL_HOOK_EXPORT  OPTIONAL_HOOK_IMPORT
 OPTIONS_FILE_SET+=ACCESS_COMPAT
 OPTIONS_FILE_SET+=ACTIONS
@@ -74,7 +74,7 @@ OPTIONS_FILE_SET+=DBD
 OPTIONS_FILE_SET+=DEFLATE
 OPTIONS_FILE_SET+=DIALUP
 OPTIONS_FILE_SET+=DIR
-OPTIONS_FILE_SET+=DOCS
+OPTIONS_FILE_UNSET+=DOCS
 OPTIONS_FILE_SET+=DUMPIO
 OPTIONS_FILE_SET+=ENV
 OPTIONS_FILE_SET+=EXPIRES
@@ -166,7 +166,7 @@ OPTIONS_FILE_UNSET+=OPTIONAL_FN_EXPORT
 OPTIONS_FILE_UNSET+=OPTIONAL_FN_IMPORT
 OPTIONS_FILE_UNSET+=OPTIONAL_HOOK_EXPORT
 OPTIONS_FILE_UNSET+=OPTIONAL_HOOK_IMPORT
-"EOF"
+EOF
 
 
 cd /usr/ports/www/apache24
@@ -179,10 +179,10 @@ sysrc apache24_http_accept_enable=YES
 
 
 mkdir -p /usr/local/etc/newsyslog.conf.d
-cat << "EOF" >> /usr/local/etc/newsyslog.conf.d/apache24
+cat <<'EOF' >> /usr/local/etc/newsyslog.conf.d/apache24
 /var/log/httpd-*.log                    644  13    *    $W6D0 JCG   /var/run/httpd.pid
 /data/www/vhosts/*/logs/apache_*_log    644  24    *    $M1D0 JCG   /var/run/httpd.pid
-"EOF"
+EOF
 ```
 
 ## Konfiguration
@@ -190,17 +190,25 @@ cat << "EOF" >> /usr/local/etc/newsyslog.conf.d/apache24
 Verzeichnisse für die ersten VirtualHosts erstellen.
 
 ``` bash
-mkdir -p /data/www/{cache,tmp}
-chmod 1777 /data/www/{cache,tmp}
-chown www:www /data/www/{cache,tmp}
+mkdir -p /data/www/cache
+chmod 1777 /data/www/cache
+chown www:www /data/www/cache
+mkdir -p /data/www/tmp
+chmod 1777 /data/www/tmp
+chown www:www /data/www/tmp
 
 
 mkdir -p /data/www/acme/.well-known
 
-mkdir -p /data/www/vhosts/_{default,localhost}_/logs
-mkdir -p /data/www/vhosts/_{default,localhost}_/data/.well-known
-chmod 0750 /data/www/vhosts/_{default,localhost}_/data
-chown www:www /data/www/vhosts/_{default,localhost}_/data
+mkdir -p /data/www/vhosts/_default_/logs
+mkdir -p /data/www/vhosts/_default_/data/.well-known
+chmod 0750 /data/www/vhosts/_default_/data
+chown www:www /data/www/vhosts/_default_/data
+
+mkdir -p /data/www/vhosts/_localhost_/logs
+mkdir -p /data/www/vhosts/_localhost_/data/.well-known
+chmod 0750 /data/www/vhosts/_localhost_/data
+chown www:www /data/www/vhosts/_localhost_/data
 
 mkdir -p /data/www/vhosts/mail.example.com/logs
 mkdir -p /data/www/vhosts/mail.example.com/data/.well-known
@@ -218,7 +226,7 @@ Die folgende Konfiguration verwendet für den localhost den Pfad `/data/www/vhos
 `httpd.conf` einrichten.
 
 ``` bash
-cat << "EOF" > /usr/local/etc/apache24/httpd.conf
+cat <<'EOF' > /usr/local/etc/apache24/httpd.conf
 ServerRoot "/usr/local"
 PidFile "/var/run/httpd.pid"
 LoadModule mpm_event_module libexec/apache24/mod_mpm_event.so
@@ -759,13 +767,13 @@ Include "etc/apache24/vhosts.conf"
     Header unset Pragma
     Header unset ETag
 </IfModule>
-"EOF"
+EOF
 ```
 
 `vhosts.conf` einrichten.
 
 ``` bash
-cat << "EOF" > /usr/local/etc/apache24/vhosts.conf
+cat <<'EOF' > /usr/local/etc/apache24/vhosts.conf
 <VirtualHost 127.0.0.1:80>
     ServerName localhost
     ServerAdmin webmaster@example.com
@@ -836,13 +844,13 @@ cat << "EOF" > /usr/local/etc/apache24/vhosts.conf
         RewriteRule "^/?(.*)" "https://%{HTTP_HOST}/$1" [L,QSA,R=308]
     </IfModule>
 </VirtualHost>
-"EOF"
+EOF
 ```
 
 `vhosts-ssl.conf` einrichten.
 
 ``` bash
-cat << "EOF" > /usr/local/etc/apache24/vhosts-ssl.conf
+cat <<'EOF' > /usr/local/etc/apache24/vhosts-ssl.conf
 <VirtualHost *:443>
     ServerName devnull.example.com
     ServerAdmin webmaster@example.com
@@ -906,7 +914,7 @@ cat << "EOF" > /usr/local/etc/apache24/vhosts-ssl.conf
     SSLCertificateFile "/usr/local/etc/letsencrypt/live/www.example.com/fullchain.pem"
     SSLCertificateKeyFile "/usr/local/etc/letsencrypt/live/www.example.com/privkey.pem"
 </VirtualHost>
-"EOF"
+EOF
 ```
 
 ## Abschluss
