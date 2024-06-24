@@ -33,10 +33,13 @@
       {% endif %}
         <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes">
       {% if page and page.meta and page.meta.robots %}
-        <meta name="robots" content="noai, noarchive, noimageindex, max-snippet:-1, max-image-preview:standard, max-video-preview:standard, {{ page.meta.robots }}">
+        <meta name="CCBot" content="nofollow">
+        <meta name="robots" content="noai, noimageai, noarchive, noimageindex, max-snippet:-1, max-image-preview:standard, max-video-preview:standard, {{ page.meta.robots }}">
       {% else %}
-        <meta name="robots" content="noai, noarchive, noimageindex, max-snippet:-1, max-image-preview:standard, max-video-preview:standard">
+        <meta name="CCBot" content="nofollow">
+        <meta name="robots" content="noai, noimageai, noarchive, noimageindex, max-snippet:-1, max-image-preview:standard, max-video-preview:standard">
       {% endif %}
+        <meta name="tdm-reservation" content="1">
         <meta name="format-detection" content="telephone=no">
       {% if page.meta and page.meta.author %}
         <meta name="author" content="{{ page.meta.author }}">

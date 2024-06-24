@@ -133,12 +133,12 @@ gpart create -s gpt nvd0
 gpart create -s gpt nvd1
 
 gpart add -t freebsd-boot  -b      40 -s     216 -l bootfs0 nvd0
-gpart add -t efi           -b     256 -s    3840 -l uefifs0 nvd0
+gpart add -t efi           -b     256 -s    3840 -l efiesp0 nvd0
 gpart add -t freebsd-swap  -b    4096 -s 8388608 -l swapfs0 nvd0
 gpart add -t freebsd-ufs   -b 8392704            -l rootfs0 nvd0
 
 gpart add -t freebsd-boot  -b      40 -s     216 -l bootfs1 nvd1
-gpart add -t efi           -b     256 -s    3840 -l uefifs1 nvd1
+gpart add -t efi           -b     256 -s    3840 -l efiesp1 nvd1
 gpart add -t freebsd-swap  -b    4096 -s 8388608 -l swapfs1 nvd1
 gpart add -t freebsd-ufs   -b 8392704            -l rootfs1 nvd1
 
@@ -192,9 +192,9 @@ Unser System soll natürlich auch von den Festplatten booten können, weshalb wi
 Festplatte 1:
 
 ``` bash
-newfs_msdos /dev/gpt/uefifs0
+newfs_msdos /dev/gpt/efiesp0
 
-mount -t msdosfs /dev/gpt/uefifs0 /mnt/boot/efi
+mount -t msdosfs /dev/gpt/efiesp0 /mnt/boot/efi
 
 mkdir -p /mnt/boot/efi/EFI/BOOT
 cp /mnt/boot/loader.efi /mnt/boot/efi/EFI/BOOT/BOOTX64.efi
@@ -208,9 +208,9 @@ gpart bootcode -b /mnt/boot/pmbr -p /mnt/boot/gptboot -i 1 nvd0
 Festplatte 2:
 
 ``` bash
-newfs_msdos /dev/gpt/uefifs1
+newfs_msdos /dev/gpt/efiesp1
 
-mount -t msdosfs /dev/gpt/uefifs1 /mnt/boot/efi
+mount -t msdosfs /dev/gpt/efiesp1 /mnt/boot/efi
 
 mkdir -p /mnt/boot/efi/EFI/BOOT
 cp /mnt/boot/loader.efi /mnt/boot/efi/EFI/BOOT/BOOTX64.efi

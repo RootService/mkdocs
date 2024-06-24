@@ -139,7 +139,7 @@ postscreen_dnsbl_sites =
   psbl.surriel.com*2
   torexit.dan.me.uk*2
   tor.dan.me.uk*1
-  safe.dnsbl.sorbs.net*1
+#  safe.dnsbl.sorbs.net*1
 postscreen_dnsbl_threshold = 5
 postscreen_greet_action = enforce
 postscreen_non_smtp_command_enable = yes

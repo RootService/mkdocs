@@ -19,7 +19,7 @@ Unsere BasePorts werden am Ende folgende Dienste umfassen.
 - OpenSSL 3.0.13
 - LUA 5.4.6
 - TCL 8.6.14
-- Python 3.9.19
+- Python 3.11.9
 - cURL 8.7.1
 - Ruby 3.2.4
 - Rust 1.78.0
@@ -313,12 +313,12 @@ cd /usr/ports/lang/tcl86
 make all install clean-depends clean
 ```
 
-Wir installieren `lang/python39` und dessen Abhängigkeiten.
+Wir installieren `lang/python311` und dessen Abhängigkeiten.
 
 ``` bash
 cat <<'EOF' >> /etc/make.conf
-#DEFAULT_VERSIONS+=python=3.9
-#DEFAULT_VERSIONS+=python3=3.9
+#DEFAULT_VERSIONS+=python=3.11
+#DEFAULT_VERSIONS+=python3=3.11
 EOF
 
 
@@ -337,14 +337,14 @@ OPTIONS_FILE_SET+=BRACKETEDPASTE
 OPTIONS_FILE_UNSET+=DOCS
 EOF
 
-mkdir -p /var/db/ports/lang_python39
-cat <<'EOF' > /var/db/ports/lang_python39/options
-_OPTIONS_READ=python39-3.9.19
+mkdir -p /var/db/ports/lang_python311
+cat <<'EOF' > /var/db/ports/lang_python311/options
+_OPTIONS_READ=python311-3.11.9
 _FILE_COMPLETE_OPTIONS_LIST=DEBUG IPV6 LIBMPDEC LTO NLS PYMALLOC FNV SIPHASH
 OPTIONS_FILE_UNSET+=DEBUG
 OPTIONS_FILE_SET+=IPV6
 OPTIONS_FILE_SET+=LIBMPDEC
-OPTIONS_FILE_UNSET+=LTO
+OPTIONS_FILE_SET+=LTO
 OPTIONS_FILE_SET+=NLS
 OPTIONS_FILE_SET+=PYMALLOC
 OPTIONS_FILE_UNSET+=FNV
@@ -495,7 +495,7 @@ Wir installieren `devel/py-pip` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/devel_py-pip
 cat <<'EOF' > /var/db/ports/devel_py-pip/options
-_OPTIONS_READ=py39-pip-23.3.2
+_OPTIONS_READ=py311-pip-23.3.2
 _FILE_COMPLETE_OPTIONS_LIST=DOCS
 OPTIONS_FILE_UNSET+=DOCS
 EOF

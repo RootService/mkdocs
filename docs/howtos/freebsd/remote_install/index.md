@@ -24,7 +24,7 @@ Unsere BasePorts werden am Ende folgende Dienste umfassen.
 - OpenSSL 3.0.13
 - LUA 5.4.6
 - TCL 8.6.14
-- Python 3.9.19
+- Python 3.11.9
 - cURL 8.7.1
 - Ruby 3.2.4
 - Rust 1.78.0

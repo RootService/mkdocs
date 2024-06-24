@@ -91,7 +91,7 @@ sysctl kern.geom.debugflags=0x10
 gpart create -s gpt nvd0
 
 gpart add -t freebsd-boot  -b      40 -s     216 -l bootfs nvd0
-gpart add -t efi           -b     256 -s    3840 -l uefifs nvd0
+gpart add -t efi           -b     256 -s    3840 -l efiesp nvd0
 gpart add -t freebsd-swap  -b    4096 -s 8388608 -l swapfs nvd0
 gpart add -t freebsd-ufs   -b 8392704            -l rootfs nvd0
 
@@ -120,9 +120,9 @@ cp -a /usr/freebsd-dist /mnt/usr/
 Unser System soll natürlich auch von der Festplatte booten können, weshalb wir jetzt den Bootcode und Bootloader in der Bootpartittion installieren.
 
 ``` bash
-newfs_msdos /dev/gpt/uefifs
+newfs_msdos /dev/gpt/efiesp
 
-mount -t msdosfs /dev/gpt/uefifs /mnt/boot/efi
+mount -t msdosfs /dev/gpt/efiesp /mnt/boot/efi
 
 mkdir -p /mnt/boot/efi/EFI/BOOT
 cp /mnt/boot/loader.efi /mnt/boot/efi/EFI/BOOT/BOOTX64.efi

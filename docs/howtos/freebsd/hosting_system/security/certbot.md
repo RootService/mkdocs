@@ -26,7 +26,7 @@ Wir installieren `security/py-certbot` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/security_py-certbot
 cat <<'EOF' > /var/db/ports/security_py-certbot/options
-_OPTIONS_READ=py39-certbot-2.10.0
+_OPTIONS_READ=py311-certbot-2.10.0
 _FILE_COMPLETE_OPTIONS_LIST=MANPAGES
 OPTIONS_FILE_SET+=MANPAGES
 EOF

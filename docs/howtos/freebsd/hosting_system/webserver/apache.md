@@ -378,7 +378,7 @@ LoadModule rewrite_module libexec/apache24/mod_rewrite.so
     Group www
 </IfModule>
 TraceEnable off
-HttpProtocolOptions Strict LenientMethods Require1.0
+HttpProtocolOptions Strict RegisteredMethods Require1.0
 <IfModule http2_module>
     Protocols h2 http/1.1
     ProtocolsHonorOrder On
