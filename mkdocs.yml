@@ -180,12 +180,9 @@ markdown_extensions:
     - pymdownx.mark:
 #    - pymdownx.smartsymbols:
     - pymdownx.snippets:
-        base_path:
-            - docs/.snippets
-#            - LICENSE.md
-#        auto_append:
-#            - refs.md
-        check_paths: true
+        base_path: snippets
+#        auto_append: autoappend.md
+#        check_paths: true
     - pymdownx.superfences:
         preserve_tabs: true
         custom_fences:

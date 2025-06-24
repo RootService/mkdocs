@@ -425,6 +425,8 @@ In der `sysctl.conf` können die meisten Kernel-Parameter verändert werden. Wir
 
 ``` bash
 cat <<'EOF' >> /etc/sysctl.conf
+--8<-- "configs/etc/sysctl.conf"
+
 kern.ipc.maxsockbuf=16777216
 kern.ipc.shm_use_phys=1
 kern.ipc.soacceptqueue=1024
