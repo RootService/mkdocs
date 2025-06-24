@@ -13,7 +13,7 @@ author_url: https://github.com/JoeUser78
 
 Unser Hosting System wird folgende Dienste umfassen.
 
-- OpenSSH 9.7p1 (Public-Key-Auth)
+- OpenSSH 9.9p2 (Public-Key-Auth)
 
 ## Voraussetzungen
 

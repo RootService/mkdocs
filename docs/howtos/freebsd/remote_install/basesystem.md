@@ -15,10 +15,10 @@ In diesem HowTo beschreibe ich step-by-step die Remote Installation des [FreeBSD
 
 Unser BaseSystem wird folgende Dienste umfassen.
 
-- FreeBSD 14.1-RELEASE 64Bit
-- OpenSSL 3.0.13
-- OpenSSH 9.7p1
-- Unbound 1.20.0
+- FreeBSD 14.3-RELEASE 64Bit
+- OpenSSL 3.0.16
+- OpenSSH 9.9p2
+- Unbound 1.22.0
 
 ## Voraussetzungen
 
@@ -68,7 +68,7 @@ Um unsere umfangreichen Vorbereitungen nun abzuschliessen, müssen wir nur noch 
 Als Erstes kopieren wir mittels PuTTYs SCP-Client (`pscp`) das mfsBSD Image in das RescueSystem.
 
 ``` powershell
-pscp -P 2222 "${Env:USERPROFILE}\VirtualBox VMs\mfsBSD\mfsbsd-14.1-RELEASE-amd64.img" root@127.0.0.1:/tmp/mfsbsd-14.1-RELEASE-amd64.img
+pscp -P 2222 "${Env:USERPROFILE}\VirtualBox VMs\mfsBSD\mfsbsd-14.3-RELEASE-amd64.img" root@127.0.0.1:/tmp/mfsbsd-14.3-RELEASE-amd64.img
 ```
 
 Jetzt können wir das mfsBSD Image mittels `dd` auf der ersten Festplatte (`/dev/nvme0n1`) unserer virtuellen Maschine installieren und uns anschliessend wieder aus dem RescueSystem ausloggen.
@@ -76,7 +76,7 @@ Jetzt können wir das mfsBSD Image mittels `dd` auf der ersten Festplatte (`/dev
 ``` bash
 dd if=/dev/zero of=/dev/nvme0n1 count=512 bs=1M
 
-dd if=/tmp/mfsbsd-14.1-RELEASE-amd64.img of=/dev/nvme0n1 bs=1M
+dd if=/tmp/mfsbsd-14.3-RELEASE-amd64.img of=/dev/nvme0n1 bs=1M
 
 exit
 ```
@@ -181,8 +181,8 @@ mkdir -p /mnt/data
 Auf die gemounteten Partitionen entpacken wir ein FreeBSD Basesystem mit dem wir problemlos weiterarbeiten können. Je nach Auslastung des FreeBSD FTP-Servers kann dies ein wenig dauern, bitte nicht ungeduldig werden.
 
 ``` bash
-fetch -4 -q -o - --no-verify-peer "https://download.freebsd.org/releases/amd64/14.1-RELEASE/base.txz"   | tar Jxpvf - -C /mnt/
-fetch -4 -q -o - --no-verify-peer "https://download.freebsd.org/releases/amd64/14.1-RELEASE/kernel.txz" | tar Jxpvf - -C /mnt/
+fetch -4 -q -o - --no-verify-peer "https://download.freebsd.org/releases/amd64/14.3-RELEASE/base.txz"   | tar Jxpvf - -C /mnt/
+fetch -4 -q -o - --no-verify-peer "https://download.freebsd.org/releases/amd64/14.3-RELEASE/kernel.txz" | tar Jxpvf - -C /mnt/
 
 cp -a /mnt/boot/kernel /mnt/boot/GENERIC
 ```

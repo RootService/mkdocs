@@ -13,19 +13,19 @@ author_url: https://github.com/JoeUser78
 
 Unser Hosting System wird am Ende folgende Dienste umfassen.
 
-- CertBot 2.10.0 (LetsEncrypt ACME API 2.0)
-- OpenSSH 9.7p1 (Public-Key-Auth)
-- Unbound 1.20.0 (DNScrypt, DNS over TLS)
-- MySQL 8.0.35 (InnoDB, GTID)
+- CertBot 4.0.0 (LetsEncrypt ACME API 2.0)
+- OpenSSH 9.9p2 (Public-Key-Auth)
+- Unbound 1.22.0 (DNScrypt, DNS over TLS)
+- MySQL 8.0.42 (InnoDB, GTID)
 - Dovecot 2.3.21 (IMAP only, 1GB Quota)
-- Postfix 3.9.0 (Dovecot-SASL, postscreen)
+- Postfix 3.10.2 (Dovecot-SASL, postscreen)
 - OpenDKIM 2.10.3 (VBR, 2048 Bit RSA)
 - OpenDMARC 1.4.2 (SPF2, FailureReports)
 - SpamAssassin 4.0.1 (SpamAss-Milter)
-- Apache 2.4.59 (MPM-Event, HTTP/2, mod_brotli)
-- NGinx 1.24.1 (HTTP/2, mod_brotli)
-- PHP 8.2.19 (PHP-FPM, Composer, PEAR)
-- NodeJS 20.13.1 (NPM, YARN)
+- Apache 2.4.63 (MPM-Event, HTTP/2, mod_brotli)
+- NGinx 1.28.0 (HTTP/2, mod_brotli)
+- PHP 8.3.22 (PHP-FPM, Composer, PEAR)
+- NodeJS 22.16.0 (NPM, YARN)
 
 Folgende Punkte sind in allen folgenden HowTos zu beachten.
 

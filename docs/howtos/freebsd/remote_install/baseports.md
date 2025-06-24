@@ -15,14 +15,14 @@ In diesem HowTo beschreibe ich step-by-step die Installation einiger Ports (Pack
 
 Unsere BasePorts werden am Ende folgende Dienste umfassen.
 
-- Perl 5.36.3
-- OpenSSL 3.0.13
-- LUA 5.4.6
-- TCL 8.6.14
-- Python 3.11.9
-- cURL 8.7.1
-- Ruby 3.2.4
-- Rust 1.78.0
+- Perl 5.40.2
+- OpenSSL 3.0.16
+- LUA 5.4.7
+- TCL 8.6.16
+- Python 3.11.13
+- cURL 8.14.1
+- Ruby 3.3.8
+- Rust 1.87.0
 
 ## Voraussetzungen
 

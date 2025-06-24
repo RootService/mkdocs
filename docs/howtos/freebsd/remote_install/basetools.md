@@ -15,16 +15,15 @@ In diesem HowTo beschreibe ich step-by-step die Installation einiger Tools (Port
 
 Unsere BaseTools werden am Ende folgende Dienste umfassen.
 
-- Sudo 1.9.15p5
-- wget 1.24.5
-- Bash 5.2.26
-- GIT 2.45.1
-- Portmaster 3.29
-- SMARTmontools 7.3
-- Nano 8.0
-- SQLite 3.45.1
-- GnuPG 2.4.5
-- Subversion 1.14.3
+- Sudo 1.9.16p2
+- wget 1.25.0
+- Bash 5.2.37
+- GIT 2.50.0
+- Portmaster 3.30
+- Nano 8.4
+- SQLite 3.46.1
+- GnuPG 2.4.7
+- Subversion 1.14.5
 
 ## Voraussetzungen
 

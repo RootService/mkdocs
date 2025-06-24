@@ -13,7 +13,7 @@ author_url: https://github.com/JoeUser78
 
 Unser Hosting System wird folgende Dienste umfassen.
 
-- CertBot 2.10.0 (LetsEncrypt ACME API 2.0)
+- CertBot 4.0.0 (LetsEncrypt ACME API 2.0)
 
 ## Voraussetzungen
 

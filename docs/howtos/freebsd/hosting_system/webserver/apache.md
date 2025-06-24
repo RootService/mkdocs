@@ -13,7 +13,7 @@ author_url: https://github.com/JoeUser78
 
 Unser Hosting System wird um folgende Dienste erweitert.
 
-- Apache 2.4.59 (MPM-Event, HTTP/2, mod_brotli)
+- Apache 2.4.63 (MPM-Event, HTTP/2, mod_brotli)
 
 ## Voraussetzungen
 

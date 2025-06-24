@@ -23,7 +23,7 @@ VirtualBox (inklusive dem Extensionpack) und PuTTY werden mit den jeweiligen Sta
 winget install PuTTY.PuTTY
 winget install Oracle.VirtualBox
 
-$Env:vbox_ver=((winget show Oracle.VirtualBox) -match '^Version:' -split '\s+')[1]
+$Env:vbox_ver=((winget show Oracle.VirtualBox) -match '^Version:' -split '\s+')
 curl -o "Oracle_VM_VirtualBox_Extension_Pack-${Env:vbox_ver}.vbox-extpack" -L "https://download.virtualbox.org/virtualbox/${Env:vbox_ver}/Oracle_VM_VirtualBox_Extension_Pack-${Env:vbox_ver}.vbox-extpack"
 & "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" extpack install --replace Oracle_VM_VirtualBox_Extension_Pack-${Env:vbox_ver}.vbox-extpack
 rm Oracle_VM_VirtualBox_Extension_Pack-${Env:vbox_ver}.vbox-extpack
@@ -58,9 +58,9 @@ Als nächstes benötigen wir die FreeBSD 64Bit Installations-CD, welche wir mitt
 ``` powershell
 cd "${Env:USERPROFILE}\VirtualBox VMs\mfsBSD"
 
-curl -o "FreeBSD-14.1-RELEASE-amd64-disc1.iso" -L "https://download.freebsd.org/releases/ISO-IMAGES/14.1/FreeBSD-14.1-RELEASE-amd64-disc1.iso"
+curl -o "FreeBSD-14.3-RELEASE-amd64-disc1.iso" -L "https://download.freebsd.org/releases/ISO-IMAGES/14.1/FreeBSD-14.3-RELEASE-amd64-disc1.iso"
 
-& "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" storageattach "mfsBSD" --storagectl "AHCI Controller" --port 0 --device 0 --type dvddrive --medium "FreeBSD-14.1-RELEASE-amd64-disc1.iso"
+& "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" storageattach "mfsBSD" --storagectl "AHCI Controller" --port 0 --device 0 --type dvddrive --medium "FreeBSD-14.3-RELEASE-amd64-disc1.iso"
 ```
 
 Nachdem die virtuelle Maschine nun fertig konfiguriert ist, wird es Zeit diese zu booten.
@@ -467,13 +467,13 @@ sed -e 's/^#\(mfsbsd.rootpw=\).*$/\1"mfsroot"/' conf/loader.conf.sample > conf/l
 Für unsere Zwecke reicht die Standardkonfiguration des mfsBSD-Buildscripts aus, so dass wir unser mfsBSD-Image direkt erzeugen können.
 
 ``` bash
-make BASE=/usr/freebsd-dist RELEASE=14.1-RELEASE ARCH=amd64 PKG_STATIC=/usr/local/sbin/pkg-static MFSROOT_MAXSIZE=120m
+make BASE=/usr/freebsd-dist RELEASE=14.3-RELEASE ARCH=amd64 PKG_STATIC=/usr/local/sbin/pkg-static MFSROOT_MAXSIZE=120m
 ```
 
-Anschliessend liegt unter `/usr/local/mfsbsd/mfsbsd-master/mfsbsd-14.1-RELEASE-amd64.img` unser fertiges mfsBSD-Image. Dieses kopieren wir nun per PuTTY auf den Windows Host.
+Anschliessend liegt unter `/usr/local/mfsbsd/mfsbsd-master/mfsbsd-14.3-RELEASE-amd64.img` unser fertiges mfsBSD-Image. Dieses kopieren wir nun per PuTTY auf den Windows Host.
 
 ``` powershell
-pscp -P 2222 root@127.0.0.1:/usr/local/mfsbsd/mfsbsd-master/mfsbsd-14.1-RELEASE-amd64.img "${Env:USERPROFILE}\VirtualBox VMs\mfsBSD\mfsbsd-14.1-RELEASE-amd64.img"
+pscp -P 2222 root@127.0.0.1:/usr/local/mfsbsd/mfsbsd-master/mfsbsd-14.3-RELEASE-amd64.img "${Env:USERPROFILE}\VirtualBox VMs\mfsBSD\mfsbsd-14.3-RELEASE-amd64.img"
 ```
 
 Die virtuelle Maschine können wir an dieser Stelle nun beenden.

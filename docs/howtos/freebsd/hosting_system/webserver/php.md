@@ -13,7 +13,7 @@ author_url: https://github.com/JoeUser78
 
 Unser Hosting System wird folgende Dienste umfassen.
 
-- PHP 8.2.19 (PHP-FPM, Composer, PEAR)
+- PHP 8.3.22 (PHP-FPM, Composer, PEAR)
 
 ## Voraussetzungen
 

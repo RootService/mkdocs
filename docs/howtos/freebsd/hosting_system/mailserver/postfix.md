@@ -13,7 +13,7 @@ author_url: https://github.com/JoeUser78
 
 Unser Hosting System wird um folgende Dienste erweitert.
 
-- Postfix 3.9.0 (Dovecot-SASL, postscreen)
+- Postfix 3.10.2 (Dovecot-SASL, postscreen)
 
 ## Voraussetzungen
 

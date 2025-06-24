@@ -13,7 +13,7 @@ author_url: https://github.com/JoeUser78
 
 Unser Hosting System wird um folgende Dienste erweitert.
 
-- NGinx 1.24.0 (HTTP/2, mod_brotli)
+- NGinx 1.28.0 (HTTP/2, mod_brotli)
 
 ## Voraussetzungen
 

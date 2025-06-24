@@ -13,34 +13,33 @@ author_url: https://github.com/JoeUser78
 
 Unser BaseSystem wird am Ende folgende Dienste umfassen.
 
-- FreeBSD 14.1-RELEASE 64Bit
-- OpenSSL 3.0.13
-- OpenSSH 9.7p1
-- Unbound 1.20.0
+- FreeBSD 14.3-RELEASE 64Bit
+- OpenSSL 3.0.16
+- OpenSSH 9.9p2
+- Unbound 1.22.0
 
 Unsere BasePorts werden am Ende folgende Dienste umfassen.
 
-- Perl 5.36.3
-- OpenSSL 3.0.13
-- LUA 5.4.6
-- TCL 8.6.14
-- Python 3.11.9
-- cURL 8.7.1
-- Ruby 3.2.4
-- Rust 1.78.0
+- Perl 5.40.2
+- OpenSSL 3.0.16
+- LUA 5.4.7
+- TCL 8.6.16
+- Python 3.11.13
+- cURL 8.14.1
+- Ruby 3.3.8
+- Rust 1.87.0
 
 Unsere BaseTools werden am Ende folgende Dienste umfassen.
 
-- Sudo 1.9.15p5
-- wget 1.24.5
-- Bash 5.2.26
-- GIT 2.45.1
-- Portmaster 3.29
-- SMARTmontools 7.3
-- Nano 8.0
-- SQLite 3.45.1
-- GnuPG 2.4.5
-- Subversion 1.14.3
+- Sudo 1.9.16p2
+- wget 1.25.0
+- Bash 5.2.37
+- GIT 2.50.0
+- Portmaster 3.30
+- Nano 8.4
+- SQLite 3.46.1
+- GnuPG 2.4.7
+- Subversion 1.14.5
 
 Folgende Punkte sind in allen folgenden HowTos zu beachten.
 

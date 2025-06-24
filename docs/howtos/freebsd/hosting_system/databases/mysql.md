@@ -13,7 +13,7 @@ author_url: https://github.com/JoeUser78
 
 Unser Hosting System wird um folgende Dienste erweitert.
 
-- MySQL 8.0.35 (InnoDB, GTID)
+- MySQL 8.0.42 (InnoDB, GTID)
 
 ## Voraussetzungen
 
