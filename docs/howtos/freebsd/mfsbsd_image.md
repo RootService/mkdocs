@@ -15,7 +15,11 @@ In diesem HowTo beschreibe ich step-by-step das Erstellen eines [mfsBSD](https:/
 
 ## Das Referenzsystem
 
-Als Referenzsystem habe ich mich für eine virtuelle Maschine auf Basis von [Oracle VM VirtualBox](https://www.virtualbox.org/){: target="_blank" rel="noopener"} unter [Microsoft Windows 11 Professional (64 Bit)](https://support.microsoft.com/products/windows){: target="_blank" rel="noopener"} entschieden. Leider bringt Microsoft Windows keinen eigenen SSH-Client mit, so dass ich auf das sehr empfehlenswerte [PuTTY (64 Bit)](https://www.chiark.greenend.org.uk/~sgtatham/putty/){: target="_blank" rel="noopener"} zurückgreife.
+Als Referenzsystem für dieses HowTo habe ich mich für eine virtuelle Maschine auf Basis von [Oracle VirtualBox](https://www.virtualbox.org/){: target="_blank" rel="noopener"} unter [Microsoft Windows 11 Pro (64 Bit)](https://www.microsoft.com/en-us/windows/windows-11){: target="_blank" rel="noopener"} entschieden. So lässt sich ohne grösseren Aufwand ein handelsüblicher dedizierter Server simulieren und anschliessend kann diese virtuelle Maschine als kostengünstiges lokales Testsystem weiter genutzt werden.
+
+Trotzdem habe ich dieses HowTo so ausgelegt, dass es sich nahezu unverändert auf handelsübliche dedizierte Server übertragen lässt und dieses auch auf mehreren dedizierten Servern getestet.
+
+Obwohl Microsoft Windows 11 Pro einen eigenen OpenSSH-Client mitbringt, greife ich lieber auf das sehr empfehlenswerte [PuTTY (64 Bit)](https://www.chiark.greenend.org.uk/~sgtatham/putty/){: target="_blank" rel="noopener"} zurück.
 
 VirtualBox (inklusive dem Extensionpack) und PuTTY werden mit den jeweiligen Standardoptionen installiert.
 
@@ -23,16 +27,16 @@ VirtualBox (inklusive dem Extensionpack) und PuTTY werden mit den jeweiligen Sta
 winget install PuTTY.PuTTY
 winget install Oracle.VirtualBox
 
-$Env:vbox_ver=((winget show Oracle.VirtualBox) -match '^Version:' -split '\s+')
-curl -o "Oracle_VM_VirtualBox_Extension_Pack-${Env:vbox_ver}.vbox-extpack" -L "https://download.virtualbox.org/virtualbox/${Env:vbox_ver}/Oracle_VM_VirtualBox_Extension_Pack-${Env:vbox_ver}.vbox-extpack"
-& "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" extpack install --replace Oracle_VM_VirtualBox_Extension_Pack-${Env:vbox_ver}.vbox-extpack
-rm Oracle_VM_VirtualBox_Extension_Pack-${Env:vbox_ver}.vbox-extpack
+$Env:vbox_ver=((winget show Oracle.VirtualBox) -match '^Version:' -split '\s+' | Select-Object -Last 1)
+curl -o "Oracle_VM_VirtualBox_Extension_Pack-${Env:vbox_ver}.vbox-extpack" -L "https://download.virtualbox.org/virtualbox/${Env:vbox_ver}/Oracle_VirtualBox_Extension_Pack-${Env:vbox_ver}.vbox-extpack"
+& "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" extpack install --replace Oracle_VirtualBox_Extension_Pack-${Env:vbox_ver}.vbox-extpack
+rm Oracle_VirtualBox_Extension_Pack-${Env:vbox_ver}.vbox-extpack
 $Env:vbox_ver=''
 ```
 
 ## Die Virtuelle Maschine
 
-Als Erstes öffnen wir eine neue PowerShell und legen manuell eine neue virtuelle Maschine an. Diese virtuelle Maschine bekommt den Namen `mfsBSD` und wird mit einer UEFI-Firmware, einem Quad-Core Prozessor, Intels ICH9-Chipsatz, 4096MB RAM, 64MB VideoRAM, einer 64GB SSD-Festplatte, einem DVD-Player, einer Netzwerkkarte, einem NVMe-Controller sowie einem AHCI-Controller und einem TPM 2.0 ausgestattet. Zudem setzen wir die RTC (Real-Time Clock) der virtuellen Maschine auf UTC (Coordinated Universal Time), aktivieren den HPET (High Precision Event Timer) und legen die Bootreihenfolge fest.
+Als Erstes öffnen wir eine neue PowerShell und legen manuell eine neue virtuelle Maschine an. Diese virtuelle Maschine bekommt den Namen `mfsBSD` und wird mit einer UEFI-Firmware, einem Quad-Core Prozessor, Intels ICH9-Chipsatz, 8192MB RAM, 64MB VideoRAM, einer 64GB SSD-Festplatte, einem DVD-Player, einer Netzwerkkarte, einem NVMe-Controller sowie einem AHCI-Controller und einem TPM 2.0 ausgestattet. Zudem setzen wir die RTC (Real-Time Clock) der virtuellen Maschine auf UTC (Coordinated Universal Time), aktivieren den HPET (High Precision Event Timer) und legen die Bootreihenfolge fest.
 
 ``` powershell
 & "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" createvm --name "mfsBSD" --ostype FreeBSD_64 --register
@@ -41,7 +45,7 @@ cd "${Env:USERPROFILE}\VirtualBox VMs\mfsBSD"
 
 & "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" createmedium disk --filename "mfsBSD1.vdi" --format VDI --size 64536
 
-& "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" modifyvm "mfsBSD" --firmware efi --memory 4096 --vram 64 --cpus 4 --hpet on --hwvirtex on --chipset ICH9 --iommu automatic --tpm-type 2.0 --rtc-use-utc on
+& "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" modifyvm "mfsBSD" --firmware efi --memory 8192 --vram 64 --cpus 4 --hpet on --hwvirtex on --chipset ICH9 --iommu automatic --tpm-type 2.0 --rtc-use-utc on
 & "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" modifyvm "mfsBSD" --cpu-profile host --apic on --ioapic on --x2apic on --pae on --long-mode on --nested-paging on --large-pages on --vtx-vpid on --vtx-ux on
 & "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" modifyvm "mfsBSD" --nic1 nat --nic-type1 virtio --nat-pf1 "VBoxSSH,tcp,,2222,,22" --nat-pf1 "VBoxHTTP,tcp,,8080,,80" --nat-pf1 "VBoxHTTPS,tcp,,8443,,443"
 & "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" modifyvm "mfsBSD" --graphicscontroller vmsvga --audio-enabled off --usb-ehci off --usb-ohci off --usb-xhci off --boot1 dvd --boot2 disk --boot3 none --boot4 none
@@ -58,7 +62,7 @@ Als nächstes benötigen wir die FreeBSD 64Bit Installations-CD, welche wir mitt
 ``` powershell
 cd "${Env:USERPROFILE}\VirtualBox VMs\mfsBSD"
 
-curl -o "FreeBSD-14.3-RELEASE-amd64-disc1.iso" -L "https://download.freebsd.org/releases/ISO-IMAGES/14.1/FreeBSD-14.3-RELEASE-amd64-disc1.iso"
+curl -o "FreeBSD-14.3-RELEASE-amd64-disc1.iso" -L "https://download.freebsd.org/releases/ISO-IMAGES/14.3/FreeBSD-14.3-RELEASE-amd64-disc1.iso"
 
 & "${Env:ProgramFiles}\Oracle\VirtualBox\VBoxManage.exe" storageattach "mfsBSD" --storagectl "AHCI Controller" --port 0 --device 0 --type dvddrive --medium "FreeBSD-14.3-RELEASE-amd64-disc1.iso"
 ```
@@ -78,6 +82,12 @@ Aus diesem Grund werden wir, wenn der Bootvorgang abgeschlossen ist und wir den 
 ???+ hint
 
     Diese Shell nutzt das amerikanische Tastaturlayout, welches einige Tasten anders belegt als das deutsche Tastaturlayout.
+
+    Um auf das deutsche Tastaturlayout zu wechseln, wählen wir mittels `kbdmap` das Layout "German (accent keys)" aus:
+
+    ``` bash
+    /usr/sbin/kbdmap -K
+    ```
 
 ## Minimalsystem installieren
 
@@ -135,8 +145,10 @@ gpart bootcode -b /mnt/boot/pmbr -p /mnt/boot/gptboot -i 1 nvd0
 Vor dem Wechsel in die Chroot-Umgebung müssen wir noch die `resolv.conf` in die Chroot-Umgebung kopieren und das Device-Filesysteme dorthin mounten.
 
 ``` bash
-echo "nameserver 127.0.0.1" > /etc/resolv.conf
-echo "nameserver 8.8.8.8" >> /etc/resolv.conf
+cat <<'EOF' > /etc/resolv.conf
+--8<-- "configs/etc/resolv.conf"
+EOF
+
 cp /etc/resolv.conf /mnt/etc/resolv.conf
 
 mount -t devfs devfs /mnt/dev
@@ -154,76 +166,46 @@ Zunächst setzen wir die Systemzeit (CMOS clock) mittels `tzsetup` auf "UTC" (Un
 /usr/sbin/tzsetup UTC
 ```
 
-This version of sh was rewritten in 1989 under the BSD license after the Bourne shell from AT&T System V Release 4 UNIX.
+Wir bringen etwas Farbe in die Console, passen den Prompt an und legen `ee` statt `vi` als Default-Editor fest:
 
 ``` bash
-# Colorize console output
-cat <<'EOF' >> /etc/csh.cshrc
-setenv LSCOLORS "Dxfxcxdxbxegedabagacad"
+cat <<'EOF' > /usr/share/skel/dot.cshrc
+--8<-- "configs/usr/share/skel/dot.cshrc"
 EOF
 
-sed -e '/export PAGER/ a\
-CLICOLORS="YES";                             export CLICOLOR\
-LSCOLORS="Dxfxcxdxbxegedabagacad";           export LSCOLORS\
-COLORFGBG="15;0";                            export COLORFGBG\
-COLORTERM=truecolor;                         export COLORTERM\
-TERM=${TERM:-xterm-256color};                export TERM\
-MANCOLOR="1";                                export MANCOLOR\
-MANWIDTH=tty;                                export MANWIDTH\
-' -i '' /usr/share/skel/dot.profile
-
-sed -e '/export PAGER/ a\
-CLICOLORS="YES";                             export CLICOLOR\
-LSCOLORS="Dxfxcxdxbxegedabagacad";           export LSCOLORS\
-COLORFGBG="15;0";                            export COLORFGBG\
-COLORTERM=truecolor;                         export COLORTERM\
-TERM=${TERM:-xterm-256color};                export TERM\
-MANCOLOR="1";                                export MANCOLOR\
-MANWIDTH=tty;                                export MANWIDTH\
-' -i '' /root/.profile
-
-
-# Some useful aliases
-cat <<'EOF' >> /etc/csh.cshrc
-alias ls        ls -FGIPTW
-alias l         ls -FGIPTWahl
+cat <<'EOF' > /usr/share/skel/dot.shrc
+--8<-- "configs/usr/share/skel/dot.shrc"
 EOF
 
-sed -e '/some useful aliases/ a\
-alias ls="ls -FGIPTW"\
-alias l="ls -FGIPTWahl"\
-' -i '' /usr/share/skel/dot.shrc
+cat <<'EOF' > /usr/share/skel/dot.mailrc
+--8<-- "configs/usr/share/skel/dot.mailrc"
+EOF
 
-sed -e '/some useful aliases/ a\
-alias ls="ls -FGIPTW"\
-alias l="ls -FGIPTWahl"\
-' -i '' /root/.shrc
+cat <<'EOF' > /usr/share/skel/dot.profile
+--8<-- "configs/usr/share/skel/dot.profile"
+EOF
 
 
-# Use ee instead of vi as standard editor
-sed -e 's/\(EDITOR[[:space:]]*\)vi[[:space:]]*$/\1ee/' -i '' /usr/share/skel/dot.cshrc
-sed -e 's/\(set EDITOR=\)vi[[:space:]]*$/\1ee/' -i '' /usr/share/skel/dot.mailrc
-sed -e 's/\(set VISUAL=\)vi[[:space:]]*$/\1ee/' -i '' /usr/share/skel/dot.mailrc
-sed -e 's/\(EDITOR=\)vi;\([[:space:]].*\)$/\1ee;\2/' -i '' /usr/share/skel/dot.profile
+cat <<'EOF' > /root/.cshrc
+--8<-- "configs/root/.cshrc"
+EOF
 
-sed -e 's/\(EDITOR[[:space:]]*\)vi[[:space:]]*$/\1ee/' -i '' /root/.cshrc
-sed -e 's/\(EDITOR=\)vi;\([[:space:]].*\)$/\1ee;\2/' -i '' /root/.profile
+cat <<'EOF' > /root/.shrc
+--8<-- "configs/root/.shrc"
+EOF
 
+cat <<'EOF' > /root/.mailrc
+--8<-- "configs/root/.mailrc"
+EOF
 
-# Use meaningfuller prompt
-sed -e 's/\(set prompt =\).*$/\1 "[%B%n%b@%B%m%b:%B%~%b] %# "/' -i '' /root/.cshrc
-sed -e 's/\(PS1=\).*$/\1"\\[\\e[1;36m\\][\\[\\e[1;33m\\]\\u@\\h:\\[\\e[1;36m\\]\\w] \\\\$ \\[\\e[0m\\]"/' -i '' /root/.shrc
+cat <<'EOF' > /root/.profile
+--8<-- "configs/root/.profile"
+EOF
+```
 
-sed -e 's/\(set prompt =\).*$/\1 "[%B%n%b@%B%m%b:%B%~%b] %# "/' -i '' /usr/share/skel/dot.cshrc
-sed -e 's/\(PS1=\).*$/\1"\\[\\e[1;36m\\][\\[\\e[1;33m\\]\\u@\\h:\\[\\e[1;36m\\]\\w] \\\\$ \\[\\e[0m\\]"/' -i '' /usr/share/skel/dot.shrc
+Wir setzen ein paar Defaults für "root" neu:
 
-
-# Set missing ENV
-sed -e 's#\(setenv=BLOCKSIZE=K\)#\1,OPENSSL_CONF=/usr/local/openssl/openssl.cnf,CRYPTOGRAPHY_OPENSSL_NO_LEGACY=1#' -i '' /etc/login.conf
-cap_mkdb /etc/login.conf
-
-
-# Set root shell to /bin/sh
+``` bash
 pw useradd -D -g '' -M 0700 -s sh -w no
 pw usermod -n root -s sh -w none
 ```
@@ -231,164 +213,51 @@ pw usermod -n root -s sh -w none
 Das Home-Verzeichnis des Users root ist standardmässig leider nicht ausreichend restriktiv in seinen Zugriffsrechten, was wir mit einem entsprechenden Aufruf von `chmod` schnell ändern. Bevor wir es vergessen, setzen wir bei dieser Gelegenheit gleich ein sicheres Passwort für root.
 
 ``` bash
+chmod 0700 /root
+
 passwd root
 ```
 
 Die aliases-Datenbank für FreeBSDs DMA müssen wir mittels `newaliases` anlegen, auch wenn wir später DMA gar nicht verwenden möchten.
 
 ``` bash
-sed -e 's/^#[[:space:]]*\(root:[[:space:]]*\).*$/\1 admin@example.com/' \
-    -e 's/^#[[:space:]]*\(hostmaster:[[:space:]]*.*\)$/\1/' \
-    -e 's/^#[[:space:]]*\(webmaster:[[:space:]]*.*\)$/\1/' \
-    -e 's/^#[[:space:]]*\(www:[[:space:]]*.*\)$/\1/' \
-    -i '' /etc/mail/aliases
+cat <<'EOF' > /etc/mail/aliases
+--8<-- "configs/etc/mail/aliases"
+EOF
 
 newaliases
 ```
 
 Die `fstab` ist bei unserem minimalistischen Partitionslayout zwar nicht zwingend nötig, aber wir möchten später keine unerwarteten Überraschungen erleben, also legen wir sie vorsichtshalber an.
 
-``` text
+``` bash
 cat <<'EOF' > /etc/fstab
-# Device           Mountpoint    FStype     Options      Dump    Pass
-# Custom /etc/fstab for FreeBSD VM images
-/dev/gpt/rootfs    /             ufs        rw           1       1
-/dev/gpt/swapfs    none          swap       sw           0       0
-/dev/gpt/efiesp    /boot/efi     msdosfs    rw           2       2
+--8<-- "configs/etc/fstab"
 EOF
 ```
 
 In der `rc.conf` werden diverse Grundeinstellungen für das System und die installierten Dienste vorgenommen. Wir legen sie daher mittela `ee /etc/rc.conf` mit folgendem Inhalt an.
 
 ``` bash
-cat <<'EOF' >> /etc/rc.conf
-##############################################################
-###  Important initial Boot-time options  ####################
-##############################################################
-#kern_securelevel_enable="YES"
-#kern_securelevel="1"
-kld_list="accf_data accf_http accf_dns cc_htcp"
-fsck_y_enable="YES"
-growfs_enable="YES"
-dmesg_enable="YES"
-zfs_enable="YES"
-zpool_reguid="zroot"
-zpool_upgrade="zroot"
-dumpdev="AUTO"
-
-##############################################################
-###  Network configuration sub-section  ######################
-##############################################################
-hostname="vbox.example.com"
-ifconfig_vtnet0="DHCP"
-
-##############################################################
-###  System console options  #################################
-##############################################################
-keymap="de.acc.kbd"
-
-##############################################################
-###  Mail Transfer Agent (MTA) options  ######################
-##############################################################
-sendmail_enable="NONE"
-sendmail_cert_create="NO"
-sendmail_submit_enable="NO"
-sendmail_outbound_enable="NO"
-sendmail_msp_queue_enable="NO"
-sendmail_rebuild_aliases="NO"
-dma_flushq_enable="YES"
-
-##############################################################
-###  Miscellaneous administrative options  ###################
-##############################################################
-syslogd_flags="-ss"
-clear_tmp_enable="YES"
-cron_flags="$cron_flags -j 0 -J 0 -m root"
-update_motd="YES"
-nscd_enable="YES"
-ntpd_enable="YES"
-ntpd_sync_on_start="YES"
-resolv_enable="NO"
-
-##############################################################
-### Jail Configuration #######################################
-##############################################################
-
-##############################################################
-###  System services options  ################################
-##############################################################
-local_unbound_enable="YES"
-local_unbound_tls="NO"
-blacklistd_enable="NO"
-sshd_enable="YES"
+cat <<'EOF' > /etc/rc.conf
+--8<-- "configs/etc/rc.conf"
 EOF
 ```
 
-Da dies lediglich ein lokales temporäres System zum Erzeugen unseres mfsBSD-Images wird, können wir den SSH-Dienst bedenkenlos etwas komfortabler aber dadurch zwangsläufig auch etwas unsicherer konfigurieren, indem wir den Login per Passwort zulassen.
+Da dies lediglich ein lokales temporäres System zum Erzeugen unseres mfsBSD-Images wird, können wir den OpenSSH-Dienst bedenkenlos etwas komfortabler aber dadurch zwangsläufig auch etwas unsicherer konfigurieren, indem wir den Login per Passwort zulassen.
 
 ``` bash
-sed -e 's|^#\(Port\).*$|\1 22|' \
-    -e 's|^#\(PermitRootLogin\).*$|\1 prohibit-password|' \
-    -e 's|^#\(PubkeyAuthentication\).*$|\1 yes|' \
-    -e 's|^#\(PasswordAuthentication\).*$|\1 no|' \
-    -e 's|^#\(PermitEmptyPasswords\).*$|\1 no|' \
-    -e 's|^#\(KbdInteractiveAuthentication\).*$|\1 no|' \
-    -e 's|^#\(ChallengeResponseAuthentication\).*$|\1 no|' \
-    -e 's|^#\(UsePAM\).*$|\1 no|' \
-    -e 's|^#\(AllowAgentForwarding\).*$|\1 no|' \
-    -e 's|^#\(AllowTcpForwarding\).*$|\1 no|' \
-    -e 's|^#\(GatewayPorts\).*$|\1 no|' \
-    -e 's|^#\(X11Forwarding\).*$|\1 no|' \
-    -e 's|^#\(PermitUserEnvironment\).*$|\1 no|' \
-    -e 's|^#\(ClientAliveInterval\).*$|\1 10|' \
-    -e 's|^#\(ClientAliveCountMax\).*$|\1 6|' \
-    -e 's|^#\(PidFile\).*$|\1 /var/run/sshd.pid|' \
-    -e 's|^#\(MaxStartups\).*$|\1 10:30:100|' \
-    -e 's|^#\(PermitTunnel\).*$|\1 no|' \
-    -e 's|^#\(ChrootDirectory\).*$|\1 %h|' \
-    -e 's|^#\(UseBlacklist\).*$|\1 no|' \
-    -e 's|^#\(VersionAddendum\).*$|\1 none|' \
-    -e 's|^\(Subsystem.*\)$|#\1|' \
-    -i '' /etc/ssh/sshd_config
-
-cat <<'EOF' >> /etc/ssh/sshd_config
-
-Subsystem sftp internal-sftp -u 0027
-
-AllowGroups wheel admin sshusers sftponly
-
-Match User root
-    ChrootDirectory none
-    PasswordAuthentication no
-
-Match Group admin
-    ChrootDirectory none
-    PasswordAuthentication yes
-
-Match Group sshusers
-    ChrootDirectory none
-    PasswordAuthentication no
-
-Match Group sftponly
-    ChrootDirectory /home
-    PasswordAuthentication yes
-    ForceCommand internal-sftp -d %u
-
+cat <<'EOF' > /etc/ssh/sshd_config
+--8<-- "configs/etc/ssh/sshd_config"
 EOF
 
-sed -e '/^# Ciphers and keying/ a\
-Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com\
-Macs hmac-sha2-512,hmac-sha2-512-etm@openssh.com,hmac-sha2-256,hmac-sha2-256-etm@openssh.com\
-KexAlgorithms sntrup761x25519-sha512@openssh.com,curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256\
-' -i '' /etc/ssh/sshd_config
-
+rm -f /etc/ssh/ssh_host_*_key*
 ssh-keygen -q -t rsa -b 4096 -f "/etc/ssh/ssh_host_rsa_key" -N ""
 ssh-keygen -l -f "/etc/ssh/ssh_host_rsa_key.pub"
 ssh-keygen -q -t ecdsa -b 384 -f "/etc/ssh/ssh_host_ecdsa_key" -N ""
 ssh-keygen -l -f "/etc/ssh/ssh_host_ecdsa_key.pub"
 ssh-keygen -q -t ed25519 -f "/etc/ssh/ssh_host_ed25519_key" -N ""
 ssh-keygen -l -f "/etc/ssh/ssh_host_ed25519_key.pub"
-
 
 mkdir -p /root/.ssh
 chmod 0700 /root/.ssh
