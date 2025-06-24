@@ -72,7 +72,7 @@ theme:
       - search.share
       - search.suggest
       - toc.follow
-      - toc.integrate
+#      - toc.integrate
 
 extra_css:
     - stylesheets/extra.css
@@ -125,10 +125,10 @@ plugins:
     - minify:
 #        minify_html: true
     - redirects:
-    - git-revision-date-localized:
-        type: iso_datetime
-        enable_creation_date: true
-        fallback_to_build_date: true
+#    - git-revision-date-localized:
+#        type: iso_datetime
+#        enable_creation_date: true
+#        fallback_to_build_date: true
 
 markdown_extensions:
 # Python Markdown
