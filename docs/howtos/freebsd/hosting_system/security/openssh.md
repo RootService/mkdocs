@@ -2,7 +2,7 @@
 title: 'OpenSSH'
 description: 'In diesem HowTo wird step-by-step die Installation von OpenSSH für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2024-05-24'
+updated: '2025-06-24'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---

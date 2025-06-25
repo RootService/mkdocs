@@ -2,7 +2,7 @@
 title: 'Remote Installation'
 description: 'In diesem HowTo werden step-by-step die Voraussetzungen für die Remote Installation des FreeBSD 64Bit BaseSystem auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2024-05-24'
+updated: '2025-06-24'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
