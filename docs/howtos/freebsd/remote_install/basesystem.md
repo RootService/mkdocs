@@ -491,42 +491,42 @@ Es folgt ein wenig Voodoo, um die Netzwerkkonfiguration in der `/etc/rc.conf` zu
 ``` bash
 # Default Interface
 route -n get -inet default | awk '/interface/ {print $2}' | \
-    xargs -I % sed -e 's/IFACE/%/g' -i '' /etc/rc.conf
+    xargs -I % sed -e 's|DEFAULT|%|g' -i '' /etc/rc.conf
 
 # IPv4
 route -n get -inet default | awk '/gateway/ {print $2}' | \
-    xargs -I % sed -e 's/GATEWAY4/%/g' -i '' /etc/rc.conf
+    xargs -I % sed -e 's|GATEWAY4|%|g' -i '' /etc/rc.conf
 ifconfig -f cidr `route -n get -inet default | awk '/interface/ {print $2}'` inet | \
     awk '/inet / {if(substr($2,1,3)!=127) print $2}' | head -n 1 | \
-    xargs -I % sed -e 's/IPADDR4/%/g' -i '' /etc/rc.conf
+    xargs -I % sed -e 's|IPADDR4|%|g' -i '' /etc/rc.conf
 
 # IPv6
 route -n get -inet6 default | awk '/gateway/ {print $2}' | \
-    xargs -I % sed -e 's/GATEWAY6/%/g' -i '' /etc/rc.conf
+    xargs -I % sed -e 's|GATEWAY6|%|g' -i '' /etc/rc.conf
 ifconfig -f cidr `route -n get -inet6 default | awk '/interface/ {print $2}'` inet6 | \
     awk '/inet6 / {if(substr($2,1,1)!="f") print $2}' | head -n 1 | \
-    xargs -I % sed -e 's/IPADDR6/%/g' -i '' /etc/rc.conf
+    xargs -I % sed -e 's|IPADDR6|%|g' -i '' /etc/rc.conf
 ```
 
 Wir richten die `/etc/hosts` ein.
 
 ``` bash
 # localhost
-sed -e 's/my.domain/example.com/g' -i '' /etc/hosts
+sed -e 's|my.domain/example.com/g' -i '' /etc/hosts
 
 # IPv4
 echo 'IPADDR4   devnull.example.com   devnull' >> /etc/hosts
 
 ifconfig `route -n get -inet default | awk '/interface/ {print $2}'` inet | \
     awk '/inet / {if(substr($2,1,3)!=127) print $2}' | head -n 1 | \
-    xargs -I % sed -e 's/IPADDR4/%/g' -i '' /etc/hosts
+    xargs -I % sed -e 's|IPADDR4|%|g' -i '' /etc/hosts
 
 # IPv6
 echo 'IPADDR6   devnull.example.com   devnull' >> /etc/hosts
 
 ifconfig `route -n get -inet6 default | awk '/interface/ {print $2}'` inet6 | \
     awk '/inet6 / {if(substr($2,1,1)!="f") print $2}' | head -n 1 | \
-    xargs -I % sed -e 's/IPADDR6/%/g' -i '' /etc/hosts
+    xargs -I % sed -e 's|IPADDR6|%|g' -i '' /etc/hosts
 ```
 
 ### Systemgruppen anlegen
@@ -616,6 +616,32 @@ Kernel Parameter in `/boot/loader.conf` setzen.
 cat <<'EOF' > /boot/loader.conf
 --8<-- "configs/boot/loader.conf"
 EOF
+```
+
+## Packet Filter (PF) einrichten
+
+``` bash
+cat <<'EOF' > /etc/pf.conf
+--8<-- "configs/etc/pf.conf"
+EOF
+
+cat <<'EOF' > /etc/pf.internal
+--8<-- "configs/etc/pf.internal"
+EOF
+
+# Default Interface
+route -n get -inet default | awk '/interface/ {print $2}' | \
+    xargs -I % sed -e 's|DEFAULT|%|g' -i '' /etc/pf.conf
+
+# IPv4
+ifconfig -f cidr `route -n get -inet default | awk '/interface/ {print $2}'` inet | \
+    awk '/inet / {if(substr($2,1,3)!=127) print $2}' | head -n 1 | \
+    xargs -I % sed -e 's|#IPADDR4|%|g' -i '' /etc/pf.internal
+
+# IPv6
+ifconfig -f cidr `route -n get -inet6 default | awk '/interface/ {print $2}'` inet6 | \
+    awk '/inet6 / {if(substr($2,1,1)!="f") print $2}' | head -n 1 | \
+    xargs -I % sed -e 's|#IPADDR6|%|g' -i '' /etc/pf.internal
 ```
 
 ## Abschluss der Installation

@@ -15,15 +15,17 @@ In diesem HowTo beschreibe ich step-by-step die Installation einiger Tools (Port
 
 Unsere BaseTools werden am Ende folgende Dienste umfassen.
 
-- Sudo 1.9.16p2
+- Sudo 1.9.17p1
+- Bind-Tools 9.20.10
+- QEmu GuestAgent 10.0.2
+- Cloud-Init 24.1.4
+- SMARTMonTools 7.5
 - wget 1.25.0
-- Bash 5.2.37
 - GIT 2.50.0
-- Portmaster 3.30
-- Nano 8.4
-- SQLite 3.46.1
 - GnuPG 2.4.7
+- SQLite 3.46.1
 - Subversion 1.14.5
+- Nano 8.4
 
 ## Voraussetzungen
 
@@ -46,31 +48,11 @@ Wir installieren `security/sudo` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/security_sudo
 cat <<'EOF' > /var/db/ports/security_sudo/options
-_OPTIONS_READ=sudo-1.9.15p5
-_FILE_COMPLETE_OPTIONS_LIST=AUDIT DISABLE_AUTH DISABLE_ROOT_SUDO DOCS EXAMPLES INSULTS LDAP NLS NOARGS_SHELL OPIE PAM PYTHON SSL GSSAPI_BASE GSSAPI_HEIMDAL GSSAPI_MIT SSSD SSSD2
-OPTIONS_FILE_SET+=AUDIT
-OPTIONS_FILE_UNSET+=DISABLE_AUTH
-OPTIONS_FILE_UNSET+=DISABLE_ROOT_SUDO
-OPTIONS_FILE_UNSET+=DOCS
-OPTIONS_FILE_UNSET+=EXAMPLES
-OPTIONS_FILE_UNSET+=INSULTS
-OPTIONS_FILE_UNSET+=LDAP
-OPTIONS_FILE_SET+=NLS
-OPTIONS_FILE_UNSET+=NOARGS_SHELL
-OPTIONS_FILE_UNSET+=OPIE
-OPTIONS_FILE_SET+=PAM
-OPTIONS_FILE_UNSET+=PYTHON
-OPTIONS_FILE_SET+=SSL
-OPTIONS_FILE_UNSET+=GSSAPI_BASE
-OPTIONS_FILE_UNSET+=GSSAPI_HEIMDAL
-OPTIONS_FILE_UNSET+=GSSAPI_MIT
-OPTIONS_FILE_UNSET+=SSSD
-OPTIONS_FILE_UNSET+=SSSD2
+--8<-- "ports/security_sudo/options"
 EOF
 
 
-cd /usr/ports/security/sudo
-make all install clean-depends clean
+portmaster -w -B -g --force-config security/sudo@default  -n
 ```
 
 Wir konfigurieren `sudo` und erlauben Mitgliedern der Gruppe `wheel` beliebige Kommandos als beliebiger User ohne Passwortabfrage auszuführen.
@@ -91,198 +73,112 @@ cat <<'EOF' > /usr/local/etc/sudoers.d/01_wheel
 %wheel ALL = (ALL:ALL) NOPASSWD: ALL
 EOF
 chmod 0440 /usr/local/etc/sudoers.d/01_wheel
+
+cat <<'EOF' > /usr/local/etc/sudoers.d/20_joeuser
+joeuser ALL = (ALL:ALL) NOPASSWD: ALL
+EOF
+chmod 0440 /usr/local/etc/sudoers.d/20_joeuser
 ```
 
-Wir installieren `ftp/wget` und dessen Abhängigkeiten.
+Wir installieren `dns/bind-tools` und dessen Abhängigkeiten.
 
 ``` bash
-mkdir -p /var/db/ports/devel_libunistring
-cat <<'EOF' > /var/db/ports/devel_libunistring/options
-_OPTIONS_READ=libunistring-1.2
-_FILE_COMPLETE_OPTIONS_LIST=DOCS
-OPTIONS_FILE_UNSET+=DOCS
+mkdir -p /var/db/ports/devel_fstrm
+cat <<'EOF' > /var/db/ports/devel_fstrm/options
+--8<-- "ports/devel_fstrm/options"
 EOF
 
-mkdir -p /var/db/ports/ftp_wget
-cat <<'EOF' > /var/db/ports/ftp_wget/options
-_OPTIONS_READ=wget-1.24.5
-_FILE_COMPLETE_OPTIONS_LIST=DOCS IDN IPV6 MANPAGES METALINK NLS NTLM PSL GNUTLS OPENSSL PCRE1 PCRE2
-OPTIONS_FILE_UNSET+=DOCS
-OPTIONS_FILE_SET+=IDN
-OPTIONS_FILE_SET+=IPV6
-OPTIONS_FILE_SET+=MANPAGES
-OPTIONS_FILE_UNSET+=METALINK
-OPTIONS_FILE_SET+=NLS
-OPTIONS_FILE_UNSET+=NTLM
-OPTIONS_FILE_SET+=PSL
-OPTIONS_FILE_UNSET+=GNUTLS
-OPTIONS_FILE_SET+=OPENSSL
-OPTIONS_FILE_UNSET+=PCRE1
-OPTIONS_FILE_SET+=PCRE2
+mkdir -p /var/db/ports/devel_libevent
+cat <<'EOF' > /var/db/ports/devel_libevent/options
+--8<-- "ports/devel_libevent/options"
+EOF
+
+mkdir -p /var/db/ports/devel_protobuf-c
+cat <<'EOF' > /var/db/ports/devel_protobuf-c/options
+--8<-- "ports/devel_protobuf-c/options"
+EOF
+
+mkdir -p /var/db/ports/dns_bind-tools
+cat <<'EOF' > /var/db/ports/dns_bind-tools/options
+--8<-- "ports/dns_bind-tools/options"
 EOF
 
 
-cd /usr/ports/ftp/wget
-make all install clean-depends clean
+portmaster -w -B -g --force-config dns/bind-tools  -n
 ```
 
-Wir installieren `devel/git` und dessen Abhängigkeiten.
+Wir installieren `emulators/qemu@guestagent` und dessen Abhängigkeiten.
 
 ``` bash
-mkdir -p /var/db/ports/shells_bash
-cat <<'EOF' > /var/db/ports/shells_bash/options
-_OPTIONS_READ=bash-5.2.26
-_FILE_COMPLETE_OPTIONS_LIST=DOCS FDESCFS HELP NLS PORTS_READLINE STATIC SYSBASHRC SYSLOG
-OPTIONS_FILE_UNSET+=DOCS
-OPTIONS_FILE_SET+=FDESCFS
-OPTIONS_FILE_SET+=HELP
-OPTIONS_FILE_SET+=NLS
-OPTIONS_FILE_SET+=PORTS_READLINE
-OPTIONS_FILE_UNSET+=STATIC
-OPTIONS_FILE_UNSET+=SYSBASHRC
-OPTIONS_FILE_UNSET+=SYSLOG
+mkdir -p /var/db/ports/devel_glib20
+cat <<'EOF' > /var/db/ports/devel_glib20/options
+--8<-- "ports/devel_glib20/options"
 EOF
 
-mkdir -p /var/db/ports/devel_bison
-cat <<'EOF' > /var/db/ports/devel_bison/options
-_OPTIONS_READ=bison-3.8.2
-_FILE_COMPLETE_OPTIONS_LIST=DOCS EXAMPLES NLS
-OPTIONS_FILE_UNSET+=DOCS
-OPTIONS_FILE_UNSET+=EXAMPLES
-OPTIONS_FILE_SET+=NLS
+mkdir -p /var/db/ports/textproc_py-docutils
+cat <<'EOF' > /var/db/ports/textproc_py-docutils/options
+--8<-- "ports/textproc_py-docutils/options"
 EOF
 
-mkdir -p /var/db/ports/textproc_xmlto
-cat <<'EOF' > /var/db/ports/textproc_xmlto/options
-_OPTIONS_READ=xmlto-0.0.28
-_FILE_COMPLETE_OPTIONS_LIST=DOCS DBLATEX FOP PASSIVETEX
-OPTIONS_FILE_UNSET+=DOCS
-OPTIONS_FILE_UNSET+=DBLATEX
-OPTIONS_FILE_UNSET+=FOP
-OPTIONS_FILE_UNSET+=PASSIVETEX
-EOF
-
-mkdir -p /var/db/ports/misc_getopt
-cat <<'EOF' > /var/db/ports/misc_getopt/options
-_OPTIONS_READ=getopt-1.1.6
-_FILE_COMPLETE_OPTIONS_LIST=DOCS NLS
-OPTIONS_FILE_UNSET+=DOCS
-OPTIONS_FILE_SET+=NLS
-EOF
-
-mkdir -p /var/db/ports/textproc_docbook-xsl
-cat <<'EOF' > /var/db/ports/textproc_docbook-xsl/options
-_OPTIONS_READ=docbook-xsl-1.79.1
-_FILE_COMPLETE_OPTIONS_LIST=DOCS ECLIPSE EPUB EXTENSIONS HIGHLIGHTING HTMLHELP JAVAHELP PROFILING ROUNDTRIP SLIDES TEMPLATE TESTS TOOLS WEBSITE XHTML11
-OPTIONS_FILE_UNSET+=DOCS
-OPTIONS_FILE_SET+=ECLIPSE
-OPTIONS_FILE_SET+=EPUB
-OPTIONS_FILE_SET+=EXTENSIONS
-OPTIONS_FILE_SET+=HIGHLIGHTING
-OPTIONS_FILE_SET+=HTMLHELP
-OPTIONS_FILE_SET+=JAVAHELP
-OPTIONS_FILE_SET+=PROFILING
-OPTIONS_FILE_SET+=ROUNDTRIP
-OPTIONS_FILE_SET+=SLIDES
-OPTIONS_FILE_SET+=TEMPLATE
-OPTIONS_FILE_UNSET+=TESTS
-OPTIONS_FILE_SET+=TOOLS
-OPTIONS_FILE_SET+=WEBSITE
-OPTIONS_FILE_SET+=XHTML11
-EOF
-
-mkdir -p /var/db/ports/textproc_xmlcatmgr
-cat <<'EOF' > /var/db/ports/textproc_xmlcatmgr/options
-_OPTIONS_READ=xmlcatmgr-2.2
-_FILE_COMPLETE_OPTIONS_LIST=DOCS
-OPTIONS_FILE_UNSET+=DOCS
-EOF
-
-mkdir -p /var/db/ports/www_w3m
-cat <<'EOF' > /var/db/ports/www_w3m/options
-_OPTIONS_READ=w3m-0.5.3.20230718
-_FILE_COMPLETE_OPTIONS_LIST=DOCS INLINE_IMAGE JAPANESE KEY_LYNX NLS
-OPTIONS_FILE_UNSET+=DOCS
-OPTIONS_FILE_UNSET+=INLINE_IMAGE
-OPTIONS_FILE_UNSET+=JAPANESE
-OPTIONS_FILE_UNSET+=KEY_LYNX
-OPTIONS_FILE_SET+=NLS
-EOF
-
-mkdir -p /var/db/ports/devel_boehm-gc
-cat <<'EOF' > /var/db/ports/devel_boehm-gc/options
-_OPTIONS_READ=boehm-gc-8.2.6
-_FILE_COMPLETE_OPTIONS_LIST=DEBUG DOCS
-OPTIONS_FILE_UNSET+=DEBUG
-OPTIONS_FILE_UNSET+=DOCS
-EOF
-
-mkdir -p /var/db/ports/devel_libatomic_ops
-cat <<'EOF' > /var/db/ports/devel_libatomic_ops/options
-_OPTIONS_READ=libatomic_ops-7.8.0
-_FILE_COMPLETE_OPTIONS_LIST=DOCS
-OPTIONS_FILE_UNSET+=DOCS
-EOF
-
-mkdir -p /var/db/ports/security_p5-Authen-SASL
-cat <<'EOF' > /var/db/ports/security_p5-Authen-SASL/options
-_OPTIONS_READ=p5-Authen-SASL-2.17
-_FILE_COMPLETE_OPTIONS_LIST=KERBEROS
-OPTIONS_FILE_UNSET+=KERBEROS
-EOF
-
-mkdir -p /var/db/ports/security_p5-IO-Socket-SSL
-cat <<'EOF' > /var/db/ports/security_p5-IO-Socket-SSL/options
-_OPTIONS_READ=p5-IO-Socket-SSL-2.085
-_FILE_COMPLETE_OPTIONS_LIST=CERTS EXAMPLES IDN IPV6
-OPTIONS_FILE_SET+=CERTS
-OPTIONS_FILE_UNSET+=EXAMPLES
-OPTIONS_FILE_SET+=IDN
-OPTIONS_FILE_SET+=IPV6
-EOF
-
-mkdir -p /var/db/ports/security_p5-Net-SSLeay
-cat <<'EOF' > /var/db/ports/security_p5-Net-SSLeay/options
-_OPTIONS_READ=p5-Net-SSLeay-1.94
-_FILE_COMPLETE_OPTIONS_LIST=EXAMPLES
-OPTIONS_FILE_UNSET+=EXAMPLES
-EOF
-
-mkdir -p /var/db/ports/devel_git
-cat <<'EOF' > /var/db/ports/devel_git/options
-_OPTIONS_READ=git-2.45.1
-_FILE_COMPLETE_OPTIONS_LIST=CONTRIB CURL GITWEB HTMLDOCS ICONV NLS PCRE2 PERL SEND_EMAIL SUBTREE
-OPTIONS_FILE_SET+=CONTRIB
-OPTIONS_FILE_SET+=CURL
-OPTIONS_FILE_UNSET+=GITWEB
-OPTIONS_FILE_UNSET+=HTMLDOCS
-OPTIONS_FILE_SET+=ICONV
-OPTIONS_FILE_SET+=NLS
-OPTIONS_FILE_SET+=PCRE2
-OPTIONS_FILE_SET+=PERL
-OPTIONS_FILE_SET+=SEND_EMAIL
-OPTIONS_FILE_SET+=SUBTREE
+mkdir -p /var/db/ports/emulators_qemu
+cat <<'EOF' > /var/db/ports/emulators_qemu/options
+--8<-- "ports/emulators_qemu/options"
 EOF
 
 
-cd /usr/ports/devel/git
-make all install clean-depends clean
+portmaster -w -B -g --force-config emulators/qemu@guestagent  -n
 ```
 
-Wir installieren `ports-mgmt/portmaster` und dessen Abhängigkeiten.
+Wir installieren `net/cloud-init` und dessen Abhängigkeiten.
 
 ``` bash
-mkdir -p /var/db/ports/ports-mgmt_portmaster
-cat <<'EOF' > /var/db/ports/ports-mgmt_portmaster/options
-_OPTIONS_READ=portmaster-3.29
-_FILE_COMPLETE_OPTIONS_LIST=BASH ZSH
-OPTIONS_FILE_SET+=BASH
-OPTIONS_FILE_SET+=ZSH
+mkdir -p /var/db/ports/comms_py-pyserial
+cat <<'EOF' > /var/db/ports/comms_py-pyserial/options
+--8<-- "ports/comms_py-pyserial/options"
+EOF
+
+mkdir -p /var/db/ports/devel_py-Jinja2
+cat <<'EOF' > /var/db/ports/devel_py-Jinja2/options
+--8<-- "ports/devel_py-Jinja2/options"
+EOF
+
+mkdir -p /var/db/ports/devel_py-babel
+cat <<'EOF' > /var/db/ports/devel_py-babel/options
+--8<-- "ports/devel_py-babel/options"
+EOF
+
+mkdir -p /var/db/ports/devel_py-pyyaml
+cat <<'EOF' > /var/db/ports/devel_py-pyyaml/options
+--8<-- "ports/devel_py-pyyaml/options"
+EOF
+
+mkdir -p /var/db/ports/security_py-oauthlib
+cat <<'EOF' > /var/db/ports/security_py-oauthlib/options
+--8<-- "ports/security_py-oauthlib/options"
+EOF
+
+mkdir -p /var/db/ports/security_py-cryptography
+cat <<'EOF' > /var/db/ports/security_py-cryptography/options
+--8<-- "ports/security_py-cryptography/options"
+EOF
+
+mkdir -p /var/db/ports/www_py-pyjwt
+cat <<'EOF' > /var/db/ports/www_py-pyjwt/options
+--8<-- "ports/www_py-pyjwt/options"
+EOF
+
+mkdir -p /var/db/ports/www_py-requests
+cat <<'EOF' > /var/db/ports/www_py-requests/options
+--8<-- "ports/www_py-requests/options"
+EOF
+
+mkdir -p /var/db/ports/net_py-urllib3
+cat <<'EOF' > /var/db/ports/net_py-urllib3/options
+--8<-- "ports/net_py-urllib3/options"
 EOF
 
 
-cd /usr/ports/ports-mgmt/portmaster
-make all install clean-depends clean
+portmaster -w -B -g --force-config net/cloud-init  -n
 ```
 
 Wir installieren `sysutils/smartmontools` und dessen Abhängigkeiten.
@@ -290,14 +186,11 @@ Wir installieren `sysutils/smartmontools` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/sysutils_smartmontools
 cat <<'EOF' > /var/db/ports/sysutils_smartmontools/options
-_OPTIONS_READ=smartmontools-7.3
-_FILE_COMPLETE_OPTIONS_LIST=DOCS
-OPTIONS_FILE_UNSET+=DOCS
+--8<-- "ports/sysutils_smartmontools/options"
 EOF
 
 
-cd /usr/ports/sysutils/smartmontools
-make all install clean-depends clean
+portmaster -w -B -g --force-config sysutils/smartmontools  -n
 ```
 
 Wir konfigurieren `smartmontools`.
@@ -320,80 +213,104 @@ daily_status_smart_devices="/dev/nvme0 /dev/nvme1"
 EOF
 ```
 
-Wir installieren `editors/nano` und dessen Abhängigkeiten.
+Wir installieren `security/expiretable` und dessen Abhängigkeiten.
 
 ``` bash
-mkdir -p /var/db/ports/editors_nano
-cat <<'EOF' > /var/db/ports/editors_nano/options
-_OPTIONS_READ=nano-8.0
-_FILE_COMPLETE_OPTIONS_LIST=DOCS EXAMPLES NLS
-OPTIONS_FILE_UNSET+=DOCS
-OPTIONS_FILE_UNSET+=EXAMPLES
-OPTIONS_FILE_SET+=NLS
-EOF
-
-
-cd /usr/ports/editors/nano
-make all install clean-depends clean
+portmaster -w -B -g --force-config security/expiretable  -n
 ```
 
-Wir installieren `databases/sqlite3` und dessen Abhängigkeiten.
+Wir installieren `ftp/wget` und dessen Abhängigkeiten.
 
 ``` bash
-mkdir -p /var/db/ports/databases_sqlite3
-cat <<'EOF' > /var/db/ports/databases_sqlite3/options
-_OPTIONS_READ=sqlite3-3.45.1
-_FILE_COMPLETE_OPTIONS_LIST=ARMOR DBPAGE DBSTAT DIRECT_READ DQS EXAMPLES EXTENSION FTS3_TOKEN FTS4 FTS5 LIKENOTBLOB MEMMAN METADATA NORMALIZE NULL_TRIM RBU SECURE_DELETE SORT_REF STATIC STMT STRIP TCL THREADS TRUSTED_SCHEMA UNKNOWN_SQL UNLOCK_NOTIFY UPDATE_LIMIT URI URI_AUTHORITY TS0 TS1 TS2 TS3 STAT3 STAT4 LIBEDIT READLINE SESSION OFFSET SOUNDEX GEOPOLY RTREE RTREE_INT ICU UNICODE61
-OPTIONS_FILE_UNSET+=ARMOR
-OPTIONS_FILE_SET+=DBPAGE
-OPTIONS_FILE_SET+=DBSTAT
-OPTIONS_FILE_UNSET+=DIRECT_READ
-OPTIONS_FILE_SET+=DQS
-OPTIONS_FILE_UNSET+=EXAMPLES
-OPTIONS_FILE_SET+=EXTENSION
-OPTIONS_FILE_SET+=FTS3_TOKEN
-OPTIONS_FILE_SET+=FTS4
-OPTIONS_FILE_SET+=FTS5
-OPTIONS_FILE_UNSET+=LIKENOTBLOB
-OPTIONS_FILE_UNSET+=MEMMAN
-OPTIONS_FILE_SET+=METADATA
-OPTIONS_FILE_UNSET+=NORMALIZE
-OPTIONS_FILE_UNSET+=NULL_TRIM
-OPTIONS_FILE_UNSET+=RBU
-OPTIONS_FILE_SET+=SECURE_DELETE
-OPTIONS_FILE_UNSET+=SORT_REF
-OPTIONS_FILE_UNSET+=STATIC
-OPTIONS_FILE_UNSET+=STMT
-OPTIONS_FILE_SET+=STRIP
-OPTIONS_FILE_UNSET+=TCL
-OPTIONS_FILE_SET+=THREADS
-OPTIONS_FILE_UNSET+=TRUSTED_SCHEMA
-OPTIONS_FILE_UNSET+=UNKNOWN_SQL
-OPTIONS_FILE_SET+=UNLOCK_NOTIFY
-OPTIONS_FILE_UNSET+=UPDATE_LIMIT
-OPTIONS_FILE_SET+=URI
-OPTIONS_FILE_UNSET+=URI_AUTHORITY
-OPTIONS_FILE_UNSET+=TS0
-OPTIONS_FILE_SET+=TS1
-OPTIONS_FILE_UNSET+=TS2
-OPTIONS_FILE_UNSET+=TS3
-OPTIONS_FILE_UNSET+=STAT3
-OPTIONS_FILE_UNSET+=STAT4
-OPTIONS_FILE_SET+=LIBEDIT
-OPTIONS_FILE_UNSET+=READLINE
-OPTIONS_FILE_UNSET+=SESSION
-OPTIONS_FILE_UNSET+=OFFSET
-OPTIONS_FILE_UNSET+=SOUNDEX
-OPTIONS_FILE_UNSET+=GEOPOLY
-OPTIONS_FILE_SET+=RTREE
-OPTIONS_FILE_UNSET+=RTREE_INT
-OPTIONS_FILE_SET+=ICU
-OPTIONS_FILE_SET+=UNICODE61
+mkdir -p /var/db/ports/ftp_wget
+cat <<'EOF' > /var/db/ports/ftp_wget/options
+--8y-- "ports/ftp_wget/options"
 EOF
 
 
-cd /usr/ports/databases/sqlite3
-make all install clean-depends clean
+portmaster -w -B -g --force-config ftp/wget  -n
+```
+
+Wir installieren `devel/git@default` und dessen Abhängigkeiten.
+
+``` bash
+mkdir -p /var/db/ports/security_p5-Authen-SASL
+cat <<'EOF' > /var/db/ports/security_p5-Authen-SASL/options
+--8<-- "ports/security_p5-Authen-SASL/options"
+EOF
+
+mkdir -p /var/db/ports/security_p5-IO-Socket-SSL
+cat <<'EOF' > /var/db/ports/security_p5-IO-Socket-SSL/options
+--8<-- "ports/security_p5-IO-Socket-SSL/options"
+EOF
+
+mkdir -p /var/db/ports/security_p5-Net-SSLeay
+cat <<'EOF' > /var/db/ports/security_p5-Net-SSLeay/options
+--8<-- "ports/security_p5-Net-SSLeay/options"
+EOF
+
+mkdir -p /var/db/ports/textproc_xmlto
+cat <<'EOF' > /var/db/ports/textproc_xmlto/options
+--8<-- "ports/textproc_xmlto/options"
+EOF
+
+mkdir -p /var/db/ports/misc_getopt
+cat <<'EOF' > /var/db/ports/misc_getopt/options
+--8<-- "ports/misc_getopt/options"
+EOF
+
+mkdir -p /var/db/ports/textproc_xmlcatmgr
+cat <<'EOF' > /var/db/ports/textproc_xmlcatmgr/options
+--8<-- "ports/textproc_xmlcatmgr/options"
+EOF
+
+mkdir -p /var/db/ports/textproc_docbook-xsl
+cat <<'EOF' > /var/db/ports/textproc_docbook-xsl/options
+--8<-- "ports/textproc_docbook-xsl/options"
+EOF
+
+mkdir -p /var/db/ports/textproc_libxml2
+cat <<'EOF' > /var/db/ports/textproc_libxml2/options
+--8<-- "ports/textproc_libxml2/options"
+EOF
+
+mkdir -p /var/db/ports/textproc_libxslt
+cat <<'EOF' > /var/db/ports/textproc_libxslt/options
+--8<-- "ports/textproc_libxslt/options"
+EOF
+
+mkdir -p /var/db/ports/security_libgcrypt
+cat <<'EOF' > /var/db/ports/security_libgcrypt/options
+--8<-- "ports/security_libgcrypt/options"
+EOF
+
+mkdir -p /var/db/ports/security_libgpg-error
+cat <<'EOF' > /var/db/ports/security_libgpg-error/options
+--8<-- "ports/security_libgpg-error/options"
+EOF
+
+mkdir -p /var/db/ports/www_w3m
+cat <<'EOF' > /var/db/ports/www_w3m/options
+--8<-- "ports/www_w3m/options"
+EOF
+
+mkdir -p /var/db/ports/devel_boehm-gc
+cat <<'EOF' > /var/db/ports/devel_boehm-gc/options
+--8<-- "ports/devel_boehm-gc/options"
+EOF
+
+mkdir -p /var/db/ports/devel_libatomic_ops
+cat <<'EOF' > /var/db/ports/devel_libatomic_ops/options
+--8<-- "ports/devel_libatomic_ops/options"
+EOF
+
+mkdir -p /var/db/ports/devel_git
+cat <<'EOF' > /var/db/ports/devel_git/options
+--8<-- "ports/devel_git/options"
+EOF
+
+
+portmaster -w -B -g --force-config devel/git@default  -n
 ```
 
 Wir installieren `security/gnupg` und dessen Abhängigkeiten.
@@ -401,101 +318,77 @@ Wir installieren `security/gnupg` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/security_pinentry
 cat <<'EOF' > /var/db/ports/security_pinentry/options
-_OPTIONS_READ=pinentry-1.3.0
-_FILE_COMPLETE_OPTIONS_LIST= EFL FLTK GNOME GTK2 NCURSES QT5 QT6 TTY
-OPTIONS_FILE_UNSET+=EFL
-OPTIONS_FILE_UNSET+=FLTK
-OPTIONS_FILE_UNSET+=GNOME
-OPTIONS_FILE_UNSET+=GTK2
-OPTIONS_FILE_UNSET+=NCURSES
-OPTIONS_FILE_UNSET+=QT5
-OPTIONS_FILE_UNSET+=QT6
-OPTIONS_FILE_SET+=TTY
+--8<-- "ports/security_pinentry/options"
 EOF
 
 mkdir -p /var/db/ports/security_pinentry-tty
 cat <<'EOF' > /var/db/ports/security_pinentry-tty/options
-_OPTIONS_READ=pinentry-tty-1.3.0
-_FILE_COMPLETE_OPTIONS_LIST=LIBSECRET
-OPTIONS_FILE_UNSET+=LIBSECRET
+--8<-- "ports/security_pinentry-tty/options"
 EOF
 
 mkdir -p /var/db/ports/security_gnupg
 cat <<'EOF' > /var/db/ports/security_gnupg/options
-_OPTIONS_READ=gnupg-2.4.5
-_FILE_COMPLETE_OPTIONS_LIST=DOCS GNUTLS LARGE_RSA LDAP NLS SCDAEMON SUID_GPG WKS_SERVER
-OPTIONS_FILE_UNSET+=DOCS
-OPTIONS_FILE_UNSET+=GNUTLS
-OPTIONS_FILE_SET+=LARGE_RSA
-OPTIONS_FILE_UNSET+=LDAP
-OPTIONS_FILE_SET+=NLS
-OPTIONS_FILE_UNSET+=SCDAEMON
-OPTIONS_FILE_UNSET+=SUID_GPG
-OPTIONS_FILE_UNSET+=WKS_SERVER
+--8<-- "ports/security_gnupg/options"
 EOF
 
 
-cd /usr/ports/security/gnupg
-make all install clean-depends clean
+portmaster -w -B -g --force-config security/gnupg  -n
+```
+
+Wir installieren `databases/sqlite3` und dessen Abhängigkeiten.
+
+``` bash
+mkdir -p /var/db/ports/databases_sqlite3
+cat <<'EOF' > /var/db/ports/databases_sqlite3/options
+--8<-- "ports/databases_sqlite3/options"
+EOF
+
+
+portmaster -w -B -g --force-config databases/sqlite3@default  -n
 ```
 
 Wir installieren `devel/subversion` und dessen Abhängigkeiten.
 
 ``` bash
+mkdir -p /var/db/ports/databases_db5
+cat <<'EOF' > /var/db/ports/databases_db5/options
+--8<-- "ports/databases_db5/options"
+EOF
+
 mkdir -p /var/db/ports/devel_apr1
 cat <<'EOF' > /var/db/ports/devel_apr1/options
-_OPTIONS_READ=apr-1.7.3.1.6.3
-_FILE_COMPLETE_OPTIONS_LIST=IPV6 BDB BDB5 SSL NSS GDBM LDAP MYSQL NDBM ODBC PGSQL SQLITE
-OPTIONS_FILE_SET+=IPV6
-OPTIONS_FILE_UNSET+=BDB
-OPTIONS_FILE_UNSET+=BDB5
-OPTIONS_FILE_SET+=SSL
-OPTIONS_FILE_UNSET+=NSS
-OPTIONS_FILE_UNSET+=GDBM
-OPTIONS_FILE_UNSET+=LDAP
-OPTIONS_FILE_UNSET+=MYSQL
-OPTIONS_FILE_UNSET+=NDBM
-OPTIONS_FILE_UNSET+=ODBC
-OPTIONS_FILE_UNSET+=PGSQL
-OPTIONS_FILE_UNSET+=SQLITE
+--8<-- "ports/devel_apr1/options"
 EOF
 
 mkdir -p /var/db/ports/textproc_utf8proc
 cat <<'EOF' > /var/db/ports/textproc_utf8proc/options
-_OPTIONS_READ=utf8proc-2.9.0
-_FILE_COMPLETE_OPTIONS_LIST=DOCS
-OPTIONS_FILE_UNSET+=DOCS
+--8<-- "ports/textproc_utf8proc/options"
 EOF
 
 mkdir -p /var/db/ports/www_serf
 cat <<'EOF' > /var/db/ports/www_serf/options
-_OPTIONS_READ=serf-1.3.10
-_FILE_COMPLETE_OPTIONS_LIST=DOCS GSSAPI_BASE GSSAPI_HEIMDAL GSSAPI_MIT
-OPTIONS_FILE_UNSET+=DOCS
-OPTIONS_FILE_UNSET+=GSSAPI_BASE
-OPTIONS_FILE_UNSET+=GSSAPI_HEIMDAL
-OPTIONS_FILE_UNSET+=GSSAPI_MIT
+--8<-- "ports/www_serf/options"
 EOF
 
 mkdir -p /var/db/ports/devel_subversion
 cat <<'EOF' > /var/db/ports/devel_subversion/options
-_OPTIONS_READ=subversion-1.14.3
-_FILE_COMPLETE_OPTIONS_LIST=BDB DOCS GPG_AGENT NLS SASL SERF STATIC SVNSERVE_WRAPPER TEST TOOLS
-OPTIONS_FILE_UNSET+=BDB
-OPTIONS_FILE_UNSET+=DOCS
-OPTIONS_FILE_SET+=GPG_AGENT
-OPTIONS_FILE_SET+=NLS
-OPTIONS_FILE_UNSET+=SASL
-OPTIONS_FILE_SET+=SERF
-OPTIONS_FILE_UNSET+=STATIC
-OPTIONS_FILE_UNSET+=SVNSERVE_WRAPPER
-OPTIONS_FILE_UNSET+=TEST
-OPTIONS_FILE_SET+=TOOLS
+--8<-- "ports/devel_subversion/options"
 EOF
 
 
-cd /usr/ports/devel/subversion
-make all install clean-depends clean
+portmaster -w -B -g --force-config devel/subversion  -n
+```
+
+Wir installieren `editors/nano` und dessen Abhängigkeiten.
+
+``` bash
+mkdir -p /var/db/ports/editors_nano
+cat <<'EOF' > /var/db/ports/editors_nano/options
+--8<-- "ports/editors_nano/options"
+EOF
+
+
+portmaster -w -B -g --force-config editors/nano  -n
 ```
 
 Wenn wir ein Programm nicht kennen, dann finden wir zu jedem Port eine Datei `pkg-descr`, die eine kurze Beschreibung sowie (meistens) einen Link zur Projekt-Homepage der Software enthält. Für `smartmontools` zum Beispiel würden wir die Beschreibung unter `/usr/ports/sysutils/smartmontools/pkg-descr` finden.

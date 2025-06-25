@@ -28,7 +28,3 @@ PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin
 #10      7       *       *       *       root    /usr/local/bin/git -C /usr/ports pull --quiet && /usr/bin/make -C /usr/ports fetchindex && /usr/local/sbin/pkg version -vIL= && /usr/local/sbin/pkg audit -F
 #10      7       *       *       *       root    /usr/local/sbin/pkg update -f && /usr/local/sbin/pkg audit -F # && /usr/local/sbin/pkg upgrade
 #
-#*/10    *       *       *       *       root    /usr/local/sbin/update-badhosts >/dev/null 2>&1
-#*/5     *       *       *       *       root    /usr/local/sbin/update-dynip
-#40      */6     *       *       *       root    /usr/local/sbin/update-pftables
-#

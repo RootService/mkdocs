@@ -20,26 +20,32 @@ Unser BaseSystem wird am Ende folgende Dienste umfassen.
 
 Unsere BasePorts werden am Ende folgende Dienste umfassen.
 
+- Portmaster 3.30
 - Perl 5.40.2
-- OpenSSL 3.0.16
+- OpenSSL 3.5.0
 - LUA 5.4.7
 - TCL 8.6.16
 - Python 3.11.13
+- Bash 5.2.37
 - cURL 8.14.1
-- Ruby 3.3.8
+- LLVM 19.1.7
 - Rust 1.87.0
+- Ruby 3.3.8
+- Go 1.24.4
 
 Unsere BaseTools werden am Ende folgende Dienste umfassen.
 
-- Sudo 1.9.16p2
+- Sudo 1.9.17p1
+- Bind-Tools 9.20.10
+- QEmu GuestAgent 10.0.2
+- Cloud-Init 24.1.4
+- SMARTMonTools 7.5
 - wget 1.25.0
-- Bash 5.2.37
 - GIT 2.50.0
-- Portmaster 3.30
-- Nano 8.4
-- SQLite 3.46.1
 - GnuPG 2.4.7
+- SQLite 3.46.1
 - Subversion 1.14.5
+- Nano 8.4
 
 Folgende Punkte sind in allen folgenden HowTos zu beachten.
 

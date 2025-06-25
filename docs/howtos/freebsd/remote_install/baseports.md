@@ -15,14 +15,18 @@ In diesem HowTo beschreibe ich step-by-step die Installation einiger Ports (Pack
 
 Unsere BasePorts werden am Ende folgende Dienste umfassen.
 
+- Portmaster 3.30
 - Perl 5.40.2
-- OpenSSL 3.0.16
+- OpenSSL 3.5.0
 - LUA 5.4.7
 - TCL 8.6.16
 - Python 3.11.13
+- Bash 5.2.37
 - cURL 8.14.1
-- Ruby 3.3.8
+- LLVM 19.1.7
 - Rust 1.87.0
+- Ruby 3.3.8
+- Go 1.24.4
 
 ## Voraussetzungen
 
@@ -52,7 +56,7 @@ Wir deaktivieren also zuerst das Default-Repository von `pkg`, um versehentliche
 
 ``` bash
 mkdir -p /usr/local/etc/pkg/repos
-sed -e 's|quarterly|latest|g' /etc/pkg/FreeBSD.conf > /usr/local/etc/pkg/repos/FreeBSD.conf
+sed -e 's|quarterly|latest|' /etc/pkg/FreeBSD.conf > /usr/local/etc/pkg/repos/FreeBSD.conf
 sed -e 's|\(enabled:\)[[:space:]]*yes|\1 no|g' -i '' /usr/local/etc/pkg/repos/FreeBSD.conf
 ```
 
@@ -68,104 +72,63 @@ cat <<'EOF' >> /etc/crontab
 EOF
 ```
 
-Wir installieren `sysutils/cpu-microcode` und dessen Abhängigkeiten.
+Wir installieren `ports-mgmt/pkg` und dessen Abhängigkeiten.
 
 ``` bash
-mkdir -p /var/db/ports/sysutils_cpu-microcode-intel
-cat <<'EOF' > /var/db/ports/sysutils_cpu-microcode-intel/options
-_OPTIONS_READ=cpu-microcode-intel-20231114
-_FILE_COMPLETE_OPTIONS_LIST=RC SPLIT
-OPTIONS_FILE_SET+=RC
-OPTIONS_FILE_SET+=SPLIT
+mkdir -p /var/db/ports/ports-mgmt_pkg
+cat <<'EOF' > /var/db/ports/ports-mgmt_pkg/options
+--8<-- "ports/ports-mgmt_pkg/options
+EOF
+
+make -C /usr/ports/ports-mgmt/pkg/ all install clean-depends clean
+```
+
+Wir installieren `ports-mgmt/portmaster` und dessen Abhängigkeiten.
+
+``` bash
+mkdir -p /var/db/ports/ports-mgmt_portmaster
+cat <<'EOF' > /var/db/ports/ports-mgmt_portmaster/options
+--8<-- "ports/ports-mgmt_portmaster/options
+EOF
+
+make -C /usr/ports/ports-mgmt/portmaster/ all install clean-depends clean
+```
+
+Wir installieren `ports-mgmt/pkg` und `ports-mgmt/portmaster` und ihre Abhängigkeiten mittels `portmaster` erneut.
+
+``` bash
+portmaster -w -b -g --force-config ports-mgmt/pkg
+portmaster -w -b -g --force-config ports-mgmt/portconfig
+portmaster -w -b -g --force-config ports-mgmt/portmaster
+```
+
+Wir installieren `lang/perl5.40` und dessen Abhängigkeiten.
+
+``` bash
+mkdir -p /var/db/ports/lang_perl5.40
+cat <<'EOF' > /var/db/ports/lang_perl5.40/options
+--8<-- "ports/lang_perl5.40/options"
 EOF
 
 
-cd /usr/ports/sysutils/cpu-microcode
-make LICENSES_ACCEPTED=EULA config-recursive all install clean-depends clean
-
-
-sysrc microcode_update_enable=YES
+portmaster -w -B -g --force-config lang/perl5.40  -n
 ```
 
-Wir installieren `lang/perl5.36` und dessen Abhängigkeiten.
+Wir installieren `security/openssl35` und dessen Abhängigkeiten.
 
 ``` bash
 cat <<'EOF' >> /etc/make.conf
-#DEFAULT_VERSIONS+=perl5=5.36
+DEFAULT_VERSIONS+=ssl=openssl35
 EOF
 
 
-mkdir -p /var/db/ports/lang_perl5.36
-cat <<'EOF' > /var/db/ports/lang_perl5.36/options
-_OPTIONS_READ=perl5-5.36.3
-_FILE_COMPLETE_OPTIONS_LIST=DEBUG DOT_INC DTRACE GDBM MULTIPLICITY PERL_64BITINT PERL_MALLOC SITECUSTOMIZE THREADS
-OPTIONS_FILE_UNSET+=DEBUG
-OPTIONS_FILE_UNSET+=DOT_INC
-OPTIONS_FILE_UNSET+=DTRACE
-OPTIONS_FILE_UNSET+=GDBM
-OPTIONS_FILE_SET+=MULTIPLICITY
-OPTIONS_FILE_SET+=PERL_64BITINT
-OPTIONS_FILE_UNSET+=PERL_MALLOC
-OPTIONS_FILE_UNSET+=SITECUSTOMIZE
-OPTIONS_FILE_SET+=THREADS
+mkdir -p /var/db/ports/security_openssl35
+cat <<'EOF' > /var/db/ports/security_openssl35/options
+--8<-- "ports/security_openssl35/options"
 EOF
 
 
-cd /usr/ports/lang/perl5.36
-make all install clean-depends clean
-```
-
-Wir installieren `security/openssl` und dessen Abhängigkeiten.
-
-``` bash
-cat <<'EOF' >> /etc/make.conf
-DEFAULT_VERSIONS+=ssl=openssl
-EOF
-
-
-mkdir -p /var/db/ports/security_openssl
-cat <<'EOF' > /var/db/ports/security_openssl/options
-_OPTIONS_READ=openssl-3.0.13
-_FILE_COMPLETE_OPTIONS_LIST=ASYNC CT KTLS MAN3 RFC3779 SHARED ZLIB ARIA DES GOST IDEA SM4 RC2 RC4 RC5 WEAK-SSL-CIPHERS MD2 MD4 MDC2 RMD160 SM2 SM3 FIPS LEGACY ASM SSE2 THREADS EC NEXTPROTONEG SCTP SSL3 TLS1 TLS1_1 TLS1_2
-OPTIONS_FILE_SET+=ASYNC
-OPTIONS_FILE_SET+=CT
-OPTIONS_FILE_SET+=KTLS
-OPTIONS_FILE_SET+=MAN3
-OPTIONS_FILE_UNSET+=RFC3779
-OPTIONS_FILE_SET+=SHARED
-OPTIONS_FILE_UNSET+=ZLIB
-OPTIONS_FILE_UNSET+=ARIA
-OPTIONS_FILE_SET+=DES
-OPTIONS_FILE_SET+=GOST
-OPTIONS_FILE_UNSET+=IDEA
-OPTIONS_FILE_UNSET+=SM4
-OPTIONS_FILE_SET+=RC2
-OPTIONS_FILE_SET+=RC4
-OPTIONS_FILE_UNSET+=RC5
-OPTIONS_FILE_UNSET+=WEAK-SSL-CIPHERS
-OPTIONS_FILE_UNSET+=MD2
-OPTIONS_FILE_SET+=MD4
-OPTIONS_FILE_UNSET+=MDC2
-OPTIONS_FILE_SET+=RMD160
-OPTIONS_FILE_UNSET+=SM2
-OPTIONS_FILE_UNSET+=SM3
-OPTIONS_FILE_SET+=FIPS
-OPTIONS_FILE_UNSET+=LEGACY
-OPTIONS_FILE_SET+=ASM
-OPTIONS_FILE_SET+=SSE2
-OPTIONS_FILE_SET+=THREADS
-OPTIONS_FILE_SET+=EC
-OPTIONS_FILE_SET+=NEXTPROTONEG
-OPTIONS_FILE_SET+=SCTP
-OPTIONS_FILE_UNSET+=SSL3
-OPTIONS_FILE_SET+=TLS1
-OPTIONS_FILE_SET+=TLS1_1
-OPTIONS_FILE_SET+=TLS1_2
-EOF
-
-
-cd /usr/ports/security/openssl
-make all install clean-depends clean
+portmaster -w -B -g --force-config security/openssl35  -n
 ```
 
 Wir installieren `security/ca_root_nss` und dessen Abhängigkeiten.
@@ -173,321 +136,109 @@ Wir installieren `security/ca_root_nss` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/security_ca_root_nss
 cat <<'EOF' > /var/db/ports/security_ca_root_nss/options
-_OPTIONS_READ=ca_root_nss-3.93
-_FILE_COMPLETE_OPTIONS_LIST=ETCSYMLINK
-OPTIONS_FILE_SET+=ETCSYMLINK
+--8<-- "ports/security_ca_root_nss/options"
 EOF
 
 
-cd /usr/ports/security/ca_root_nss
-make all install clean-depends clean
+portmaster -w -B -g --force-config security/ca_root_nss  -n
 ```
 
 Wir installieren `devel/pcre2` und dessen Abhängigkeiten.
 
 ``` bash
-mkdir -p /var/db/ports/devel_pkgconf
-cat <<'EOF' > /var/db/ports/devel_pkgconf/options
-_OPTIONS_READ=pkgconf-2.2.0
-_FILE_COMPLETE_OPTIONS_LIST=DOCS
-OPTIONS_FILE_UNSET+=DOCS
-EOF
-
 mkdir -p /var/db/ports/devel_autoconf
 cat <<'EOF' > /var/db/ports/devel_autoconf/options
-_OPTIONS_READ=autoconf-2.72
-_FILE_COMPLETE_OPTIONS_LIST=INFO
-OPTIONS_FILE_UNSET+=INFO
+--8<-- "ports/devel_autoconf/options"
 EOF
 
 mkdir -p /var/db/ports/devel_m4
 cat <<'EOF' > /var/db/ports/devel_m4/options
-_OPTIONS_READ=m4-1.4.19
-_FILE_COMPLETE_OPTIONS_LIST=EXAMPLES INFO LIBSIGSEGV NLS
-OPTIONS_FILE_UNSET+=EXAMPLES
-OPTIONS_FILE_UNSET+=INFO
-OPTIONS_FILE_UNSET+=LIBSIGSEGV
-OPTIONS_FILE_SET+=NLS
-EOF
-
-mkdir -p /var/db/ports/devel_gettext-tools
-cat <<'EOF' > /var/db/ports/devel_gettext-tools/options
-_OPTIONS_READ=gettext-tools-0.22.5
-_FILE_COMPLETE_OPTIONS_LIST=DOCS EXAMPLES THREADS
-OPTIONS_FILE_UNSET+=DOCS
-OPTIONS_FILE_UNSET+=EXAMPLES
-OPTIONS_FILE_SET+=THREADS
-EOF
-
-mkdir -p /var/db/ports/devel_libtextstyle
-cat <<'EOF' > /var/db/ports/devel_libtextstyle/options
-_OPTIONS_READ=libtextstyle-0.22.5
-_FILE_COMPLETE_OPTIONS_LIST=DOCS
-OPTIONS_FILE_UNSET+=DOCS
+--8<-- "ports/devel_m4/options"
 EOF
 
 mkdir -p /var/db/ports/devel_gettext-runtime
 cat <<'EOF' > /var/db/ports/devel_gettext-runtime/options
-_OPTIONS_READ=gettext-runtime-0.22.5
-_FILE_COMPLETE_OPTIONS_LIST=DOCS
-OPTIONS_FILE_UNSET+=DOCS
+--8<-- "ports/devel_gettext-runtime/options"
 EOF
 
-mkdir -p /var/db/ports/devel_gmake
-cat <<'EOF' > /var/db/ports/devel_gmake/options
-_OPTIONS_READ=gmake-4.4.1
-_FILE_COMPLETE_OPTIONS_LIST=NLS
-OPTIONS_FILE_SET+=NLS
+mkdir -p /var/db/ports/devel_gettext-tools
+cat <<'EOF' > /var/db/ports/devel_gettext-tools/options
+--8<-- "ports/devel_gettext-tools/options"
+EOF
+
+mkdir -p /var/db/ports/devel_libtextstyle
+cat <<'EOF' > /var/db/ports/devel_libtextstyle/options
+--8<-- "ports/devel_libtextstyle/options"
 EOF
 
 mkdir -p /var/db/ports/devel_automake
 cat <<'EOF' > /var/db/ports/devel_automake/options
-_OPTIONS_READ=automake-1.16.5
-_FILE_COMPLETE_OPTIONS_LIST=DOCS
-OPTIONS_FILE_UNSET+=DOCS
+--8<-- "ports/devel_automake/options"
+EOF
+
+mkdir -p /var/db/ports/devel_gmake
+cat <<'EOF' > /var/db/ports/devel_gmake/options
+--8<-- "ports/devel_gmake/options"
+EOF
+
+mkdir -p /var/db/ports/devel_pkgconf
+cat <<'EOF' > /var/db/ports/devel_pkgconf/options
+--8<-- "ports/devel_pkgconf/options"
 EOF
 
 mkdir -p /var/db/ports/devel_pcre2
 cat <<'EOF' > /var/db/ports/devel_pcre2/options
-_OPTIONS_READ=pcre2-10.43
-_FILE_COMPLETE_OPTIONS_LIST=DOCS LIBBZ2 LIBZ LIBEDIT READLINE
-OPTIONS_FILE_UNSET+=DOCS
-OPTIONS_FILE_SET+=LIBBZ2
-OPTIONS_FILE_SET+=LIBZ
-OPTIONS_FILE_SET+=LIBEDIT
-OPTIONS_FILE_UNSET+=READLINE
+--8<-- "ports/devel_pcre2/options"
 EOF
 
 
-cd /usr/ports/devel/pcre2
-make all install clean-depends clean
+portmaster -w -B -g --force-config devel/pcre2  -n
 ```
 
 Wir installieren `lang/lua54` und dessen Abhängigkeiten.
 
 ``` bash
-cat <<'EOF' >> /etc/make.conf
-#DEFAULT_VERSIONS+=lua=5.4
-EOF
-
-
 mkdir -p /var/db/ports/lang_lua54
 cat <<'EOF' > /var/db/ports/lang_lua54/options
-_OPTIONS_READ=lua54-5.4.6
-_FILE_COMPLETE_OPTIONS_LIST= EDITNONE LIBEDIT_DL LIBEDIT READLINE DOCS ASSERT APICHECK
-OPTIONS_FILE_UNSET+=EDITNONE
-OPTIONS_FILE_SET+=LIBEDIT_DL
-OPTIONS_FILE_UNSET+=LIBEDIT
-OPTIONS_FILE_UNSET+=READLINE
-OPTIONS_FILE_UNSET+=DOCS
-OPTIONS_FILE_UNSET+=ASSERT
-OPTIONS_FILE_UNSET+=APICHECK
+--8<-- "ports/lang_lua54/options"
 EOF
 
 
-cd /usr/ports/lang/lua54
-make all install clean-depends clean
+portmaster -w -B -g --force-config lang/lua54  -n
 ```
 
 Wir installieren `lang/tcl86` und dessen Abhängigkeiten.
 
 ``` bash
-cat <<'EOF' >> /etc/make.conf
-#DEFAULT_VERSIONS+=tcltk=8.6
-EOF
-
-
 mkdir -p /var/db/ports/lang_tcl86
 cat <<'EOF' > /var/db/ports/lang_tcl86/options
-_OPTIONS_READ=tcl86-8.6.14
-_FILE_COMPLETE_OPTIONS_LIST=DEBUG DTRACE TCLMAN THREADS TZDATA
-OPTIONS_FILE_UNSET+=DEBUG
-OPTIONS_FILE_UNSET+=DTRACE
-OPTIONS_FILE_SET+=TCLMAN
-OPTIONS_FILE_SET+=THREADS
-OPTIONS_FILE_SET+=TZDATA
+--8<-- "ports/lang_tcl86/options"
 EOF
 
 
-cd /usr/ports/lang/tcl86
-make all install clean-depends clean
+portmaster -w -B -g --force-config lang/tcl86  -n
 ```
 
-Wir installieren `lang/python311` und dessen Abhängigkeiten.
+Wir installieren `lang/python` und dessen Abhängigkeiten.
 
 ``` bash
-cat <<'EOF' >> /etc/make.conf
-#DEFAULT_VERSIONS+=python=3.11
-#DEFAULT_VERSIONS+=python3=3.11
+mkdir -p /var/db/ports/devel_readline
+cat <<'EOF' > /var/db/ports/devel_readline/options
+--8<-- "ports/devel_readline/options"
 EOF
-
 
 mkdir -p /var/db/ports/math_mpdecimal
 cat <<'EOF' > /var/db/ports/math_mpdecimal/options
-_OPTIONS_READ=mpdecimal-4.0.0
-_FILE_COMPLETE_OPTIONS_LIST=DOCS
-OPTIONS_FILE_UNSET+=DOCS
-EOF
-
-mkdir -p /var/db/ports/devel_readline
-cat <<'EOF' > /var/db/ports/devel_readline/options
-_OPTIONS_READ=readline-8.2.10
-_FILE_COMPLETE_OPTIONS_LIST=BRACKETEDPASTE DOCS
-OPTIONS_FILE_SET+=BRACKETEDPASTE
-OPTIONS_FILE_UNSET+=DOCS
+--8<-- "ports/math_mpdecimal/options"
 EOF
 
 mkdir -p /var/db/ports/lang_python311
 cat <<'EOF' > /var/db/ports/lang_python311/options
-_OPTIONS_READ=python311-3.11.9
-_FILE_COMPLETE_OPTIONS_LIST=DEBUG IPV6 LIBMPDEC LTO NLS PYMALLOC FNV SIPHASH
-OPTIONS_FILE_UNSET+=DEBUG
-OPTIONS_FILE_SET+=IPV6
-OPTIONS_FILE_SET+=LIBMPDEC
-OPTIONS_FILE_SET+=LTO
-OPTIONS_FILE_SET+=NLS
-OPTIONS_FILE_SET+=PYMALLOC
-OPTIONS_FILE_UNSET+=FNV
-OPTIONS_FILE_UNSET+=SIPHASH
+--8<-- "ports/lang_python311/options"
 EOF
 
 
-cd /usr/ports/lang/python3
-make all install clean-depends clean
-
-cd /usr/ports/lang/python
-make all install clean-depends clean
-```
-
-Wir installieren `ftp/curl` und dessen Abhängigkeiten.
-
-``` bash
-mkdir -p /var/db/ports/archivers_brotli
-cat <<'EOF' > /var/db/ports/archivers_brotli/options
-_OPTIONS_READ=brotli-1.1.0
-_FILE_COMPLETE_OPTIONS_LIST=STATIC
-OPTIONS_FILE_UNSET+=STATIC
-EOF
-
-mkdir -p /var/db/ports/devel_cmake-core
-cat <<'EOF' > /var/db/ports/devel_cmake-core/options
-_OPTIONS_READ=cmake-core-3.29.3
-_FILE_COMPLETE_OPTIONS_LIST=CPACK DOCS
-OPTIONS_FILE_SET+=CPACK
-OPTIONS_FILE_UNSET+=DOCS
-EOF
-
-mkdir -p /var/db/ports/textproc_expat2
-cat <<'EOF' > /var/db/ports/textproc_expat2/options
-_OPTIONS_READ=expat-2.6.2
-_FILE_COMPLETE_OPTIONS_LIST=DOCS STATIC TEST
-OPTIONS_FILE_UNSET+=DOCS
-OPTIONS_FILE_UNSET+=STATIC
-OPTIONS_FILE_UNSET+=TEST
-EOF
-
-mkdir -p /var/db/ports/devel_ninja
-cat <<'EOF' > /var/db/ports/devel_ninja/options
-_OPTIONS_READ=ninja-1.11.1
-_FILE_COMPLETE_OPTIONS_LIST=BASH DOCS ZSH
-OPTIONS_FILE_SET+=BASH
-OPTIONS_FILE_UNSET+=DOCS
-OPTIONS_FILE_SET+=ZSH
-EOF
-
-mkdir -p /var/db/ports/archivers_zstd
-cat <<'EOF' > /var/db/ports/archivers_zstd/options
-_OPTIONS_READ=zstd-1.5.6
-_FILE_COMPLETE_OPTIONS_LIST=OPTIMIZED_CFLAGS
-OPTIONS_FILE_UNSET+=OPTIMIZED_CFLAGS
-EOF
-
-mkdir -p /var/db/ports/archivers_liblz4
-cat <<'EOF' > /var/db/ports/archivers_liblz4/options
-_OPTIONS_READ=liblz4-1.9.4
-_FILE_COMPLETE_OPTIONS_LIST=TEST
-OPTIONS_FILE_UNSET+=TEST
-EOF
-
-mkdir -p /var/db/ports/security_libssh2
-cat <<'EOF' > /var/db/ports/security_libssh2/options
-_OPTIONS_READ=libssh2-1.11.0
-_FILE_COMPLETE_OPTIONS_LIST=GCRYPT TRACE ZLIB
-OPTIONS_FILE_UNSET+=GCRYPT
-OPTIONS_FILE_UNSET+=TRACE
-OPTIONS_FILE_SET+=ZLIB
-EOF
-
-mkdir -p /var/db/ports/dns_libpsl
-cat <<'EOF' > /var/db/ports/dns_libpsl/options
-_OPTIONS_READ=libpsl-0.21.5
-_FILE_COMPLETE_OPTIONS_LIST= ICU IDN IDN2
-OPTIONS_FILE_SET+=ICU
-OPTIONS_FILE_UNSET+=IDN
-OPTIONS_FILE_UNSET+=IDN2
-EOF
-
-mkdir -p /var/db/ports/security_rhash
-cat <<'EOF' > /var/db/ports/security_rhash/options
-_OPTIONS_READ=rhash-1.4.4
-_FILE_COMPLETE_OPTIONS_LIST=DOCS NLS
-OPTIONS_FILE_UNSET+=DOCS
-OPTIONS_FILE_SET+=NLS
-EOF
-
-mkdir -p /var/db/ports/ftp_curl
-cat <<'EOF' > /var/db/ports/ftp_curl/options
-_OPTIONS_READ=curl-8.7.1
-_FILE_COMPLETE_OPTIONS_LIST=ALTSVC BROTLI CA_BUNDLE COOKIES CURL_DEBUG DEBUG DOCS EXAMPLES IDN IPV6 NTLM PROXY PSL STATIC TLS_SRP ZSTD GSSAPI_BASE GSSAPI_HEIMDAL GSSAPI_MIT GSSAPI_NONE CARES THREADED_RESOLVER GNUTLS OPENSSL WOLFSSL DICT FTP GOPHER HTTP HTTP2 IMAP LDAP LDAPS LIBSSH LIBSSH2 MQTT POP3 RTMP RTSP SMB SMTP TELNET TFTP WEBSOCKET
-OPTIONS_FILE_SET+=ALTSVC
-OPTIONS_FILE_SET+=BROTLI
-OPTIONS_FILE_SET+=CA_BUNDLE
-OPTIONS_FILE_SET+=COOKIES
-OPTIONS_FILE_UNSET+=CURL_DEBUG
-OPTIONS_FILE_UNSET+=DEBUG
-OPTIONS_FILE_UNSET+=DOCS
-OPTIONS_FILE_UNSET+=EXAMPLES
-OPTIONS_FILE_UNSET+=IDN
-OPTIONS_FILE_SET+=IPV6
-OPTIONS_FILE_SET+=NTLM
-OPTIONS_FILE_SET+=PROXY
-OPTIONS_FILE_SET+=PSL
-OPTIONS_FILE_UNSET+=STATIC
-OPTIONS_FILE_SET+=TLS_SRP
-OPTIONS_FILE_SET+=ZSTD
-OPTIONS_FILE_UNSET+=GSSAPI_BASE
-OPTIONS_FILE_UNSET+=GSSAPI_HEIMDAL
-OPTIONS_FILE_UNSET+=GSSAPI_MIT
-OPTIONS_FILE_SET+=GSSAPI_NONE
-OPTIONS_FILE_UNSET+=CARES
-OPTIONS_FILE_SET+=THREADED_RESOLVER
-OPTIONS_FILE_UNSET+=GNUTLS
-OPTIONS_FILE_SET+=OPENSSL
-OPTIONS_FILE_UNSET+=WOLFSSL
-OPTIONS_FILE_SET+=DICT
-OPTIONS_FILE_SET+=FTP
-OPTIONS_FILE_SET+=GOPHER
-OPTIONS_FILE_SET+=HTTP
-OPTIONS_FILE_SET+=HTTP2
-OPTIONS_FILE_SET+=IMAP
-OPTIONS_FILE_UNSET+=LDAP
-OPTIONS_FILE_UNSET+=LDAPS
-OPTIONS_FILE_UNSET+=LIBSSH
-OPTIONS_FILE_SET+=LIBSSH2
-OPTIONS_FILE_UNSET+=MQTT
-OPTIONS_FILE_SET+=POP3
-OPTIONS_FILE_UNSET+=RTMP
-OPTIONS_FILE_SET+=RTSP
-OPTIONS_FILE_UNSET+=SMB
-OPTIONS_FILE_SET+=SMTP
-OPTIONS_FILE_SET+=TELNET
-OPTIONS_FILE_SET+=TFTP
-OPTIONS_FILE_UNSET+=WEBSOCKET
-EOF
-
-
-cd /usr/ports/ftp/curl
-make all install clean-depends clean
+portmaster -w -B -g --force-config lang/python  -n
 ```
 
 Wir installieren `devel/py-pip` und dessen Abhängigkeiten.
@@ -495,49 +246,185 @@ Wir installieren `devel/py-pip` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/devel_py-pip
 cat <<'EOF' > /var/db/ports/devel_py-pip/options
-_OPTIONS_READ=py311-pip-23.3.2
-_FILE_COMPLETE_OPTIONS_LIST=DOCS
-OPTIONS_FILE_UNSET+=DOCS
+--8<-- "ports/devel_py-pip/options"
 EOF
 
-
-cd /usr/ports/devel/py-pip
-make all install clean-depends clean
+portmaster -w -B -g --force-config devel/py-pip  -n
 ```
 
-Wir installieren `lang/ruby32` und dessen Abhängigkeiten.
+Wir installieren `devel/re2c` und dessen Abhängigkeiten.
 
 ``` bash
-cat <<'EOF' >> /etc/make.conf
-#DEFAULT_VERSIONS+=ruby=3.2
+mkdir -p /var/db/ports/devel_cmake-core
+cat <<'EOF' > /var/db/ports/devel_cmake-core/options
+--8<-- "ports/devel_cmake-core/options"
 EOF
 
+mkdir -p /var/db/ports/devel_ninja
+cat <<'EOF' > /var/db/ports/devel_ninja/options
+--8<-- "ports/devel_ninja/options"
+EOF
+
+mkdir -p /var/db/ports/devel_libunistring
+cat <<'EOF' > /var/db/ports/devel_libunistring/options
+--8<-- "ports/devel_libunistring/options"
+EOF
+
+mkdir -p /var/db/ports/misc_help2man
+cat <<'EOF' > /var/db/ports/misc_help2man/options
+--8<-- "ports/misc_help2man/options"
+EOF
+
+mkdir -p /var/db/ports/print_texinfo
+cat <<'EOF' > /var/db/ports/print_texinfo/options
+--8<-- "ports/print_texinfo/options"
+EOF
+
+mkdir -p /var/db/ports/converters_libiconv
+cat <<'EOF' > /var/db/ports/converters_libiconv/options
+--8<-- "ports/converters_libiconv/options"
+EOF
+
+mkdir -p /var/db/ports/devel_p5-Locale-libintl
+cat <<'EOF' > /var/db/ports/devel_p5-Locale-libintl/options
+--8<-- "ports/devel_p5-Locale-libintl/options"
+EOF
+
+mkdir -p /var/db/ports/security_rhash
+cat <<'EOF' > /var/db/ports/security_rhash/options
+--8<-- "ports/security_rhash/options"
+EOF
+
+mkdir -p /var/db/ports/textproc_expat2
+cat <<'EOF' > /var/db/ports/textproc_expat2/options
+--8<-- "ports/textproc_expat2/options"
+EOF
+
+mkdir -p /var/db/ports/devel_re2c
+cat <<'EOF' > /var/db/ports/devel_re2c/options
+--8<-- "ports/devel_re2c/options"
+EOF
+
+portmaster -w -B -g --force-config devel/re2c  -n
+```
+
+Wir installieren `shells/bash` und dessen Abhängigkeiten.
+
+``` bash
+mkdir -p /var/db/ports/devel_bison
+cat <<'EOF' > /var/db/ports/devel_bison/options
+--8<-- "ports/devel_bison/options"
+EOF
+
+mkdir -p /var/db/ports/shells_bash
+cat <<'EOF' > /var/db/ports/shells_bash/options
+--8<-- "ports/shells_bash/options"
+EOF
+
+
+portmaster -w -B -g --force-config shells/bash  -n
+```
+
+Wir installieren `ftp/curl` und dessen Abhängigkeiten.
+
+``` bash
+mkdir -p /var/db/ports/archivers_brotli
+cat <<'EOF' > /var/db/ports/archivers_brotli/options
+--8<-- "ports/archivers_brotli/options"
+EOF
+
+mkdir -p /var/db/ports/archivers_zstd
+cat <<'EOF' > /var/db/ports/archivers_zstd/options
+--8<-- "ports/archivers_zstd/options"
+EOF
+
+mkdir -p /var/db/ports/archivers_liblz4
+cat <<'EOF' > /var/db/ports/archivers_liblz4/options
+--8<-- "ports/archivers_liblz4/options"
+EOF
+
+mkdir -p /var/db/ports/security_libssh2
+cat <<'EOF' > /var/db/ports/security_libssh2/options
+--8<-- "ports/security_libssh2/options"
+EOF
+
+mkdir -p /var/db/ports/dns_libpsl
+cat <<'EOF' > /var/db/ports/dns_libpsl/options
+--8<-- "ports/dns_libpsl/options"
+EOF
+
+mkdir -p /var/db/ports/ftp_curl
+cat <<'EOF' > /var/db/ports/ftp_curl/options
+--8<-- "ports/ftp_curl/options"
+EOF
+
+
+portmaster -w -B -g --force-config ftp/curl  -n
+```
+
+Wir installieren `devel/llvm` und dessen Abhängigkeiten.
+
+``` bash
+mkdir -p /var/db/ports/devel_binutils
+cat <<'EOF' > /var/db/ports/devel_binutils/options
+--8<-- "ports/devel_binutils/options"
+EOF
 
 mkdir -p /var/db/ports/math_gmp
 cat <<'EOF' > /var/db/ports/math_gmp/options
-_OPTIONS_READ=gmp-6.3.0
-_FILE_COMPLETE_OPTIONS_LIST=CPU_OPTS INFO
-OPTIONS_FILE_UNSET+=CPU_OPTS
-OPTIONS_FILE_UNSET+=INFO
+--8<-- "ports/math_gmp/options"
 EOF
 
-mkdir -p /var/db/ports/lang_ruby32
-cat <<'EOF' > /var/db/ports/lang_ruby32/options
-_OPTIONS_READ=ruby-3.2.4
-_FILE_COMPLETE_OPTIONS_LIST=CAPIDOCS DEBUG DOCS EXAMPLES GMP RDOC LIBEDIT READLINE
-OPTIONS_FILE_UNSET+=CAPIDOCS
-OPTIONS_FILE_UNSET+=DEBUG
-OPTIONS_FILE_UNSET+=DOCS
-OPTIONS_FILE_UNSET+=EXAMPLES
-OPTIONS_FILE_SET+=GMP
-OPTIONS_FILE_UNSET+=RDOC
-OPTIONS_FILE_SET+=LIBEDIT
-OPTIONS_FILE_UNSET+=READLINE
+mkdir -p /var/db/ports/math_mpfr
+cat <<'EOF' > /var/db/ports/math_mpfr/options
+--8<-- "ports/math_mpfr/options"
+EOF
+
+mkdir -p /var/db/ports/devel_swig
+cat <<'EOF' > /var/db/ports/devel_swig/options
+--8<-- "ports/devel_swig/options"
+EOF
+
+mkdir -p /var/db/ports/lang_lua53
+cat <<'EOF' > /var/db/ports/lang_lua53/options
+--8<-- "ports/lang_lua53/options"
+EOF
+
+mkdir -p /var/db/ports/devel_llvm19
+cat <<'EOF' > /var/db/ports/devel_llvm19/options
+--8<-- "ports/devel_llvm19/options"
+EOF
+
+mkdir -p /var/db/ports/devel_llvm
+cat <<'EOF' > /var/db/ports/devel_llvm/options
+--8<-- "ports/devel_llvm/options"
+EOF
+
+portmaster -w -B -g --force-config devel/llvm  -n
+```
+
+Wir installieren `lang/rust` und dessen Abhängigkeiten.
+
+``` bash
+mkdir -p /var/db/ports/lang_rust
+cat <<'EOF' > /var/db/ports/lang_rust/options
+--8<-- "ports/lang_rust/options"
+EOF
+
+portmaster -w -B -g --force-config lang/rust-bootstrap  -n
+portmaster -w -B -g --force-config lang/rust  -n
+```
+
+Wir installieren `lang/ruby33` und dessen Abhängigkeiten.
+
+``` bash
+mkdir -p /var/db/ports/lang_ruby33
+cat <<'EOF' > /var/db/ports/lang_ruby33/options
+--8<-- "ports/lang_ruby33/options"
 EOF
 
 
-cd /usr/ports/lang/ruby32
-make all install clean-depends clean
+portmaster -w -B -g --force-config lang/ruby33  -n
 ```
 
 Wir installieren `devel/ruby-gems` und dessen Abhängigkeiten.
@@ -545,39 +432,44 @@ Wir installieren `devel/ruby-gems` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/devel_ruby-gems
 cat <<'EOF' > /var/db/ports/devel_ruby-gems/options
-_OPTIONS_READ=ruby31-gems-3.5.10
-_FILE_COMPLETE_OPTIONS_LIST=DOCS
-OPTIONS_FILE_UNSET+=DOCS
+--8<-- "ports/devel_ruby-gems/options"
 EOF
 
 
-cd /usr/ports/devel/ruby-gems
-make all install clean-depends clean
+portmaster -w -B -g --force-config devel/ruby-gems  -n
 ```
 
-Wir installieren `lang/rust` und dessen Abhängigkeiten.
+Wir installieren `sysutils/rubygem-bundler` und dessen Abhängigkeiten.
 
 ``` bash
-cat <<'EOF' >> /etc/make.conf
-#DEFAULT_VERSIONS+=rust=rust
+portmaster -w -B -g --force-config sysutils/rubygem-bundler  -n
+```
+
+Wir installieren `lang/go` und dessen Abhängigkeiten.
+
+``` bash
+mkdir -p /var/db/ports/lang_go124
+cat <<'EOF' > /var/db/ports/lang_go124/options
+--8<-- "ports/lang_go124/options"
 EOF
 
 
-mkdir -p /var/db/ports/lang_rust
-cat <<'EOF' > /var/db/ports/lang_rust/options
-_OPTIONS_READ=rust-1.78.0
-_FILE_COMPLETE_OPTIONS_LIST=DOCS GDB LTO PORT_LLVM SOURCES WASM
-OPTIONS_FILE_UNSET+=DOCS
-OPTIONS_FILE_UNSET+=GDB
-OPTIONS_FILE_UNSET+=LTO
-OPTIONS_FILE_UNSET+=PORT_LLVM
-OPTIONS_FILE_SET+=SOURCES
-OPTIONS_FILE_SET+=WASM
+portmaster -w -B -g --force-config lang/go  -n
+```
+
+Wir installieren `sysutils/cpu-microcode` und dessen Abhängigkeiten.
+
+``` bash
+mkdir -p /var/db/ports/sysutils_cpu-microcode-intel
+cat <<'EOF' > /var/db/ports/sysutils_cpu-microcode-intel/options
+--8<-- "ports/sysutils_cpu-microcode-intel/options"
 EOF
 
 
-cd /usr/ports/lang/rust
-make all install clean-depends clean
+portmaster -w -B -g --force-config sysutils/cpu-microcode  -n
+
+
+sysrc microcode_update_enable=YES
 ```
 
 ## Wie geht es weiter?
