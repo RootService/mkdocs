@@ -14,18 +14,22 @@ author_url: https://github.com/JoeUser78
 Unser Hosting System wird am Ende folgende Dienste umfassen.
 
 - CertBot 4.0.0 (LetsEncrypt ACME API 2.0)
-- OpenSSH 9.9p2 (Public-Key-Auth)
+- OpenSSH 10.0p1 (Public-Key-Auth)
 - Unbound 1.22.0 (DNScrypt, DNS over TLS)
+- PostgreSQL 17.5
 - MySQL 8.0.42 (InnoDB, GTID)
-- Dovecot 2.3.21 (IMAP only, 1GB Quota)
+- Apache 2.4.63 (MPM-Event, HTTP/2, mod_brotli)
+- NGinx 1.28.0 (HTTP/2, HTTP/3, mod_brotli)
+- PHP 8.3.22 (PHP-FPM, Composer, PEAR)
+- NodeJS 22.16.0 (NPM, YARN)
+- Dovecot 2.3.21 (IMAP only, Pigeonhole)
+- PostfixAdmin 4.0.0 (PostgreSQL, Vacation)
 - Postfix 3.10.2 (Dovecot-SASL, postscreen)
 - OpenDKIM 2.10.3 (VBR, 2048 Bit RSA)
 - OpenDMARC 1.4.2 (SPF2, FailureReports)
 - SpamAssassin 4.0.1 (SpamAss-Milter)
-- Apache 2.4.63 (MPM-Event, HTTP/2, mod_brotli)
-- NGinx 1.28.0 (HTTP/2, mod_brotli)
-- PHP 8.3.22 (PHP-FPM, Composer, PEAR)
-- NodeJS 22.16.0 (NPM, YARN)
+- Amavisd
+- ClamAV
 
 Folgende Punkte sind in allen folgenden HowTos zu beachten.
 
@@ -66,7 +70,7 @@ Die von uns jeweils gewünschten Build-Optionen der Ports legen wir dabei mittel
 Da wir unsere Nutzdaten weitestgehend unter `/data` ablegen werden, legen wir ein paar hierfür benötigte Verzeichnisse an, sofern nicht bereits geschehen.
 
 ``` bash
-mkdir -p /data/db /data/www/acme/.well-known
+mkdir -p /data
 ```
 
 ## DNS Records
@@ -74,19 +78,121 @@ mkdir -p /data/db /data/www/acme/.well-known
 Für diese HowTos müssen zuvor folgende DNS-Records angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
 
 ``` dns-zone
-example.com.            IN  A       __IPV4ADDR__
-example.com.            IN  AAAA    __IPV6ADDR__
+example.com.                     IN  A       __IPV4ADDR__
+example.com.                     IN  AAAA    __IPV6ADDR__
 
-devnull.example.com.    IN  A       __IPV4ADDR__
-devnull.example.com.    IN  AAAA    __IPV6ADDR__
+devnull.example.com.             IN  A       __IPV4ADDR__
+devnull.example.com.             IN  AAAA    __IPV6ADDR__
+```
 
-mail.example.com.       IN  A       __IPV4ADDR__
-mail.example.com.       IN  AAAA    __IPV6ADDR__
+## Voraussetzungen für den Abschnitt Security
 
-www.example.com.        IN  A       __IPV4ADDR__
-www.example.com.        IN  AAAA    __IPV6ADDR__
+Es müssen zuerst noch DNS-Records angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
 
-example.com.            IN  MX  10  mail.example.com.
+``` dns-zone
+example.com.                     IN  CAA     0 issue "letsencrypt.org"
+example.com.                     IN  CAA     0 issuewild "letsencrypt.org"
+```
+
+## Voraussetzungen für den Abschnitt Datenbanken
+
+Da wir unsere Nutzdaten weitestgehend unter `/data` ablegen werden, legen wir ein paar hierfür benötigte Verzeichnisse an, sofern nicht bereits geschehen.
+
+``` bash
+mkdir -p /data/db
+```
+
+## Voraussetzungen für den Abschnitt Webserver
+
+Es müssen zuerst noch DNS-Records angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
+
+``` dns-zone
+www.example.com.                 IN  A       __IPV4ADDR__
+www.example.com.                 IN  AAAA    __IPV6ADDR__
+```
+
+Da wir unsere Nutzdaten weitestgehend unter `/data` ablegen werden, legen wir ein paar hierfür benötigte Verzeichnisse an, sofern nicht bereits geschehen.
+
+``` bash
+mkdir -p /data/www
+```
+
+## Voraussetzungen für den Abschnitt Mailserver
+
+Es müssen zuerst noch DNS-Records angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
+
+``` dns-zone
+example.com.                     IN  MX  10  mail.example.com.
+
+mail.example.com.                IN  A       __IPV4ADDR__
+mail.example.com.                IN  AAAA    __IPV6ADDR__
+
+_imap._tcp.example.com.          IN  SRV     0 0 .
+_imaps._tcp.example.com.         IN  SRV     1 993 mail.example.com.
+_pop3._tcp.example.com.          IN  SRV     0 0 .
+_pop3s._tcp.example.com.         IN  SRV     0 0 .
+_submission._tcp.example.com.    IN  SRV     1 587 mail.example.com.
+_submissions._tcp.example.com.   IN  SRV     1 465 mail.example.com.
+
+example.com.                     IN  TXT     "v=spf1 a mx ptr ~all"
+
+_dmarc.example.com.              IN  TXT     "v=DMARC1; p=none; sp=none; np=reject; adkim=s; aspf=s; fo=1; rua=mailto:postmaster@example.com!50m; ruf=mailto:postmaster@example.com!50m"
+_report._dmarc.example.com.      IN  TXT     "v=DMARC1;"
+
+_adsp._domainkey.example.com.    IN  TXT     "dkim=all"
+```
+
+Wir benötigen für unsere Nutzdaten einen eigenen Systembenutzer `vmail`, welchen wir nun anlegen, sofern nicht bereits geschehen.
+
+``` bash
+pw groupadd -n vmail -g 5000
+pw useradd -n vmail -u 5000 -g vmail -c 'Virtual Mailuser' -d /nonexistent -s /usr/sbin/nologin -w no
+
+pw groupadd -n vacation -g 65501
+pw useradd -n vacation -u 65501 -g vacation -c 'Vacation Notice' -d /nonexistent -s /usr/sbin/nologin -w no
+```
+
+Da wir unsere Nutzdaten weitestgehend unter `/data` ablegen werden, legen wir ein paar hierfür benötigte Verzeichnisse an, sofern nicht bereits geschehen.
+
+``` bash
+mkdir -p /data/vmail
+chmod 0750 /data/vmail
+chown vmail:vmail /data/vmail
+```
+
+## Voraussetzungen für den Abschnitt Sonstiges
+
+Es müssen zuerst noch DNS-Records angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
+
+``` dns-zone
+```
+
+Da wir unsere Nutzdaten weitestgehend unter `/data` ablegen werden, legen wir ein paar hierfür benötigte Verzeichnisse an, sofern nicht bereits geschehen.
+
+``` bash
+mkdir -p /data
+```
+
+``` bash
+mkdir -p /var/db/ports/
+cat <<'EOF' > /var/db/ports//options
+--8<-- "ports//options"
+EOF
+
+mkdir -p /var/db/ports/
+cat <<'EOF' > /var/db/ports//options
+--8<-- "ports//options"
+EOF
+
+mkdir -p /var/db/ports/
+cat <<'EOF' > /var/db/ports//options
+--8<-- "ports//options"
+EOF
+
+mkdir -p /var/db/ports/
+cat <<'EOF' > /var/db/ports//options
+--8<-- "ports//options"
+EOF
 ```
 
 ## Los geht es

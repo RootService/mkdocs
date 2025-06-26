@@ -1,0 +1,6 @@
+127.0.0.0/8 permit
+[::1]/128 permit
+10.0.0.0/8 permit
+[fe80::]/10 permit
+__IPV4ADDR__/32 permit
+[__IPV6ADDR__]/64 permit

@@ -224,7 +224,7 @@ Wir installieren `ftp/wget` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/ftp_wget
 cat <<'EOF' > /var/db/ports/ftp_wget/options
---8y-- "ports/ftp_wget/options"
+--8<-- "ports/ftp_wget/options"
 EOF
 
 
@@ -407,43 +407,7 @@ Wenn wir ein Programm nicht kennen, dann finden wir zu jedem Port eine Datei `pk
 
 ``` bash
 cat <<'EOF' > /usr/local/sbin/update-ports
-#!/bin/sh
-
-args="$@"
-
-echo
-echo "Args: $args"
-echo
-
-git -C /usr/ports pull --rebase
-make -C /usr/ports fetchindex
-
-printf "\v================================================================================\v\n"
-
-pkg updating -d `date -u -v-2m "+%Y%m%d"`
-
-printf "\v================================================================================\v\n"
-
-read -p "Update ports? [y/N] " REPLY
-
-if [ "x$REPLY" != "xy" ]
-then
-  exit 0
-fi
-
-pkg check -Ba -da -sa -ra
-
-portmaster --no-confirm --index-first -g -w -d -R -a $args -y
-
-#portmaster --no-confirm --no-term-title --no-index-fetch --index-first --clean-distfiles -y
-
-#portmaster --no-confirm --no-term-title --no-index-fetch --index-first --clean-packages -y
-
-portmaster --no-confirm --no-term-title --no-index-fetch --index-first --check-depends -y
-
-#portmaster --no-confirm --no-term-title --check-port-dbdir -y
-
-exit 0
+--8<-- "configs/usr/local/sbin/update-ports"
 EOF
 
 chmod 0755 /usr/local/sbin/update-ports

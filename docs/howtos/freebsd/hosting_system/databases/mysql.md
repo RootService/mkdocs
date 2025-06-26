@@ -23,83 +23,52 @@ Zu den Voraussetzungen für dieses HowTo siehe bitte: [Hosting System](/howtos/f
 
 MySQL unterstützt mehrere Engines, dieses HowTo beschränkt sich allerdings auf die am Häufigsten verwendete: InnoDB
 
-Wir installieren `databases/mysql80-client` und dessen Abhängigkeiten.
+Wir installieren `databases/mysql80-server` und dessen Abhängigkeiten.
 
 ``` bash
-cat <<'EOF' >> /etc/make.conf
-#DEFAULT_VERSIONS+=mysql=8.0
-EOF
-
-
 mkdir -p /var/db/ports/comms_hidapi
 cat <<'EOF' > /var/db/ports/comms_hidapi/options
-_OPTIONS_READ=hidapi-0.14.0
-_FILE_COMPLETE_OPTIONS_LIST=DOCS
-OPTIONS_FILE_UNSET+=DOCS
+--8<-- "ports/comms_hidapi/options"
+EOF
+
+mkdir -p /var/db/ports/net_openldap26-client
+cat <<'EOF' > /var/db/ports/net_openldap26-client/options
+--8<-- "ports/net_openldap26-client/options"
+EOF
+
+mkdir -p /var/db/ports/security_cyrus-sasl2
+cat <<'EOF' > /var/db/ports/security_cyrus-sasl2/options
+--8<-- "ports/security_cyrus-sasl2/options"
 EOF
 
 mkdir -p /var/db/ports/textproc_groff
 cat <<'EOF' > /var/db/ports/textproc_groff/options
-_OPTIONS_READ=groff-1.23.0
-_FILE_COMPLETE_OPTIONS_LIST=UCHARDET
-OPTIONS_FILE_SET+=UCHARDET
+--8<-- "ports/textproc_groff/options"
 EOF
 
 mkdir -p /var/db/ports/print_gsfonts
 cat <<'EOF' > /var/db/ports/print_gsfonts/options
-_OPTIONS_READ=gsfonts-8.11
-_FILE_COMPLETE_OPTIONS_LIST=DOCS
-OPTIONS_FILE_UNSET+=DOCS
+--8<-- "ports/print_gsfonts/options"
 EOF
 
 mkdir -p /var/db/ports/databases_mysql80-client
 cat <<'EOF' > /var/db/ports/databases_mysql80-client/options
-_OPTIONS_READ=mysql80-client-8.0.35
-_FILE_COMPLETE_OPTIONS_LIST= SASLCLIENT
-OPTIONS_FILE_UNSET+=SASLCLIENT
+--8<-- "ports/databases_mysql80-client/options"
 EOF
 
-
-cd /usr/ports/databases/mysql80-client
-make all install clean-depends clean
-```
-
-Wir installieren `databases/mysql80-server` und dessen Abhängigkeiten.
-
-``` bash
 mkdir -p /var/db/ports/databases_mysql80-server
 cat <<'EOF' > /var/db/ports/databases_mysql80-server/options
-_OPTIONS_READ=mysql80-server-8.0.35
-_FILE_COMPLETE_OPTIONS_LIST= ARCHIVE BLACKHOLE EXAMPLE FEDERATED INNOBASE PARTITION PERFSCHEMA PERFSCHM
-OPTIONS_FILE_UNSET+=ARCHIVE
-OPTIONS_FILE_UNSET+=BLACKHOLE
-OPTIONS_FILE_UNSET+=EXAMPLE
-OPTIONS_FILE_UNSET+=FEDERATED
-OPTIONS_FILE_UNSET+=INNOBASE
-OPTIONS_FILE_UNSET+=PARTITION
-OPTIONS_FILE_UNSET+=PERFSCHEMA
-OPTIONS_FILE_SET+=PERFSCHM
+--8<-- "ports/databases_mysql80-server/options"
 EOF
 
 
-cd /usr/ports/databases/mysql80-server
-make all install clean-depends clean
+portmaster -w -B -g --force-config databases/mysql80-server  -n
 
 
-mkdir -p /data/db/mysql
-chmod 0750 /data/db/mysql
-chown mysql:mysql /data/db/mysql
-mkdir -p /data/db/mysql_secure
-chmod 0750 /data/db/mysql_secure
-chown mysql:mysql /data/db/mysql_secure
-mkdir -p /data/db/mysql_tmpdir
-chmod 0750 /data/db/mysql_tmpdir
-chown mysql:mysql /data/db/mysql_tmpdir
+cp -a /var/db/mysql* /data/db/
 
 sysrc mysql_enable=YES
 sysrc mysql_dbdir="/data/db/mysql"
-sysrc mysql_confdir="/usr/local/etc/mysql"
-sysrc mysql_optfile="/usr/local/etc/mysql/my.cnf"
 ```
 
 ## Konfiguration
@@ -110,64 +79,7 @@ sysrc mysql_optfile="/usr/local/etc/mysql/my.cnf"
 
 ``` bash
 cat <<'EOF' > /usr/local/etc/mysql/my.cnf
-[client]
-port                            = 3306
-socket                          = /tmp/mysql.sock
-
-[mysqld]
-user                            = mysql
-port                            = 3306
-socket                          = /tmp/mysql.sock
-bind_address                    = 127.0.0.1,::1
-basedir                         = /usr/local
-datadir                         = /data/db/mysql
-tmpdir                          = /data/db/mysql_tmpdir
-secure_file_priv                = /data/db/mysql_secure
-log_bin                         = mysql-bin
-log_output                      = TABLE,FILE
-relay_log_recovery              = ON
-slow_query_log                  = OFF
-slow_query_log_file             = slow-query.log
-server_id                       = 1
-sync_binlog                     = 1
-sync_relay_log                  = 1
-binlog_cache_size               = 256K
-binlog_stmt_cache_size          = 256K
-enforce_gtid_consistency        = ON
-gtid_mode                       = ON
-max_connections                 = 101
-safe_user_create                = ON
-lower_case_table_names          = 1
-myisam_recover_options          = FORCE,BACKUP
-net_retry_count                 = 16384
-open_files_limit                = 32768
-table_open_cache                = 8192
-table_definition_cache          = 4096
-join_buffer_size                = 512K
-sort_buffer_size                = 2048K
-read_buffer_size                = 256K
-read_rnd_buffer_size            = 512K
-max_heap_table_size             = 256M
-tmp_table_size                  = 256M
-long_query_time                 = 0.05
-innodb_thread_concurrency       = 8
-innodb_buffer_pool_size         = 2G
-innodb_buffer_pool_instances    = 2
-innodb_data_home_dir            = /data/db/mysql
-innodb_log_group_home_dir       = /data/db/mysql
-innodb_data_file_path           = ibdata1:1G;ibdata2:1G;ibdata3:128M:autoextend
-innodb_temp_data_file_path      = ibtmp1:128M:autoextend
-innodb_flush_method             = O_DIRECT
-innodb_log_file_size            = 256M
-innodb_sort_buffer_size         = 2048K
-#innodb_force_recovery           = 1
-#log_queries_not_using_indexes   = ON
-skip_name_resolve               = ON
-
-mysqlx                          = OFF
-mysqlx_port                     = 33060
-mysqlx_socket                   = /tmp/mysqlx.sock
-mysqlx_bind_address             = 127.0.0.1,::1
+--8<-- "configs/usr/local/etc/mysql/my.cnf"
 EOF
 ```
 
@@ -182,24 +94,40 @@ service mysql-server start
 Abschliessend wird das MySQL root-Passwort neu gesetzt und mittels `mysql_config_editor` verschlüsselt in `/root/.mylogin.cnf` gespeichert.
 
 ``` bash
+
+
+mysql -uroot
+
+ALTER USER 'root'@'localhost' IDENTIFIED WITH caching_sha2_password BY 'MtsdnVZx' PASSWORD EXPIRE NEVER;
+CREATE USER 'root'@'127.0.0.1' IDENTIFIED WITH caching_sha2_password BY 'MtsdnVZx' PASSWORD EXPIRE NEVER;
+CREATE USER 'root'@'::1' IDENTIFIED WITH caching_sha2_password BY 'MtsdnVZx' PASSWORD EXPIRE NEVER;
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' WITH GRANT OPTION;
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'127.0.0.1' WITH GRANT OPTION;
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'::1' WITH GRANT OPTION;
+
+FLUSH PRIVILEGES;
+QUIT;
+
+
 # First set new MySQL-root password
 mysqladmin -h localhost -uroot password --default-auth=caching_sha2_password
 
 # Setup /root/.mylogin.cnf
-mysql_config_editor set --login-path=client --host=::1 --host=127.0.0.1 --host=localhost --socket=/tmp/mysql.sock --user=root --password
+mysql_config_editor set --login-path=client --host=::1 --host=127.0.0.1 --host=127.0.0.1 --socket=/tmp/mysql.sock --user=root --password
 ```
 
 Wir erlauben dem MySQL-root User das Einloggen von `::1`, `127.0.0.1` und `localhost` mit dem zuvor festgelegtem Passwort.
 
 ``` bash
-mysql -h localhost -uroot --default-auth=caching_sha2_password
+mysql -uroot
 
-ALTER USER 'root'@'localhost' IDENTIFIED WITH caching_sha2_password BY '__MYSQL_ROOT_PASSWORD__' PASSWORD EXPIRE NEVER;
+ALTER USER 'root'@'localhost' IDENTIFIED WITH caching_sha2_password BY '__PASSWORD__' PASSWORD EXPIRE NEVER;
+CREATE USER 'root'@'127.0.0.1' IDENTIFIED WITH caching_sha2_password BY '__PASSWORD__' PASSWORD EXPIRE NEVER;
+CREATE USER 'root'@'::1' IDENTIFIED WITH caching_sha2_password BY '__PASSWORD__' PASSWORD EXPIRE NEVER;
 GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' WITH GRANT OPTION;
-CREATE USER 'root'@'127.0.0.1' IDENTIFIED WITH caching_sha2_password BY '__MYSQL_ROOT_PASSWORD__' PASSWORD EXPIRE NEVER;
 GRANT ALL PRIVILEGES ON *.* TO 'root'@'127.0.0.1' WITH GRANT OPTION;
-CREATE USER 'root'@'::1' IDENTIFIED WITH caching_sha2_password BY '__MYSQL_ROOT_PASSWORD__' PASSWORD EXPIRE NEVER;
 GRANT ALL PRIVILEGES ON *.* TO 'root'@'::1' WITH GRANT OPTION;
+
 FLUSH PRIVILEGES;
 QUIT;
 ```

@@ -24,47 +24,18 @@ Zu den Voraussetzungen für dieses HowTo siehe bitte: [Hosting System](/howtos/f
 Wir installieren `www/node` und dessen Abhängigkeiten.
 
 ``` bash
-cat <<'EOF' >> /etc/make.conf
-#DEFAULT_VERSIONS+=nodejs=lts
-EOF
-
-
 mkdir -p /var/db/ports/dns_c-ares
 cat <<'EOF' > /var/db/ports/dns_c-ares/options
-_OPTIONS_READ=c-ares-1.28.1
-_FILE_COMPLETE_OPTIONS_LIST=STATIC TEST
-OPTIONS_FILE_UNSET+=STATIC
-OPTIONS_FILE_UNSET+=TEST
+--8<-- "ports/dns_c-ares/options"
 EOF
 
-mkdir -p /var/db/ports/devel_binutils
-cat <<'EOF' > /var/db/ports/devel_binutils/options
-_OPTIONS_READ=binutils-2.40
-_FILE_COMPLETE_OPTIONS_LIST=NLS RELRO
-OPTIONS_FILE_SET+=NLS
-OPTIONS_FILE_UNSET+=RELRO
-EOF
-
-mkdir -p /var/db/ports/math_mpfr
-cat <<'EOF' > /var/db/ports/math_mpfr/options
-_OPTIONS_READ=mpfr-4.2.0
-_FILE_COMPLETE_OPTIONS_LIST=DOCS
-OPTIONS_FILE_UNSET+=DOCS
-EOF
-
-mkdir -p /var/db/ports/www_node20
-cat <<'EOF' > /var/db/ports/www_node20/options
-_OPTIONS_READ=node20-20.13.1
-_FILE_COMPLETE_OPTIONS_LIST=BUNDLED_SSL DOCS DTRACE NLS
-OPTIONS_FILE_UNSET+=BUNDLED_SSL
-OPTIONS_FILE_UNSET+=DOCS
-OPTIONS_FILE_UNSET+=DTRACE
-OPTIONS_FILE_SET+=NLS
+mkdir -p /var/db/ports/www_node22
+cat <<'EOF' > /var/db/ports/www_node22/options
+--8<-- "ports/www_node22/options"
 EOF
 
 
-cd /usr/ports/www/node
-make all install clean-depends clean
+portmaster -w -B -g --force-config www/node  -n
 
 
 sysrc node_enable=YES
@@ -73,21 +44,17 @@ sysrc node_enable=YES
 Wir installieren `www/npm` und dessen Abhängigkeiten.
 
 ``` bash
-cd /usr/ports/www/npm
-make all install clean-depends clean
+portmaster -w -B -g --force-config www/npm  -n
 ```
 
 Wir installieren `www/yarn` und dessen Abhängigkeiten.
 
 ``` bash
-mkdir -p /var/db/ports/www_yarn-node20
-cat <<'EOF' > /var/db/ports/www_yarn-node20/options
-_OPTIONS_READ=yarn-node20-1.22.19
-_FILE_COMPLETE_OPTIONS_LIST=HADOOPCOMPAT
-OPTIONS_FILE_UNSET+=HADOOPCOMPAT
+mkdir -p /var/db/ports/www_yarn-node22
+cat <<'EOF' > /var/db/ports/www_yarn-node22/options
+--8<-- "www_yarn-node22/options"
 EOF
 
 
-cd /usr/ports/www/yarn
-make all install clean-depends clean
+portmaster -w -B -g --force-config www/yarn  -n
 ```

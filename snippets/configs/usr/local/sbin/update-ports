@@ -1,0 +1,37 @@
+#!/bin/sh
+
+args="$@"
+
+echo
+echo "Args: $args"
+echo
+
+git -C /usr/ports pull --rebase
+make -C /usr/ports fetchindex
+
+printf "\v================================================================================\v\n"
+
+pkg updating -d `date -u -v-2m "+%Y%m%d"`
+
+printf "\v================================================================================\v\n"
+
+read -p "Update ports? [y/N] " REPLY
+
+if [ "x$REPLY" != "xy" ]
+then
+  exit 0
+fi
+
+pkg check -Ba -da -sa -ra
+
+portmaster --no-confirm --index-first -b -g -w -R -a $args -y
+
+portmaster --no-confirm --no-term-title --no-index-fetch --index-first --clean-distfiles -y
+
+portmaster --no-confirm --no-term-title --no-index-fetch --index-first --clean-packages -y
+
+portmaster --no-confirm --no-term-title --no-index-fetch --index-first --check-depends -y
+
+#portmaster --no-confirm --no-term-title --check-port-dbdir -y
+
+exit 0

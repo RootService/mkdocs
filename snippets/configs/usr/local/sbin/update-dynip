@@ -1,0 +1,34 @@
+#!/bin/sh
+
+cat <<'EOF' > /etc/hosts
+::1                        localhost localhost.localdomain devnull devnull.example.com
+127.0.0.1                  localhost localhost.localdomain devnull devnull.example.com
+EOF
+
+cat <<'EOF' > /etc/pf.internal
+fe80::/10
+ff02::/16
+10.0.0.0/8
+EOF
+
+ip4="`drill -a devnoip.example.com @127.0.0.1 A | awk '/^devnoip/ {print $NF}'`"
+
+if [ "$ip4" != '' ] && [ "$ip4" != 'record' ]
+then
+  echo "$ip4/32" >> /etc/pf.internal
+  echo "$ip4 devnoip devnoip.example.com" >> /etc/hosts
+fi
+
+ip6="`drill -a devnoip.example.com @127.0.0.1 AAAA | awk '/^devnoip/ {print $NF}'`"
+
+if [ "$ip6" != '' ] && [ "$ip6" != 'record' ]
+then
+  echo "$ip6/64" >> /etc/pf.internal
+  echo "$ip6 devnoip devnoip.example.com" >> /etc/hosts
+fi
+
+#cp /etc/hosts /var/spool/postfix/etc/hosts
+
+/sbin/pfctl -t internal -T replace `cat /etc/pf.internal` >/dev/null 2>&1
+
+exit 0

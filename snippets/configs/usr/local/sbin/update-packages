@@ -1,0 +1,31 @@
+#!/bin/sh
+
+args="$@"
+
+echo
+echo "Args: $args"
+echo
+
+git -C /usr/ports pull
+make -C /usr/ports fetchindex
+
+/usr/local/sbin/pkg update -f
+
+printf "\v================================================================================\v\n"
+
+pkg updating -d `date -u -v-2m "+%Y%m%d"`
+
+printf "\v================================================================================\v\n"
+
+read -p "Update packages? [y/N] " REPLY
+
+if [ "x$REPLY" != "xy" ]
+then
+  exit 0
+fi
+
+/usr/local/sbin/pkg upgrade -y
+
+/usr/local/sbin/pkg clean -y
+
+exit 0

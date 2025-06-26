@@ -1,0 +1,21 @@
+#!/bin/sh
+
+: > /tmp/pf_badhosts_mail
+/usr/bin/awk '/ DNSBL rank / {print $NF}' /var/log/maillog >> /tmp/pf_badhosts_mail
+/usr/bin/sed -e 's/^.*\[\(.*\)$/\1/g' -e 's/^\(.*\)\].*$/\1/g' -i '' /tmp/pf_badhosts_mail
+/sbin/pfctl -t badhosts_mail -T add `/usr/bin/sort -buV /tmp/pf_badhosts_mail`
+
+: > /tmp/pf_badhosts_sshd
+/usr/bin/awk '/: reverse mapping checking getaddrinfo for / {print $(NF-1)}' /var/log/auth.log >> /tmp/pf_badhosts_sshd
+/usr/bin/awk '/: Did not receive identification string from / {print $12}' /var/log/auth.log >> /tmp/pf_badhosts_sshd
+/usr/bin/awk '/: Bad protocol version identification / {print $(NF-2)}' /var/log/auth.log >> /tmp/pf_badhosts_sshd
+/usr/bin/awk '/: banner exchange: Connection from [0-9]/ {print $10}' /var/log/auth.log >> /tmp/pf_badhosts_sshd
+/usr/bin/awk '/: Unable to negotiate with [0-9]/ {print $10}' /var/log/auth.log >> /tmp/pf_badhosts_sshd
+/usr/bin/awk '/: Connection closed by [0-9]/ {print $9}' /var/log/auth.log >> /tmp/pf_badhosts_sshd
+/usr/bin/awk '/: Connection reset by [0-9]/ {print $9}' /var/log/auth.log >> /tmp/pf_badhosts_sshd
+/usr/bin/awk '/: Failed password for / {print $11}' /var/log/auth.log >> /tmp/pf_badhosts_sshd
+/usr/bin/awk '/: Invalid user / {print $(NF-2)}' /var/log/auth.log >> /tmp/pf_badhosts_sshd
+/usr/bin/sed -e 's/^.*\[\(.*\)$/\1/g' -e 's/^\(.*\)\].*$/\1/g' -i '' /tmp/pf_badhosts_sshd
+/sbin/pfctl -t badhosts_sshd -T add `/usr/bin/sort -buV /tmp/pf_badhosts_sshd`
+
+exit 0

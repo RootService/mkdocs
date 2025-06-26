@@ -28,130 +28,93 @@ Zu den Voraussetzungen für dieses HowTo siehe bitte: [Hosting System](/howtos/f
 Wir installieren `www/nginx` und dessen Abhängigkeiten.
 
 ``` bash
+mkdir -p /var/db/ports/graphics_gd
+cat <<'EOF' > /var/db/ports/graphics_gd/options
+--8<-- "ports/graphics_gd/options"
+EOF
+
+mkdir -p /var/db/ports/graphics_jpeg-turbo
+cat <<'EOF' > /var/db/ports/graphics_jpeg-turbo/options
+--8<-- "ports/graphics_jpeg-turbo/options"
+EOF
+
+mkdir -p /var/db/ports/devel_nasm
+cat <<'EOF' > /var/db/ports/devel_nasm/options
+--8<-- "ports/devel_nasm/options"
+EOF
+
+mkdir -p /var/db/ports/www_llhttp
+cat <<'EOF' > /var/db/ports/www_llhttp/options
+--8<-- "ports/www_llhttp/options"
+EOF
+
+mkdir -p /var/db/ports/graphics_png
+cat <<'EOF' > /var/db/ports/graphics_png/options
+--8<-- "ports/graphics_png/options"
+EOF
+
+mkdir -p /var/db/ports/graphics_tiff
+cat <<'EOF' > /var/db/ports/graphics_tiff/options
+--8<-- "ports/graphics_tiff/options"
+EOF
+
+mkdir -p /var/db/ports/archivers_libdeflate
+cat <<'EOF' > /var/db/ports/archivers_libdeflate/options
+--8<-- "ports/archivers_libdeflate/options"
+EOF
+
+mkdir -p /var/db/ports/graphics_jbigkit
+cat <<'EOF' > /var/db/ports/graphics_jbigkit/options
+--8<-- "ports/graphics_jbigkit/options"
+EOF
+
+mkdir -p /var/db/ports/graphics_webp
+cat <<'EOF' > /var/db/ports/graphics_webp/options
+--8<-- "ports/graphics_webp/options"
+EOF
+
+mkdir -p /var/db/ports/graphics_giflib
+cat <<'EOF' > /var/db/ports/graphics_giflib/options
+--8<-- "ports/graphics_giflib/options"
+EOF
+
+mkdir -p /var/db/ports/print_freetype2
+cat <<'EOF' > /var/db/ports/print_freetype2/options
+--8<-- "ports/print_freetype2/options"
+EOF
+
+mkdir -p /var/db/ports/print_libraqm
+cat <<'EOF' > /var/db/ports/print_libraqm/options
+--8<-- "ports/print_libraqm/options"
+EOF
+
+mkdir -p /var/db/ports/converters_fribidi
+cat <<'EOF' > /var/db/ports/converters_fribidi/options
+--8<-- "ports/converters_fribidi/options"
+EOF
+
+mkdir -p /var/db/ports/print_harfbuzz
+cat <<'EOF' > /var/db/ports/print_harfbuzz/options
+--8<-- "ports/print_harfbuzz/options"
+EOF
+
+mkdir -p /var/db/ports/devel_gobject-introspection
+cat <<'EOF' > /var/db/ports/devel_gobject-introspection/options
+--8<-- "ports/devel_gobject-introspection/options"
+EOF
+
+mkdir -p /var/db/ports/x11-fonts_fontconfig
+cat <<'EOF' > /var/db/ports/x11-fonts_fontconfig/options
+--8<-- "ports/x11-fonts_fontconfig/options"
+EOF
+
 mkdir -p /var/db/ports/www_nginx
 cat <<'EOF' > /var/db/ports/www_nginx/options
-_OPTIONS_READ=nginx-1.24.0
-OPTIONS_FILE_UNSET+=DEBUG
-OPTIONS_FILE_UNSET+=DEBUGLOG
-OPTIONS_FILE_SET+=DSO
-OPTIONS_FILE_SET+=FILE_AIO
-OPTIONS_FILE_SET+=IPV6
-OPTIONS_FILE_UNSET+=NJS
-OPTIONS_FILE_UNSET+=NJS_XML
-OPTIONS_FILE_SET+=THREADS
-OPTIONS_FILE_UNSET+=WWW
-OPTIONS_FILE_UNSET+=GSSAPI_HEIMDAL
-OPTIONS_FILE_UNSET+=GSSAPI_MIT
-OPTIONS_FILE_UNSET+=GOOGLE_PERFTOOLS
-OPTIONS_FILE_SET+=HTTP
-OPTIONS_FILE_UNSET+=HTTP_ADDITION
-OPTIONS_FILE_UNSET+=HTTP_AUTH_REQ
-OPTIONS_FILE_SET+=HTTP_CACHE
-OPTIONS_FILE_SET+=HTTP_DAV
-OPTIONS_FILE_UNSET+=HTTP_DEGRADATION
-OPTIONS_FILE_SET+=HTTP_FLV
-OPTIONS_FILE_SET+=HTTP_GUNZIP_FILTER
-OPTIONS_FILE_SET+=HTTP_GZIP_STATIC
-OPTIONS_FILE_UNSET+=HTTP_IMAGE_FILTER
-OPTIONS_FILE_UNSET+=HTTP_MP4
-OPTIONS_FILE_SET+=HTTP_PERL
-OPTIONS_FILE_SET+=HTTP_RANDOM_INDEX
-OPTIONS_FILE_SET+=HTTP_REALIP
-OPTIONS_FILE_SET+=HTTP_SECURE_LINK
-OPTIONS_FILE_SET+=HTTP_SLICE
-OPTIONS_FILE_SET+=HTTP_SSL
-OPTIONS_FILE_SET+=HTTP_STATUS
-OPTIONS_FILE_SET+=HTTP_SUB
-OPTIONS_FILE_SET+=HTTP_XSLT
-OPTIONS_FILE_SET+=HTTPV2
-OPTIONS_FILE_UNSET+=HTTPV3
-OPTIONS_FILE_UNSET+=HTTPV3_BORING
-OPTIONS_FILE_UNSET+=HTTPV3_LSSL
-OPTIONS_FILE_UNSET+=HTTPV3_QTLS
-OPTIONS_FILE_UNSET+=MAIL
-OPTIONS_FILE_UNSET+=MAIL_IMAP
-OPTIONS_FILE_UNSET+=MAIL_POP3
-OPTIONS_FILE_UNSET+=MAIL_SMTP
-OPTIONS_FILE_UNSET+=MAIL_SSL
-OPTIONS_FILE_SET+=STREAM
-OPTIONS_FILE_SET+=STREAM_REALIP
-OPTIONS_FILE_SET+=STREAM_SSL
-OPTIONS_FILE_SET+=STREAM_SSL_PREREAD
-OPTIONS_FILE_UNSET+=AJP
-OPTIONS_FILE_UNSET+=AWS_AUTH
-OPTIONS_FILE_SET+=BROTLI
-OPTIONS_FILE_UNSET+=CACHE_PURGE
-OPTIONS_FILE_UNSET+=CLOJURE
-OPTIONS_FILE_UNSET+=COOKIE_FLAG
-OPTIONS_FILE_UNSET+=CT
-OPTIONS_FILE_UNSET+=DEVEL_KIT
-OPTIONS_FILE_UNSET+=ARRAYVAR
-OPTIONS_FILE_UNSET+=DRIZZLE
-OPTIONS_FILE_UNSET+=DYNAMIC_UPSTREAM
-OPTIONS_FILE_UNSET+=ECHO
-OPTIONS_FILE_UNSET+=ENCRYPTSESSION
-OPTIONS_FILE_UNSET+=FIPS_CHECK
-OPTIONS_FILE_UNSET+=FORMINPUT
-OPTIONS_FILE_UNSET+=GRIDFS
-OPTIONS_FILE_UNSET+=HEADERS_MORE
-OPTIONS_FILE_UNSET+=HTTP_ACCEPT_LANGUAGE
-OPTIONS_FILE_UNSET+=HTTP_AUTH_DIGEST
-OPTIONS_FILE_UNSET+=HTTP_AUTH_KRB5
-OPTIONS_FILE_UNSET+=HTTP_AUTH_LDAP
-OPTIONS_FILE_UNSET+=HTTP_AUTH_PAM
-OPTIONS_FILE_UNSET+=HTTP_DAV_EXT
-OPTIONS_FILE_UNSET+=HTTP_EVAL
-OPTIONS_FILE_UNSET+=HTTP_FANCYINDEX
-OPTIONS_FILE_UNSET+=HTTP_FOOTER
-OPTIONS_FILE_UNSET+=HTTP_GEOIP2
-OPTIONS_FILE_UNSET+=HTTP_IP2LOCATION
-OPTIONS_FILE_UNSET+=HTTP_IP2PROXY
-OPTIONS_FILE_UNSET+=HTTP_JSON_STATUS
-OPTIONS_FILE_UNSET+=HTTP_MOGILEFS
-OPTIONS_FILE_UNSET+=HTTP_MP4_H264
-OPTIONS_FILE_UNSET+=HTTP_NOTICE
-OPTIONS_FILE_UNSET+=HTTP_PROXY_CONNECT
-OPTIONS_FILE_UNSET+=HTTP_PUSH
-OPTIONS_FILE_UNSET+=HTTP_PUSH_STREAM
-OPTIONS_FILE_UNSET+=HTTP_REDIS
-OPTIONS_FILE_UNSET+=HTTP_SLICE_AHEAD
-OPTIONS_FILE_UNSET+=HTTP_SUBS_FILTER
-OPTIONS_FILE_UNSET+=HTTP_TARANTOOL
-OPTIONS_FILE_UNSET+=HTTP_UPLOAD
-OPTIONS_FILE_UNSET+=HTTP_UPLOAD_PROGRESS
-OPTIONS_FILE_UNSET+=HTTP_UPSTREAM_CHECK
-OPTIONS_FILE_UNSET+=HTTP_UPSTREAM_FAIR
-OPTIONS_FILE_UNSET+=HTTP_UPSTREAM_STICKY
-OPTIONS_FILE_UNSET+=HTTP_VIDEO_THUMBEXTRACTOR
-OPTIONS_FILE_UNSET+=HTTP_ZIP
-OPTIONS_FILE_SET+=ICONV
-OPTIONS_FILE_UNSET+=LET
-OPTIONS_FILE_UNSET+=LINK
-OPTIONS_FILE_UNSET+=LUA
-OPTIONS_FILE_UNSET+=MEMC
-OPTIONS_FILE_UNSET+=MODSECURITY3
-OPTIONS_FILE_UNSET+=NAXSI
-OPTIONS_FILE_UNSET+=PASSENGER
-OPTIONS_FILE_UNSET+=POSTGRES
-OPTIONS_FILE_UNSET+=RDS_CSV
-OPTIONS_FILE_UNSET+=RDS_JSON
-OPTIONS_FILE_UNSET+=REDIS2
-OPTIONS_FILE_UNSET+=RTMP
-OPTIONS_FILE_UNSET+=SET_MISC
-OPTIONS_FILE_UNSET+=SFLOW
-OPTIONS_FILE_UNSET+=SHIBBOLETH
-OPTIONS_FILE_UNSET+=SLOWFS_CACHE
-OPTIONS_FILE_UNSET+=SRCACHE
-OPTIONS_FILE_UNSET+=STS
-OPTIONS_FILE_UNSET+=VOD
-OPTIONS_FILE_UNSET+=VTS
-OPTIONS_FILE_UNSET+=XSS
-OPTIONS_FILE_UNSET+=WEBSOCKIFY
+--8<-- "ports/www_nginx/options"
 EOF
 
 
-cd /usr/ports/www/nginx
-make all install clean-depends clean
+portmaster -w -B -g --force-config www/nginx  -n
 
 
 sysrc nginx_enable=YES
@@ -159,9 +122,8 @@ sysrc nginxlimits_enable=YES
 
 
 mkdir -p /usr/local/etc/newsyslog.conf.d
-cat <<'EOF' >> /usr/local/etc/newsyslog.conf.d/nginx
-/var/log/nginx/*.log                    644  13    *    $W6D0 JCG   /var/run/nginx.pid
-/data/www/vhosts/*/logs/nginx_*_log     644  24    *    $M1D0 JCG   /var/run/nginx.pid
+cat <<'EOF' > /usr/local/etc/newsyslog.conf.d/nginx
+--8<-- "configs/usr/local/etc/newsyslog.conf.d/nginx"
 EOF
 ```
 
@@ -170,23 +132,37 @@ EOF
 Verzeichnisse für die ersten VirtualHosts erstellen.
 
 ``` bash
-mkdir -p /data/www/{cache,tmp}
-chmod 1777 /data/www/{cache,tmp}
-chown www:www /data/www/{cache,tmp}
+mkdir -p /data/www/cache
+chmod 1777 /data/www/cache
+chown www:www /data/www/cache
+mkdir -p /data/www/tmp
+chmod 1777 /data/www/tmp
+chown www:www /data/www/tmp
 
 
-mkdir -p /data/www/acme/.well-known
+mkdir -p /data/www/vhosts/_default_/conf
+mkdir -p /data/www/vhosts/_default_/cron
+mkdir -p /data/www/vhosts/_default_/logs
+mkdir -p /data/www/vhosts/_default_/data/.well-known
+chmod 0750 /data/www/vhosts/_default_/data
+chown www:www /data/www/vhosts/_default_/data
 
-mkdir -p /data/www/vhosts/_{default,localhost}_/logs
-mkdir -p /data/www/vhosts/_{default,localhost}_/data/.well-known
-chmod 0750 /data/www/vhosts/_{default,localhost}_/data
-chown www:www /data/www/vhosts/_{default,localhost}_/data
+mkdir -p /data/www/vhosts/_localhost_/conf
+mkdir -p /data/www/vhosts/_localhost_/cron
+mkdir -p /data/www/vhosts/_localhost_/logs
+mkdir -p /data/www/vhosts/_localhost_/data/.well-known
+chmod 0750 /data/www/vhosts/_localhost_/data
+chown www:www /data/www/vhosts/_localhost_/data
 
+mkdir -p /data/www/vhosts/mail.example.com/conf
+mkdir -p /data/www/vhosts/mail.example.com/cron
 mkdir -p /data/www/vhosts/mail.example.com/logs
 mkdir -p /data/www/vhosts/mail.example.com/data/.well-known
 chmod 0750 /data/www/vhosts/mail.example.com/data
 chown www:www /data/www/vhosts/mail.example.com/data
 
+mkdir -p /data/www/vhosts/www.example.com/conf
+mkdir -p /data/www/vhosts/www.example.com/cron
 mkdir -p /data/www/vhosts/www.example.com/logs
 mkdir -p /data/www/vhosts/www.example.com/data/.well-known
 chmod 0750 /data/www/vhosts/www.example.com/data
@@ -199,63 +175,7 @@ Die folgende Konfiguration verwendet für den localhost den Pfad `/data/www/vhos
 
 ``` bash
 cat <<'EOF' > /usr/local/etc/nginx/nginx.conf
-user  www  www;
-load_module  /usr/local/libexec/nginx/ngx_http_brotli_filter_module.so;
-load_module  /usr/local/libexec/nginx/ngx_http_brotli_static_module.so;
-worker_processes  1;
-events {
-    worker_connections  1024;
-}
-http {
-    include  mime.types;
-    default_type  application/octet-stream;
-    resolver  127.0.0.1;
-    sendfile  on;
-    tcp_nopush  on;
-    keepalive_timeout  65;
-    aio  on;
-    deny  all;
-    etag  off;
-    charset  utf-8;
-    charset_types  application/atom+xml application/javascript application/json application/ld+json application/manifest+json application/rdf+xml application/rss+xml application/schema+json application/vnd.geo+json application/x-javascript application/x-web-app-manifest+json application/xhtml+xml application/xml image/svg+xml text/cache-manifest text/css text/javascript text/markdown text/plain text/vcard text/vnd.rim.location.xloc text/vtt text/x-component text/x-cross-domain-policy text/xml;
-    gzip  on;
-    gzip_vary  on;
-    gzip_comp_level  6;
-    gzip_types  application/atom+xml application/javascript application/json application/ld+json application/manifest+json application/rdf+xml application/rss+xml application/schema+json application/vnd.geo+json application/vnd.ms-fontobject application/x-font-ttf application/x-javascript application/x-web-app-manifest+json application/xhtml+xml application/xml font/eot font/opentype image/bmp image/svg+xml image/vnd.microsoft.icon image/x-icon text/cache-manifest text/css text/javascript text/markdown text/plain text/vcard text/vnd.rim.location.xloc text/vtt text/x-component text/x-cross-domain-policy text/xml;
-    brotli  on;
-    brotli_comp_level  6;
-    brotli_types  application/atom+xml application/javascript application/json application/ld+json application/manifest+json application/rdf+xml application/rss+xml application/schema+json application/vnd.geo+json application/vnd.ms-fontobject application/x-font-ttf application/x-javascript application/x-web-app-manifest+json application/xhtml+xml application/xml font/eot font/opentype image/bmp image/svg+xml image/vnd.microsoft.icon image/x-icon text/cache-manifest text/css text/javascript text/markdown text/plain text/vcard text/vnd.rim.location.xloc text/vtt text/x-component text/x-cross-domain-policy text/xml;
-    map $sent_http_content_type $expires {
-        default                               30d;
-        text/css                              7d;
-        application/atom+xml                  1h;
-        application/rdf+xml                   1h;
-        application/rss+xml                   1h;
-        application/xhtml+xml                 0;
-        application/json                      0;
-        application/ld+json                   0;
-        application/schema+json               0;
-        application/vnd.geo+json              0;
-        application/xml                       0;
-        text/xml                              0;
-        image/vnd.microsoft.icon              7d;
-        text/html                             0;
-        text/markdown                         0;
-        application/javascript                7d;
-        text/javascript                       7d;
-        application/manifest+json             7d;
-    }
-    expires  $expires;
-    include  vhosts.conf;
-    ssl_stapling  on;
-    ssl_session_tickets  off;
-    ssl_session_timeout  10m;
-    ssl_session_cache  shared:SSL:10m;
-    ssl_protocols  TLSv1.2;
-    ssl_ciphers  "ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256";
-    ssl_prefer_server_ciphers  on;
-    include  vhosts-ssl.conf;
-}
+--8<-- "configs/usr/local/etc/nginx/nginx.conf"
 EOF
 ```
 
@@ -263,94 +183,7 @@ EOF
 
 ``` bash
 cat <<'EOF' > /usr/local/etc/nginx/vhosts.conf
-    server {
-        listen  8080;
-        server_name  localhost "";
-        error_log  /data/www/vhosts/_localhost_/logs/nginx_error_log;
-        access_log  /data/www/vhosts/_localhost_/logs/nginx_access_log  combined;
-        root  /data/www/vhosts/_localhost_/data;
-        index  index.html index.htm index.php;
-        include  headers.conf;
-        location / {
-            allow  all;
-        }
-        include  defaults.conf;
-        location ~ ^(.+\.phps?)(/.*)?$ {
-            fastcgi_pass  unix:/var/run/fpm_www.sock;
-            fastcgi_index  index.php;
-            fastcgi_split_path_info  ^(.+\.phps?)(/.*)?$;
-            fastcgi_param  SCRIPT_FILENAME  /data/www/vhosts/_localhost_/data$fastcgi_script_name;
-            fastcgi_param  PATH_INFO  $fastcgi_path_info;
-            include  fastcgi_params;
-            allow  all;
-        }
-    }
-    server {
-        listen  8080 default_server;
-        server_name  devnull.example.com;
-        error_log  /data/www/vhosts/_default_/logs/nginx_error_log;
-        access_log  /data/www/vhosts/_default_/logs/nginx_access_log  combined;
-        root  /data/www/vhosts/_default_/data;
-        index  index.html index.htm index.php;
-        include  headers.conf;
-        location / {
-            allow  all;
-        }
-        include  defaults.conf;
-        location ~ ^(.+\.phps?)(/.*)?$ {
-            fastcgi_pass  unix:/var/run/fpm_www.sock;
-            fastcgi_index  index.php;
-            fastcgi_split_path_info  ^(.+\.phps?)(/.*)?$;
-            fastcgi_param  SCRIPT_FILENAME  /data/www/vhosts/_default_/data$fastcgi_script_name;
-            fastcgi_param  PATH_INFO  $fastcgi_path_info;
-            include  fastcgi_params;
-            allow  all;
-        }
-    }
-    server {
-        listen  8080;
-        server_name  mail.example.com;
-        error_log  /data/www/vhosts/mail.example.com/logs/nginx_error_log;
-        access_log  /data/www/vhosts/mail.example.com/logs/nginx_access_log  combined;
-        root  /data/www/vhosts/mail.example.com/data;
-        index  index.html index.htm index.php;
-        include  headers.conf;
-        location / {
-            allow  all;
-        }
-        include  defaults.conf;
-        location ~ ^(.+\.phps?)(/.*)?$ {
-            fastcgi_pass  unix:/var/run/fpm_www.sock;
-            fastcgi_index  index.php;
-            fastcgi_split_path_info  ^(.+\.phps?)(/.*)?$;
-            fastcgi_param  SCRIPT_FILENAME  /data/www/vhosts/mail.example.com/data$fastcgi_script_name;
-            fastcgi_param  PATH_INFO  $fastcgi_path_info;
-            include  fastcgi_params;
-            allow  all;
-        }
-    }
-    server {
-        listen  8080;
-        server_name  www.example.com;
-        error_log  /data/www/vhosts/www.example.com/logs/nginx_error_log;
-        access_log  /data/www/vhosts/www.example.com/logs/nginx_access_log  combined;
-        root  /data/www/vhosts/www.example.com/data;
-        index  index.html index.htm index.php;
-        include  headers.conf;
-        location / {
-            allow  all;
-        }
-        include  defaults.conf;
-        location ~ ^(.+\.phps?)(/.*)?$ {
-            fastcgi_pass  unix:/var/run/fpm_www.sock;
-            fastcgi_index  index.php;
-            fastcgi_split_path_info  ^(.+\.phps?)(/.*)?$;
-            fastcgi_param  SCRIPT_FILENAME  /data/www/vhosts/www.example.com/data$fastcgi_script_name;
-            fastcgi_param  PATH_INFO  $fastcgi_path_info;
-            include  fastcgi_params;
-            allow  all;
-        }
-    }
+--8<-- "configs/usr/local/etc/nginx/vhosts.conf"
 EOF
 ```
 
@@ -358,87 +191,7 @@ EOF
 
 ``` bash
 cat <<'EOF' > /usr/local/etc/nginx/vhosts-ssl.conf
-    server {
-        listen  8443 default_server ssl http2;
-        server_name  devnull.example.com;
-        error_log  /data/www/vhosts/_default_/logs/nginx_ssl_error_log;
-        access_log  /data/www/vhosts/_default_/logs/nginx_ssl_access_log  combined;
-        ssl_certificate  /usr/local/etc/letsencrypt/live/devnull.example.com/fullchain.pem;
-        ssl_certificate_key  /usr/local/etc/letsencrypt/live/devnull.example.com/privkey.pem;
-        root  /data/www/vhosts/_default_/data;
-        index  index.html index.htm index.php;
-        include  headers.conf;
-        add_header  Public-Key-Pins "max-age=0; includeSubdomains"
-        add_header  Strict-Transport-Security "max-age=15768000; includeSubdomains; preload"
-        add_header  Expect-CT "max-age=0"
-        location / {
-            allow  all;
-        }
-        include  defaults.conf;
-        location ~ ^(.+\.phps?)(/.*)?$ {
-            fastcgi_pass  unix:/var/run/fpm_www.sock;
-            fastcgi_index  index.php;
-            fastcgi_split_path_info  ^(.+\.phps?)(/.*)?$;
-            fastcgi_param  SCRIPT_FILENAME  /data/www/vhosts/_default_/data$fastcgi_script_name;
-            fastcgi_param  PATH_INFO  $fastcgi_path_info;
-            include  fastcgi_params;
-            allow  all;
-        }
-    }
-    server {
-        listen  8443 ssl http2;
-        server_name  mail.example.com;
-        error_log  /data/www/vhosts/mail.example.com/logs/nginx_ssl_error_log;
-        access_log  /data/www/vhosts/mail.example.com/logs/nginx_ssl_access_log  combined;
-        ssl_certificate  /usr/local/etc/letsencrypt/live/mail.example.com/fullchain.pem;
-        ssl_certificate_key  /usr/local/etc/letsencrypt/live/mail.example.com/privkey.pem;
-        root  /data/www/vhosts/www.example.com/data;
-        index  index.html index.htm index.php;
-        include  headers.conf;
-        add_header  Public-Key-Pins "max-age=0; includeSubdomains"
-        add_header  Strict-Transport-Security "max-age=15768000; includeSubdomains; preload"
-        add_header  Expect-CT "max-age=0"
-        location / {
-            allow  all;
-        }
-        include  defaults.conf;
-        location ~ ^(.+\.phps?)(/.*)?$ {
-            fastcgi_pass  unix:/var/run/fpm_www.sock;
-            fastcgi_index  index.php;
-            fastcgi_split_path_info  ^(.+\.phps?)(/.*)?$;
-            fastcgi_param  SCRIPT_FILENAME  /data/www/vhosts/mail.example.com/data$fastcgi_script_name;
-            fastcgi_param  PATH_INFO  $fastcgi_path_info;
-            include  fastcgi_params;
-            allow  all;
-        }
-    }
-    server {
-        listen  8443 ssl http2;
-        server_name  www.example.com;
-        error_log  /data/www/vhosts/www.example.com/logs/nginx_ssl_error_log;
-        access_log  /data/www/vhosts/www.example.com/logs/nginx_ssl_access_log  combined;
-        ssl_certificate  /usr/local/etc/letsencrypt/live/www.example.com/fullchain.pem;
-        ssl_certificate_key  /usr/local/etc/letsencrypt/live/www.example.com/privkey.pem;
-        root  /data/www/vhosts/www.example.com/data;
-        index  index.html index.htm index.php;
-        include  headers.conf;
-        add_header  Public-Key-Pins "max-age=0; includeSubdomains"
-        add_header  Strict-Transport-Security "max-age=15768000; includeSubdomains; preload"
-        add_header  Expect-CT "max-age=0"
-        location / {
-            allow  all;
-        }
-        include  defaults.conf;
-        location ~ ^(.+\.phps?)(/.*)?$ {
-            fastcgi_pass  unix:/var/run/fpm_www.sock;
-            fastcgi_index  index.php;
-            fastcgi_split_path_info  ^(.+\.phps?)(/.*)?$;
-            fastcgi_param  SCRIPT_FILENAME  /data/www/vhosts/www.example.com/data$fastcgi_script_name;
-            fastcgi_param  PATH_INFO  $fastcgi_path_info;
-            include  fastcgi_params;
-            allow  all;
-        }
-    }
+--8<-- "configs/usr/local/etc/nginx/vhosts-ssl.conf"
 EOF
 ```
 

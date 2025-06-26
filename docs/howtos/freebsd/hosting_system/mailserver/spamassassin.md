@@ -24,144 +24,272 @@ Zu den Voraussetzungen für dieses HowTo siehe bitte: [Hosting System](/howtos/f
 Wir installieren `mail/spamassassin` und dessen Abhängigkeiten.
 
 ``` bash
-mkdir -p /var/db/ports/www_p5-HTTP-Tiny
-cat <<'EOF' > /var/db/ports/www_p5-HTTP-Tiny/options
-_OPTIONS_READ=p5-HTTP-Tiny-0.088
-_FILE_COMPLETE_OPTIONS_LIST=CERTS COOKIE HTTPS IO_SOCKET_IP
-OPTIONS_FILE_SET+=CERTS
-OPTIONS_FILE_SET+=COOKIE
-OPTIONS_FILE_SET+=HTTPS
-OPTIONS_FILE_SET+=IO_SOCKET_IP
-EOF
-
 mkdir -p /var/db/ports/databases_p5-DBD-SQLite
 cat <<'EOF' > /var/db/ports/databases_p5-DBD-SQLite/options
-_OPTIONS_READ=p5-DBD-SQLite-1.74
-_FILE_COMPLETE_OPTIONS_LIST=BUNDLED_SQLITE
-OPTIONS_FILE_SET+=BUNDLED_SQLITE
+--8<-- "ports/databases_p5-DBD-SQLite/options"
 EOF
 
 mkdir -p /var/db/ports/databases_p5-DBIx-Simple
 cat <<'EOF' > /var/db/ports/db/ports/databases_p5-DBIx-Simple/options
-_OPTIONS_READ=p5-DBIx-Simple-1.37
-_FILE_COMPLETE_OPTIONS_LIST=DBIX_XHTML_TABLE SQL_ABSTRACT SQL_INTERP TEXT_TABLE
-OPTIONS_FILE_UNSET+=DBIX_XHTML_TABLE
-OPTIONS_FILE_UNSET+=SQL_ABSTRACT
-OPTIONS_FILE_UNSET+=SQL_INTERP
-OPTIONS_FILE_UNSET+=TEXT_TABLE
-EOF
-
-mkdir -p /var/db/ports/www_p5-CGI
-cat <<'EOF' > /var/db/ports/www_p5-CGI/options
-_OPTIONS_READ=p5-CGI-4.64
-_FILE_COMPLETE_OPTIONS_LIST=EXAMPLES
-OPTIONS_FILE_UNSET+=EXAMPLES
-EOF
-
-mkdir -p /var/db/ports/devel_p5-Parse-RecDescent
-cat <<'EOF' > /var/db/ports/devel_p5-Parse-RecDescent/options
-_OPTIONS_READ=p5-Parse-RecDescent-1.967015
-_FILE_COMPLETE_OPTIONS_LIST=DOCS
-OPTIONS_FILE_UNSET+=DOCS
-EOF
-
-mkdir -p /var/db/ports/net_p5-Net-Server
-cat <<'EOF' > /var/db/ports/net_p5-Net-Server/options
-_OPTIONS_READ=p5-Net-Server-2.014
-_FILE_COMPLETE_OPTIONS_LIST=IPV6
-OPTIONS_FILE_SET+=IPV6
-EOF
-
-mkdir -p /var/db/ports/devel_p5-Moo
-cat <<'EOF' > /var/db/ports/devel_p5-Moo/options
-_OPTIONS_READ=p5-Moo-2.005005
-_FILE_COMPLETE_OPTIONS_LIST=XS
-OPTIONS_FILE_SET+=XS
-EOF
-
-mkdir -p /var/db/ports/devel_p5-Class-C3
-cat <<'EOF' > /var/db/ports/devel_p5-Class-C3/options
-_OPTIONS_READ=p5-Class-C3-0.35
-_FILE_COMPLETE_OPTIONS_LIST=XS
-OPTIONS_FILE_SET+=XS
-EOF
-
-mkdir -p /var/db/ports/devel_p5-Data-Dumper-Concise
-cat <<'EOF' > /var/db/ports/devel_p5-Data-Dumper-Concise/options
-_OPTIONS_READ=p5-Data-Dumper-Concise-2.023
-_FILE_COMPLETE_OPTIONS_LIST=ARGNAMES
-OPTIONS_FILE_SET+=ARGNAMES
+--8<-- "ports/databases_p5-DBIx-Simple/options"
 EOF
 
 mkdir -p /var/db/ports/dns_p5-Net-DNS
 cat <<'EOF' > /var/db/ports/dns_p5-Net-DNS/options
-_OPTIONS_READ=p5-Net-DNS-1.45
-_FILE_COMPLETE_OPTIONS_LIST=IDN IDN2 IPV6 SSHFP TSIG
-OPTIONS_FILE_UNSET+=IDN
-OPTIONS_FILE_SET+=IDN2
-OPTIONS_FILE_SET+=IPV6
-OPTIONS_FILE_UNSET+=SSHFP
-OPTIONS_FILE_SET+=TSIG
+--8<-- "ports/dns_p5-Net-DNS/options"
+EOF
+
+mkdir -p /var/db/ports/devel_p5-Parse-RecDescent
+cat <<'EOF' > /var/db/ports/devel_p5-Parse-RecDescent/options
+--8<-- "ports/devel_p5-Parse-RecDescent/options"
+EOF
+
+mkdir -p /var/db/ports/security_p5-IO-Socket-SSL
+cat <<'EOF' > /var/db/ports/security_p5-IO-Socket-SSL/options
+--8<-- "ports/security_p5-IO-Socket-SSL/options"
+EOF
+
+mkdir -p /var/db/ports/security_p5-Net-SSLeay
+cat <<'EOF' > /var/db/ports/security_p5-Net-SSLeay/options
+--8<-- "ports/security_p5-Net-SSLeay/options"
+EOF
+
+mkdir -p /var/db/ports/security_p5-Authen-SASL
+cat <<'EOF' > /var/db/ports/security_p5-Authen-SASL/options
+--8<-- "ports/security_p5-Authen-SASL/options"
+EOF
+
+mkdir -p /var/db/ports/net_p5-Net-Server
+cat <<'EOF' > /var/db/ports/net_p5-Net-Server/options
+--8<-- "ports/net_p5-Net-Server/options"
 EOF
 
 mkdir -p /var/db/ports/devel_p5-Test-NoWarnings
 cat <<'EOF' > /var/db/ports/devel_p5-Test-NoWarnings/options
-_OPTIONS_READ=p5-Test-NoWarnings-1.06
-_FILE_COMPLETE_OPTIONS_LIST=DEVEL_STACKTRACE
-OPTIONS_FILE_UNSET+=DEVEL_STACKTRACE
+--8<-- "ports/devel_p5-Test-NoWarnings/options"
 EOF
 
-mkdir -p /var/db/ports/dns_libidn
-cat <<'EOF' > /var/db/ports/dns_libidn/options
-_OPTIONS_READ=libidn-1.42
-_FILE_COMPLETE_OPTIONS_LIST=DOCS NLS
-OPTIONS_FILE_UNSET+=DOCS
-OPTIONS_FILE_SET+=NLS
+mkdir -p /var/db/ports/www_p5-CGI
+cat <<'EOF' > /var/db/ports/www_p5-CGI/options
+--8<-- "ports/www_p5-CGI/options"
 EOF
 
-mkdir -p /var/db/ports/devel_re2c
-cat <<'EOF' > /var/db/ports/devel_re2c/options
-_OPTIONS_READ=re2c-3.0
-_FILE_COMPLETE_OPTIONS_LIST=DOCS EXAMPLES LIBRE2C RE2GO RE2RUST
-OPTIONS_FILE_UNSET+=DOCS
-OPTIONS_FILE_UNSET+=EXAMPLES
-OPTIONS_FILE_SET+=LIBRE2C
-OPTIONS_FILE_SET+=RE2GO
-OPTIONS_FILE_SET+=RE2RUST
+mkdir -p /var/db/ports/www_p5-HTTP-Tiny
+cat <<'EOF' > /var/db/ports/www_p5-HTTP-Tiny/options
+--8<-- "ports/www_p5-HTTP-Tiny/options"
+EOF
+
+mkdir -p /var/db/ports/devel_p5-Data-Dumper-Concise
+cat <<'EOF' > /var/db/ports/devel_p5-Data-Dumper-Concise/options
+--8<-- "ports/devel_p5-Data-Dumper-Concise/options"
 EOF
 
 mkdir -p /var/db/ports/mail_spamassassin
 cat <<'EOF' > /var/db/ports/mail_spamassassin/options
-_OPTIONS_READ=spamassassin-4.0.1
-_FILE_COMPLETE_OPTIONS_LIST=AS_ROOT DOCS SSL GNUPG_NONE GNUPG GNUPG2 MYSQL PGSQL DCC DKIM PYZOR RAZOR RELAY_COUNTRY RLIMIT SPF_QUERY
-OPTIONS_FILE_SET+=AS_ROOT
-OPTIONS_FILE_UNSET+=DOCS
-OPTIONS_FILE_SET+=SSL
-OPTIONS_FILE_UNSET+=GNUPG_NONE
-OPTIONS_FILE_SET+=GNUPG
-OPTIONS_FILE_UNSET+=GNUPG2
-OPTIONS_FILE_UNSET+=MYSQL
-OPTIONS_FILE_UNSET+=PGSQL
-OPTIONS_FILE_UNSET+=DCC
-OPTIONS_FILE_SET+=DKIM
-OPTIONS_FILE_UNSET+=PYZOR
-OPTIONS_FILE_UNSET+=RAZOR
-OPTIONS_FILE_SET+=RELAY_COUNTRY
-OPTIONS_FILE_UNSET+=RLIMIT
-OPTIONS_FILE_SET+=SPF_QUERY
+--8<-- "ports/mail_spamassassin/options"
 EOF
 
 
-cd /usr/ports/net/p5-Socket6
-make all install clean-depends clean
-
-
-cd /usr/ports/mail/spamassassin
-make all install clean-depends clean
+portmaster -w -B -g --force-config mail/spamassassin  -n
 
 
 sysrc spamd_enable="YES"
 sysrc spamd_flags="-c -u spamd -H /var/spool/spamd"
+
+
+
+cat <<'EOF' > /tmp/spamass_mail_bayes_shema.sql
+CREATE TABLE bayes_expire (
+  id integer NOT NULL default '0',
+  runtime integer NOT NULL default '0'
+) WITHOUT OIDS;
+
+CREATE INDEX bayes_expire_idx1 ON bayes_expire (id);
+
+CREATE TABLE bayes_global_vars (
+  variable varchar(30) NOT NULL default '',
+  value varchar(200) NOT NULL default '',
+  PRIMARY KEY  (variable)
+) WITHOUT OIDS;
+
+INSERT INTO bayes_global_vars VALUES ('VERSION','3');
+
+CREATE TABLE bayes_seen (
+  id integer NOT NULL default '0',
+  msgid varchar(200) NOT NULL default '',
+  flag character(1) NOT NULL default '',
+  PRIMARY KEY  (id,msgid)
+) WITHOUT OIDS;
+
+CREATE TABLE bayes_token (
+  id integer NOT NULL default '0',
+  token bytea NOT NULL default '',
+  spam_count integer NOT NULL default '0',
+  ham_count integer NOT NULL default '0',
+  atime integer NOT NULL default '0',
+  PRIMARY KEY  (id,token)
+) WITHOUT OIDS;
+
+CREATE INDEX bayes_token_idx1 ON bayes_token (token);
+
+ALTER TABLE bayes_token SET (fillfactor=95);
+
+CREATE TABLE bayes_vars (
+  id serial NOT NULL,
+  username varchar(200) NOT NULL default '',
+  spam_count integer NOT NULL default '0',
+  ham_count integer NOT NULL default '0',
+  token_count integer NOT NULL default '0',
+  last_expire integer NOT NULL default '0',
+  last_atime_delta integer NOT NULL default '0',
+  last_expire_reduce integer NOT NULL default '0',
+  oldest_token_age integer NOT NULL default '2147483647',
+  newest_token_age integer NOT NULL default '0',
+  PRIMARY KEY  (id)
+) WITHOUT OIDS;
+
+CREATE UNIQUE INDEX bayes_vars_idx1 ON bayes_vars (username);
+
+CREATE OR REPLACE FUNCTION greatest_int (integer, integer)
+ RETURNS INTEGER
+ IMMUTABLE STRICT
+ AS 'SELECT CASE WHEN $1 < $2 THEN $2 ELSE $1 END;'
+ LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION least_int (integer, integer)
+ RETURNS INTEGER
+ IMMUTABLE STRICT
+ AS 'SELECT CASE WHEN $1 < $2 THEN $1 ELSE $2 END;'
+ LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION put_tokens(INTEGER,
+                                      BYTEA[],
+                                      INTEGER,
+                                      INTEGER,
+                                      INTEGER)
+RETURNS VOID AS '
+DECLARE
+  inuserid      ALIAS FOR $1;
+  intokenary    ALIAS FOR $2;
+  inspam_count  ALIAS FOR $3;
+  inham_count   ALIAS FOR $4;
+  inatime       ALIAS FOR $5;
+  _token BYTEA;
+  new_tokens INTEGER := 0;
+BEGIN
+  for i in array_lower(intokenary, 1) .. array_upper(intokenary, 1)
+  LOOP
+    _token := intokenary[i];
+    UPDATE bayes_token
+       SET spam_count = greatest_int(spam_count + inspam_count, 0),
+           ham_count = greatest_int(ham_count + inham_count, 0),
+           atime = greatest_int(atime, inatime)
+     WHERE id = inuserid
+       AND token = _token;
+    IF NOT FOUND THEN
+      -- we do not insert negative counts, just return true
+      IF NOT (inspam_count < 0 OR inham_count < 0) THEN
+        INSERT INTO bayes_token (id, token, spam_count, ham_count, atime)
+        VALUES (inuserid, _token, inspam_count, inham_count, inatime);
+        IF FOUND THEN
+          new_tokens := new_tokens + 1;
+        END IF;
+      END IF;
+    END IF;
+  END LOOP;
+
+  IF new_tokens > 0 AND inatime > 0 THEN
+    UPDATE bayes_vars
+       SET token_count = token_count + new_tokens,
+           newest_token_age = greatest_int(newest_token_age, inatime),
+           oldest_token_age = least_int(oldest_token_age, inatime)
+     WHERE id = inuserid;
+  ELSIF new_tokens > 0 AND NOT inatime > 0 THEN
+    UPDATE bayes_vars
+       SET token_count = token_count + new_tokens
+     WHERE id = inuserid;
+  ELSIF NOT new_tokens > 0 AND inatime > 0 THEN
+    UPDATE bayes_vars
+       SET newest_token_age = greatest_int(newest_token_age, inatime),
+           oldest_token_age = least_int(oldest_token_age, inatime)
+     WHERE id = inuserid;
+  END IF;
+  RETURN;
+END;
+' LANGUAGE 'plpgsql';
+EOF
+
+cat <<'EOF' > /tmp/spamass_mail_awl_shema.sql
+CREATE TABLE awl (
+  username varchar(100) NOT NULL default '',
+  email varchar(255) NOT NULL default '',
+  ip varchar(40) NOT NULL default '',
+  msgcount bigint NOT NULL default '0',
+  totscore float NOT NULL default '0',
+  signedby varchar(255) NOT NULL default '',
+  last_hit timestamp NOT NULL default CURRENT_TIMESTAMP,
+  PRIMARY KEY (username,email,signedby,ip)
+);
+
+create index awl_last_hit on awl (last_hit);
+
+create OR REPLACE function update_awl_last_hit()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.last_hit = CURRENT_TIMESTAMP;
+  RETURN NEW;
+END;
+$$ language 'plpgsql';
+
+create TRIGGER update_awl_update_last_hit BEFORE UPDATE
+ON awl FOR EACH ROW EXECUTE PROCEDURE
+update_awl_last_hit();
+
+ALTER TABLE awl SET (fillfactor=95);
+EOF
+
+
+cat <<'EOF' >> /data/db/postgres/data17/pg_hba.conf
+#
+# spamassassin databases
+#
+# TYPE  DATABASE        USER            ADDRESS                 METHOD
+#
+local   mail_bayes      spamass                                 scram-sha-256
+host    mail_bayes      spamass         127.0.0.1/32            scram-sha-256
+host    mail_bayes      spamass         ::1/128                 scram-sha-256
+local   mail_awl        spamass                                 scram-sha-256
+host    mail_awl        spamass         127.0.0.1/32            scram-sha-256
+host    mail_awl        spamass         ::1/128                 scram-sha-256
+#
+EOF
+
+su - postgres
+
+createuser -U postgres -S -D -R -P -e spamass
+
+
+createdb -U postgres -E unicode -O spamass mail_bayes
+
+psql mail_bayes
+
+GRANT ALL PRIVILEGES ON DATABASE mail_bayes TO spamass;
+QUIT;
+
+psql -U spamass mail_bayes < /tmp/spamass_mail_bayes_shema.sql
+
+
+createdb -U postgres -E unicode -O spamass mail_awl
+
+psql mail_awl
+
+GRANT ALL PRIVILEGES ON DATABASE mail_awl TO spamass;
+QUIT;
+
+psql -U spamass mail_awl < /tmp/spamass_mail_awl_shema.sql
+
+
+exit
 ```
 
 Wir installieren `mail/spamass-milter` und dessen Abhängigkeiten.
@@ -169,16 +297,11 @@ Wir installieren `mail/spamass-milter` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/mail_spamass-milter
 cat <<'EOF' > /var/db/ports/mail_spamass-milter/options
-_OPTIONS_READ=spamass-milter-0.4.0
-_FILE_COMPLETE_OPTIONS_LIST=DOCS LDAP MILTER_PORT
-OPTIONS_FILE_UNSET+=DOCS
-OPTIONS_FILE_UNSET+=LDAP
-OPTIONS_FILE_SET+=MILTER_PORT
+--8<-- "ports/mail_spamass-milter/options"
 EOF
 
 
-cd /usr/ports/mail/spamass-milter
-make all install clean-depends clean
+portmaster -w -B -g --force-config mail/spamass-milter  -n
 
 
 sysrc spamass_milter_enable="YES"
@@ -196,30 +319,53 @@ sysrc spamass_milter_localflags="-r 15 -f -u spamd -- -u spamd"
 `local.cf` einrichten.
 
 ``` bash
-sed -e 's|^#[[:space:]]*\(report_contact\)[[:space:]].*$|\1 postmaster@example.com|g' \
-    -e 's|^#[[:space:]]*\(report_hostname\)[[:space:]].*$|\1 mail.example.com|g' \
-    -e 's|^#[[:space:]]*\(report_safe\)[[:space:]].*$|\1 0|g' \
-    /usr/local/etc/mail/spamassassin/local.cf.sample > /usr/local/etc/mail/spamassassin/local.cf
-
-cat <<'EOF' >> /usr/local/etc/mail/spamassassin/local.cf
-clear_headers
-add_header all Flag _YESNOCAPS_
-add_header all Level _STARS(*)_
-add_header all Status _YESNO_, score=_SCORE_ required=_REQD_ autolearn=_AUTOLEARN_ tests=_TESTSSCORES_
-add_header all Report _REPORT_
-add_header all Checker-Version SpamAssassin _VERSION_ (_SUBVERSION_) on _HOSTNAME_
+cat <<'EOF' > /usr/local/etc/mail/spamassassin/local.cf
+--8<-- "configs/usr/local/etc/mail/spamassassin/local.cf"
 EOF
 
-sed -e 's|^#[[:space:]]*\(loadplugin\)[[:space:]]*\(Mail::SpamAssassin::Plugin::SpamCop\).*$|\1 \2|g' \
-    /usr/local/etc/mail/spamassassin/v310.pre.sample > /usr/local/etc/mail/spamassassin/v310.pre
+cat <<'EOF' > /usr/local/etc/mail/spamassassin/init.pre
+--8<-- "configs/usr/local/etc/mail/spamassassin/init.pre"
+EOF
 
-sed -e 's|^#[[:space:]]*\(loadplugin\)[[:space:]]*\(Mail::SpamAssassin::Plugin::Rule2XSBody\).*$|\1 \2|g' \
-    -e 's|^#[[:space:]]*\(loadplugin\)[[:space:]]*\(Mail::SpamAssassin::Plugin::ASN\).*$|\1 \2|g' \
-    /usr/local/etc/mail/spamassassin/v320.pre.sample > /usr/local/etc/mail/spamassassin/v320.pre
+cat <<'EOF' > /usr/local/etc/mail/spamassassin/310.pre
+--8<-- "configs/usr/local/etc/mail/spamassassin/310.pre"
+EOF
 
-sed -e 's|^#[[:space:]]*\(loadplugin\)[[:space:]]*\(Mail::SpamAssassin::Plugin::FromNameSpoof\).*$|\1 \2|g' \
-    -e 's|^#[[:space:]]*\(loadplugin\)[[:space:]]*\(Mail::SpamAssassin::Plugin::Phishing\).*$|\1 \2|g' \
-    /usr/local/etc/mail/spamassassin/v342.pre.sample > /usr/local/etc/mail/spamassassin/v342.pre
+cat <<'EOF' > /usr/local/etc/mail/spamassassin/312.pre
+--8<-- "configs/usr/local/etc/mail/spamassassin/312.pre"
+EOF
+
+cat <<'EOF' > /usr/local/etc/mail/spamassassin/320.pre
+--8<-- "configs/usr/local/etc/mail/spamassassin/320.pre"
+EOF
+
+cat <<'EOF' > /usr/local/etc/mail/spamassassin/330.pre
+--8<-- "configs/usr/local/etc/mail/spamassassin/330.pre"
+EOF
+
+cat <<'EOF' > /usr/local/etc/mail/spamassassin/340.pre
+--8<-- "configs/usr/local/etc/mail/spamassassin/340.pre"
+EOF
+
+cat <<'EOF' > /usr/local/etc/mail/spamassassin/341.pre
+--8<-- "configs/usr/local/etc/mail/spamassassin/341.pre"
+EOF
+
+cat <<'EOF' > /usr/local/etc/mail/spamassassin/342.pre
+--8<-- "configs/usr/local/etc/mail/spamassassin/342.pre"
+EOF
+
+cat <<'EOF' > /usr/local/etc/mail/spamassassin/343.pre
+--8<-- "configs/usr/local/etc/mail/spamassassin/343.pre"
+EOF
+
+cat <<'EOF' > /usr/local/etc/mail/spamassassin/400.pre
+--8<-- "configs/usr/local/etc/mail/spamassassin/400.pre"
+EOF
+
+cat <<'EOF' > /usr/local/etc/mail/spamassassin/401.pre
+--8<-- "configs/usr/local/etc/mail/spamassassin/401.pre"
+EOF
 ```
 
 SpamAssassin Datenbank anlegen.
@@ -227,6 +373,8 @@ SpamAssassin Datenbank anlegen.
 ``` bash
 /usr/local/bin/sa-update --channel updates.spamassassin.org --refreshmirrors --verbose
 /usr/local/bin/sa-update --channel updates.spamassassin.org --verbose
+/usr/local/bin/sa-update --nogpg --channel kam.sa-channels.mcgrail.com --refreshmirrors --verbose
+/usr/local/bin/sa-update --nogpg --channel kam.sa-channels.mcgrail.com --verbose
 
 /usr/local/bin/sa-compile --quiet
 ```
@@ -235,16 +383,8 @@ SpamAssassin Datenbank updaten.
 
 ``` bash
 cat <<'EOF' > /usr/local/sbin/update-spamassassin
-#!/bin/sh
-
-/usr/local/bin/sa-update --channel updates.spamassassin.org --refreshmirrors --verbose
-/usr/local/bin/sa-update --channel updates.spamassassin.org --verbose
-
-/usr/local/bin/sa-compile --quiet
-
-/usr/sbin/service sa-spamd restart
+--8<-- "configs/usr/local/sbin/update-spamassassin"
 EOF
-
 chmod 0755 /usr/local/sbin/update-spamassassin
 ```
 

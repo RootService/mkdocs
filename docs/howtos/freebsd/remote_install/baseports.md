@@ -77,7 +77,7 @@ Wir installieren `ports-mgmt/pkg` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/ports-mgmt_pkg
 cat <<'EOF' > /var/db/ports/ports-mgmt_pkg/options
---8<-- "ports/ports-mgmt_pkg/options
+--8<-- "ports/ports-mgmt_pkg/options"
 EOF
 
 make -C /usr/ports/ports-mgmt/pkg/ all install clean-depends clean
@@ -88,7 +88,7 @@ Wir installieren `ports-mgmt/portmaster` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/ports-mgmt_portmaster
 cat <<'EOF' > /var/db/ports/ports-mgmt_portmaster/options
---8<-- "ports/ports-mgmt_portmaster/options
+--8<-- "ports/ports-mgmt_portmaster/options"
 EOF
 
 make -C /usr/ports/ports-mgmt/portmaster/ all install clean-depends clean

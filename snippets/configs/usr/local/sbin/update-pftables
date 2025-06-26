@@ -1,0 +1,141 @@
+#!/bin/sh
+
+pasthours="`/bin/date -u -v-6H`"
+lasthours="`/bin/date -j -f "%a %b %d %T %Z %Y" "${pasthours}" "+%H:%M"`"
+
+echo ""
+echo "${lasthours}"
+echo ""
+
+echo ""
+echo "================================================================================"
+echo "Table badhosts_priv"
+echo "================================================================================"
+  /sbin/pfctl -t badhosts_priv -T show > /etc/pf.badhosts_priv
+  /sbin/pfctl -t badhosts_priv -T replace `/usr/bin/sort -buV /etc/pf.badhosts_priv`
+  /usr/local/sbin/expiretable -v -t 90d badhosts_priv
+#  /sbin/pfctl -t badhosts_priv -T expire 7776000
+echo ""
+/sbin/pfctl -t badhosts_priv -v -T show
+
+echo ""
+echo "================================================================================"
+echo "Table badhosts_http"
+echo "================================================================================"
+  /sbin/pfctl -t badhosts_http -T show > /etc/pf.badhosts_http
+  /sbin/pfctl -t badhosts_http -T replace `/usr/bin/sort -buV /etc/pf.badhosts_http`
+  /usr/local/sbin/expiretable -v -t 7d badhosts_http
+#  /sbin/pfctl -t badhosts_http -T expire 604800
+echo ""
+/sbin/pfctl -t badhosts_http -v -T show
+
+echo ""
+echo "================================================================================"
+echo "Table badhosts_mail"
+echo "================================================================================"
+  /sbin/pfctl -t badhosts_mail -T show > /etc/pf.badhosts_mail
+  /sbin/pfctl -t badhosts_mail -T replace `/usr/bin/sort -buV /etc/pf.badhosts_mail`
+  /usr/local/sbin/expiretable -v -t 1d badhosts_mail
+#  /sbin/pfctl -t badhosts_mail -T expire 86400
+echo ""
+/sbin/pfctl -t badhosts_mail -v -T show
+
+echo ""
+echo "================================================================================"
+echo "Table badhosts_sshd"
+echo "================================================================================"
+  /sbin/pfctl -t badhosts_sshd -T show > /etc/pf.badhosts_sshd
+  /sbin/pfctl -t badhosts_sshd -T replace `/usr/bin/sort -buV /etc/pf.badhosts_sshd`
+  /usr/local/sbin/expiretable -v -t 6h badhosts_sshd
+#  /sbin/pfctl -t badhosts_sshd -T expire 21600
+echo ""
+/sbin/pfctl -t badhosts_sshd -v -T show
+
+echo ""
+echo "================================================================================"
+echo "Table badhosts_drop"
+echo "================================================================================"
+  /usr/local/bin/curl --ignore-content-length --compressed \
+    --header "User-Agent: Mozilla/5.0 (FreeBSD 14.2; x86_64; x64; rv:136.0) Gecko/20100101 Firefox/136.0" \
+    --header "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" \
+    --header "Accept-Encoding: gzip, deflate, br" --header "Accept-Language: en,de;q=0.5" --header "DNT: 1" \
+    --header "Cache-Control: max-age=0" --header "Connection: keep-alive" --header "Referer: https://localhost/" \
+    --output "/tmp/drop_v4.json" \
+    --location "https://www.spamhaus.org/drop/drop_v4.json"
+  /usr/bin/awk -F'"' '/cidr/ { print $4 }' /tmp/drop_v4.json > /tmp/drop_v4.txt
+  /usr/local/bin/curl --ignore-content-length --compressed \
+    --header "User-Agent: Mozilla/5.0 (FreeBSD 14.2; x86_64; x64; rv:136.0) Gecko/20100101 Firefox/136.0" \
+    --header "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" \
+    --header "Accept-Encoding: gzip, deflate, br" --header "Accept-Language: en,de;q=0.5" --header "DNT: 1" \
+    --header "Cache-Control: max-age=0" --header "Connection: keep-alive" --header "Referer: https://localhost/" \
+    --output "/tmp/drop_v6.json" \
+    --location "https://www.spamhaus.org/drop/drop_v6.json"
+  /usr/bin/awk -F'"' '/cidr/ { print $4 }' /tmp/drop_v6.json > /tmp/drop_v6.txt
+  /usr/local/bin/curl --ignore-content-length --compressed \
+    --header "User-Agent: Mozilla/5.0 (FreeBSD 14.2; x86_64; x64; rv:136.0) Gecko/20100101 Firefox/136.0" \
+    --header "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" \
+    --header "Accept-Encoding: gzip, deflate, br" --header "Accept-Language: en,de;q=0.5" --header "DNT: 1" \
+    --header "Cache-Control: max-age=0" --header "Connection: keep-alive" --header "Referer: https://localhost/" \
+    --output "/tmp/asndrop.json" \
+    --location "https://www.spamhaus.org/drop/asndrop.json"
+  /usr/bin/awk -F'"' '/asn/ { print $3 }' /tmp/asndrop.json | sed -e 's|^:\([0-9]*\),$|AS\1|g' > /tmp/asndrop.txt
+: > /tmp/asntoip.txt
+for asn in `/usr/bin/awk '!/^;/ { print $1 }' /tmp/asndrop.txt`
+do
+  /usr/bin/whois -h whois.radb.net -- "-i origin $asn" | /usr/bin/awk '/^route/ { print "   " $2 }' >> /tmp/asntoip.txt
+done
+  /usr/bin/awk '!/^;/ { print "   " $1 }' /tmp/drop_v4.txt /tmp/drop_v6.txt /tmp/asntoip.txt > /etc/pf.badhosts_drop
+  /sbin/pfctl -t badhosts_drop -T replace `/usr/bin/sort -buV /etc/pf.badhosts_drop`
+  /usr/local/sbin/expiretable -v -t 90d badhosts_priv
+#  /sbin/pfctl -t badhosts_priv -T expire 7776000
+echo ""
+# /sbin/pfctl -t badhosts_drop -v -T show
+
+echo ""
+echo "================================================================================"
+echo "Table badhosts_torp"
+echo "================================================================================"
+  /usr/local/bin/curl --ignore-content-length --compressed \
+    --header "User-Agent: Mozilla/5.0 (FreeBSD 14.2; x86_64; x64; rv:136.0) Gecko/20100101 Firefox/136.0" \
+    --header "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" \
+    --header "Accept-Encoding: gzip, deflate, br" --header "Accept-Language: en,de;q=0.5" --header "DNT: 1" \
+    --header "Cache-Control: max-age=0" --header "Connection: keep-alive" --header "Referer: https://localhost/" \
+    --output "/tmp/torlist.txt" \
+    --location "https://www.dan.me.uk/torlist/?full"
+  /usr/bin/awk '!/^;/ { print "   " $1 }' /tmp/torlist.txt > /etc/pf.badhosts_torp
+  /sbin/pfctl -t badhosts_torp -T replace `/usr/bin/sort -buV /etc/pf.badhosts_torp`
+  /usr/local/sbin/expiretable -v -t 48h badhosts_torp
+#  /sbin/pfctl -t badhosts_torp -T expire 172800
+echo ""
+# /sbin/pfctl -t badhosts_torp -v -T show
+
+echo ""
+echo "================================================================================"
+echo "Table badhosts_misc"
+echo "================================================================================"
+  /usr/local/bin/curl --ignore-content-length --compressed \
+    --header "User-Agent: Mozilla/5.0 (FreeBSD 14.2; x86_64; x64; rv:136.0) Gecko/20100101 Firefox/136.0" \
+    --header "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" \
+    --header "Accept-Encoding: gzip, deflate, br" --header "Accept-Language: en,de;q=0.5" --header "DNT: 1" \
+    --header "Cache-Control: max-age=0" --header "Connection: keep-alive" --header "Referer: https://localhost/" \
+    --output "/tmp/blocklist.txt" \
+    --location "https://lists.blocklist.de/lists/all.txt"
+  /usr/bin/awk '!/^;/ { print "   " $1 }' /tmp/blocklist.txt > /etc/pf.badhosts_misc
+  /sbin/pfctl -t badhosts_misc -T replace `/usr/bin/sort -buV /etc/pf.badhosts_misc`
+  /usr/local/sbin/expiretable -v -t 48h badhosts_misc
+#  /sbin/pfctl -t badhosts_misc -T expire 172800
+echo ""
+# /sbin/pfctl -t badhosts_misc -v -T show
+
+echo ""
+echo "================================================================================"
+echo "PF Statistics"
+echo "================================================================================"
+/sbin/pfctl -v -v -s all
+echo ""
+
+echo ""
+echo "================================================================================"
+echo ""
+
+exit 0

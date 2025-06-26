@@ -1,0 +1,14 @@
+#!/bin/sh
+
+/usr/local/bin/sa-update --channel updates.spamassassin.org --refreshmirrors --verbose
+/usr/local/bin/sa-update --channel updates.spamassassin.org --verbose
+
+/usr/local/bin/sa-update --nogpg --channel kam.sa-channels.mcgrail.com --refreshmirrors --verbose
+/usr/local/bin/sa-update --nogpg --channel kam.sa-channels.mcgrail.com --verbose
+
+/usr/local/bin/sa-compile --quiet
+
+/usr/sbin/service sa-spamd restart
+/usr/sbin/service amavisd reload
+
+exit 0
