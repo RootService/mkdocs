@@ -117,10 +117,10 @@ plugins:
 #          target: _blank
 #        links_noopener: true
     - material/search:
-    - material/social:
+##    - material/social:
 #        cards_font: Roboto
-        cards_layout_options:
-          font_family: Roboto
+##        cards_layout_options:
+##          font_family: Roboto
 #    - material/tags:
     - minify:
 #        minify_html: true
@@ -211,7 +211,6 @@ markdown_extensions:
 #    - pymdownx.progressbar:
     - pymdownx.saneheaders:
     - pymdownx.striphtml:
-
 
 nav:
     - Home: 'index.md'
