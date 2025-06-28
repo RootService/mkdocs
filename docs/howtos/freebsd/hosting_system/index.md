@@ -160,41 +160,6 @@ chmod 0750 /data/vmail
 chown vmail:vmail /data/vmail
 ```
 
-## Voraussetzungen für den Abschnitt Sonstiges
-
-Es müssen zuerst noch DNS-Records angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
-
-``` dns-zone
-```
-
-Da wir unsere Nutzdaten weitestgehend unter `/data` ablegen werden, legen wir ein paar hierfür benötigte Verzeichnisse an, sofern nicht bereits geschehen.
-
-``` bash
-mkdir -p /data
-```
-
-``` bash
-mkdir -p /var/db/ports/
-cat <<'EOF' > /var/db/ports//options
---8<-- "ports//options"
-EOF
-
-mkdir -p /var/db/ports/
-cat <<'EOF' > /var/db/ports//options
---8<-- "ports//options"
-EOF
-
-mkdir -p /var/db/ports/
-cat <<'EOF' > /var/db/ports//options
---8<-- "ports//options"
-EOF
-
-mkdir -p /var/db/ports/
-cat <<'EOF' > /var/db/ports//options
---8<-- "ports//options"
-EOF
-```
-
 ## Los geht es
 
 Die einzelnen HowTos bauen aufeinander auf, daher sollten sie in der Reihenfolge von oben nach unten bis zum Ende abgearbeitet werden.
