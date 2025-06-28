@@ -145,4 +145,3 @@ Match Group sftponly
     ChrootDirectory /home
     PasswordAuthentication yes
     ForceCommand internal-sftp -d %u
-
