@@ -2,7 +2,7 @@
 title: 'Remote Installation'
 description: 'In diesem HowTo werden step-by-step die Voraussetzungen für die Remote Installation des FreeBSD 64Bit BaseSystem auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2025-06-24'
+updated: '2025-06-28'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -57,8 +57,8 @@ Folgende Punkte sind in allen folgenden HowTos zu beachten.
 - Die Domain des Servers lautet `example.com` und ist selbstständig durch die eigene Domain zu ersetzen.
 - Der Hostname des Servers lautet `devnull` und ist selbstständig durch den eigenen Hostnamen zu ersetzen (FQDN=devnull.example.com).
 - Es wird der FQDN `devnull.example.com` verwendet und ist selbstständig im DNS zu registrieren.
-- Die primäre IPv4 Adresse des Systems wird als `__IPV4ADDR__` dargestellt und ist selbsttändig zu ersetzen.
-- Die primäre IPv6 Adresse des Systems wird als `__IPV6ADDR__` dargestellt und ist selbsttändig zu ersetzen.
+- Die primäre IPv4 Adresse des Systems wird als `__IPADDR4__` dargestellt und ist selbsttändig zu ersetzen.
+- Die primäre IPv6 Adresse des Systems wird als `__IPADDR6__` dargestellt und ist selbsttändig zu ersetzen.
 
 ## Voraussetzungen
 
@@ -69,11 +69,11 @@ Die Installation des FreeBSD BaseSystem setzt ein wie in [mfsBSD Image](/howtos/
 Für diese HowTos müssen zuvor folgende DNS-Records angelegt werden, sofern sie noch nicht existieren, oder entsprechend geändert werden, sofern sie bereits existieren.
 
 ``` dns-zone
-example.com.            IN  A       __IPV4ADDR__
-example.com.            IN  AAAA    __IPV6ADDR__
+example.com.            IN  A       __IPADDR4__
+example.com.            IN  AAAA    __IPADDR6__
 
-devnull.example.com.    IN  A       __IPV4ADDR__
-devnull.example.com.    IN  AAAA    __IPV6ADDR__
+devnull.example.com.    IN  A       __IPADDR4__
+devnull.example.com.    IN  AAAA    __IPADDR6__
 ```
 
 ## Das Referenzsystem

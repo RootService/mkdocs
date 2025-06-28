@@ -2,7 +2,7 @@
 title: 'SpamAssassin'
 description: 'In diesem HowTo wird step-by-step die Installation von SpamAssassin für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2025-06-24'
+updated: '2025-06-28'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -266,6 +266,15 @@ EOF
 
 su - postgres
 
+# Password erzeugen und in /root/_passwords speichern
+chmod 0600 /root/_passwords
+newpw="`openssl rand -hex 64 | openssl passwd -5 -stdin | tr -cd '[[:print:]]' | cut -c 2-17`"
+echo "Password for PostgreSQL user spamass: $newpw" >> /root/_passwords
+chmod 0400 /root/_passwords
+echo "Password: $newpw"
+unset newpw
+
+
 createuser -U postgres -S -D -R -P -e spamass
 
 
@@ -366,6 +375,10 @@ EOF
 cat <<'EOF' > /usr/local/etc/mail/spamassassin/401.pre
 --8<-- "configs/usr/local/etc/mail/spamassassin/401.pre"
 EOF
+
+
+awk '/^Password for PostgreSQL user spamass:/ {print $NF}' /root/_passwords | \
+    xargs -I % sed -e 's|__PASSWORD_SPAMASS__|%|g' -i '' /usr/local/etc/mail/spamassassin/local.cf
 ```
 
 SpamAssassin Datenbank anlegen.

@@ -2,12 +2,12 @@
 $CONF['database_type'] = 'pgsql';
 $CONF['database_host'] = 'localhost';
 $CONF['database_user'] = 'postfix';
-$CONF['database_password'] = '__PASSWORD__';
+$CONF['database_password'] = '__PASSWORD_POSTFIX__';
 $CONF['database_name'] = 'postfixadmin';
 $CONF['encrypt'] = 'ARGON2ID';
 $CONF['configured'] = true;
 $CONF['default_language'] = 'de';
-$CONF['setup_password'] = '__PASSWORD_HASH__';
+$CONF['setup_password'] = '__SETUP_HASH__';
 $CONF['smtp_server'] = 'localhost';
 $CONF['smtp_port'] = '465';
 $CONF['smtp_type'] = 'tls';

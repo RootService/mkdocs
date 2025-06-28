@@ -38,7 +38,7 @@ myhostname = mail.$mydomain
 mynetworks =
     127.0.0.0/8 [::1]/128
     10.0.0.0/8 [fe80::]/10
-    __IPV4ADDR__/32 [__IPV6ADDR__]/64
+    __IPADDR4__/32 [__IPADDR6__]/64
 myorigin = $mydomain
 notify_classes = data protocol resource software
 openssl_path = /usr/local/bin/openssl

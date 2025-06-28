@@ -2,7 +2,7 @@
 title: 'PostgreSQL'
 description: 'In diesem HowTo wird step-by-step die Installation des PostgreSQL Datenbanksystem für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2025-06-24'
+updated: '2025-06-28'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -50,6 +50,15 @@ sysrc postgresql_initdb_flags="--encoding=utf-8 --lc-collate=C --auth=scram-sha-
 PostgreSQL wird nun zum ersten Mal gestartet, was einige Minuten dauern kann.
 
 ``` bash
+# Password erzeugen und in /root/_passwords speichern
+chmod 0600 /root/_passwords
+newpw="`openssl rand -hex 64 | openssl passwd -5 -stdin | tr -cd '[[:print:]]' | cut -c 2-17`"
+echo "Password for PostgreSQL initdb: $newpw" >> /root/_passwords
+chmod 0400 /root/_passwords
+echo "Password: $newpw"
+unset newpw
+
+
 service postgresql initdb
 
 service postgresql start
@@ -58,6 +67,15 @@ service postgresql start
 ## Sicherheit
 
 ``` bash
+# Password erzeugen und in /root/_passwords speichern
+chmod 0600 /root/_passwords
+newpw="`openssl rand -hex 64 | openssl passwd -5 -stdin | tr -cd '[[:print:]]' | cut -c 2-17`"
+echo "Password for PostgreSQL user postges: $newpw" >> /root/_passwords
+chmod 0400 /root/_passwords
+echo "Password: $newpw"
+unset newpw
+
+
 passwd postgres
 
 
@@ -74,6 +92,15 @@ host    test_db         admin           ::1/128                 scram-sha-256
 EOF
 
 su - postgres
+
+# Password erzeugen und in /root/_passwords speichern
+chmod 0600 /root/_passwords
+newpw="`openssl rand -hex 64 | openssl passwd -5 -stdin | tr -cd '[[:print:]]' | cut -c 2-17`"
+echo "Password for PostgreSQL user admin: $newpw" >> /root/_passwords
+chmod 0400 /root/_passwords
+echo "Password: $newpw"
+unset newpw
+
 
 createuser -U postgres -S -D -R -P -e admin
 

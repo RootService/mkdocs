@@ -214,7 +214,7 @@ Verzeichnisstruktur anlegen, RANDFILE erzeugen, zufälligen Startwert für die s
 mkdir -p ca/root-ca/{certs,crl,newcerts,private,revoked}
 chmod 0700 ca/root-ca/private
 openssl rand -out ca/root-ca/private/.rand 65536
-echo `openssl rand -hex 8 | tr '[[:lower:]]' '[[:upper:]]'` > ca/root-ca/serial
+echo `openssl rand -hex 64 | tr '[[:lower:]]' '[[:upper:]]'` > ca/root-ca/serial
 cp ca/root-ca/serial ca/root-ca/crlnumber
 touch ca/root-ca/index.txt ca/root-ca/index.txt.attr
 ```
@@ -222,10 +222,7 @@ touch ca/root-ca/index.txt ca/root-ca/index.txt.attr
 Zufälliges, sicheres Passwort für das Zertifikat erzeugen und zur späteren (automatisierten) Verwendung in der .pwd speichern.
 
 ``` bash
-openssl rand -hex 16 | \
-    openssl passwd -1 -stdin | \
-    tr -cd '[[:alnum:]]' | \
-    sed -e 's/^1//' \
+openssl rand -hex 64 | openssl passwd -5 -stdin | tr -cd '[[:print:]]' | cut -c 2-17 \
     > ca/root-ca/private/root-ca.pwd
 ```
 
@@ -435,7 +432,7 @@ Verzeichnisstruktur anlegen, RANDFILE erzeugen, zufälligen Startwert für die s
 mkdir -p ca/network-ca/{certs,crl,newcerts,private,revoked}
 chmod 0700 ca/network-ca/private
 openssl rand -out ca/network-ca/private/.rand 65536
-echo `openssl rand -hex 8 | tr '[[:lower:]]' '[[:upper:]]'` > ca/network-ca/serial
+echo `openssl rand -hex 64 | tr '[[:lower:]]' '[[:upper:]]'` > ca/network-ca/serial
 cp ca/network-ca/serial ca/network-ca/crlnumber
 touch ca/network-ca/index.txt ca/network-ca/index.txt.attr
 ```
@@ -443,10 +440,7 @@ touch ca/network-ca/index.txt ca/network-ca/index.txt.attr
 Zufälliges, sicheres Passwort für das Zertifikat erzeugen und zur späteren (automatisierten) Verwendung in der .pwd speichern.
 
 ``` bash
-openssl rand -hex 16 | \
-    openssl passwd -1 -stdin | \
-    tr -cd '[[:alnum:]]' | \
-    sed -e 's/^1//' \
+openssl rand -hex 64 | openssl passwd -5 -stdin | tr -cd '[[:print:]]' | cut -c 2-17 \
     > ca/network-ca/private/network-ca.pwd
 ```
 
@@ -674,7 +668,7 @@ Verzeichnisstruktur anlegen, RANDFILE erzeugen, zufälligen Startwert für die s
 mkdir -p ca/identity-ca/{certs,crl,newcerts,private,revoked}
 chmod 0700 ca/identity-ca/private
 openssl rand -out ca/identity-ca/private/.rand 65536
-echo `openssl rand -hex 8 | tr '[[:lower:]]' '[[:upper:]]'` > ca/identity-ca/serial
+echo `openssl rand -hex 64 | tr '[[:lower:]]' '[[:upper:]]'` > ca/identity-ca/serial
 cp ca/identity-ca/serial ca/identity-ca/crlnumber
 touch ca/identity-ca/index.txt ca/identity-ca/index.txt.attr
 ```
@@ -682,10 +676,7 @@ touch ca/identity-ca/index.txt ca/identity-ca/index.txt.attr
 Zufälliges, sicheres Passwort für das Zertifikat erzeugen und zur späteren (automatisierten) Verwendung in der .pwd speichern.
 
 ``` bash
-openssl rand -hex 16 | \
-    openssl passwd -1 -stdin | \
-    tr -cd '[[:alnum:]]' | \
-    sed -e 's/^1//' \
+openssl rand -hex 64 | openssl passwd -5 -stdin | tr -cd '[[:print:]]' | cut -c 2-17 \
     > ca/identity-ca/private/identity-ca.pwd
 ```
 
@@ -941,7 +932,7 @@ Verzeichnisstruktur anlegen, RANDFILE erzeugen, zufälligen Startwert für die s
 mkdir -p ca/component-ca/{certs,crl,newcerts,private,revoked}
 chmod 0700 ca/component-ca/private
 openssl rand -out ca/component-ca/private/.rand 65536
-echo `openssl rand -hex 8 | tr '[[:lower:]]' '[[:upper:]]'` > ca/component-ca/serial
+echo `openssl rand -hex 64 | tr '[[:lower:]]' '[[:upper:]]'` > ca/component-ca/serial
 cp ca/component-ca/serial ca/component-ca/crlnumber
 touch ca/component-ca/index.txt ca/component-ca/index.txt.attr
 ```
@@ -949,10 +940,7 @@ touch ca/component-ca/index.txt ca/component-ca/index.txt.attr
 Zufälliges, sicheres Passwort für das Zertifikat erzeugen und zur späteren (automatisierten) Verwendung in der .pwd speichern.
 
 ``` bash
-openssl rand -hex 16 | \
-    openssl passwd -1 -stdin | \
-    tr -cd '[[:alnum:]]' | \
-    sed -e 's/^1//' \
+openssl rand -hex 64 | openssl passwd -5 -stdin | tr -cd '[[:print:]]' | cut -c 2-17 \
     > ca/component-ca/private/component-ca.pwd
 ```
 
@@ -1236,10 +1224,7 @@ subjectAltName          = email:move
 Zufälliges, sicheres Passwort für das Zertifikat erzeugen und zur späteren (automatisierten) Verwendung in der .pwd speichern.
 
 ``` bash
-openssl rand -hex 16 | \
-    openssl passwd -1 -stdin | \
-    tr -cd '[[:alnum:]]' | \
-    sed -e 's/^1//' \
+openssl rand -hex 64 | openssl passwd -5 -stdin | tr -cd '[[:print:]]' | cut -c 2-17 \
     > private/admin-id.pwd
 ```
 
@@ -1302,10 +1287,7 @@ openssl pkcs12 \
 Zufälliges, sicheres Passwort für das Zertifikat erzeugen und zur späteren (automatisierten) Verwendung in der .pwd speichern.
 
 ``` bash
-openssl rand -hex 16 | \
-    openssl passwd -1 -stdin | \
-    tr -cd '[[:alnum:]]' | \
-    sed -e 's/^1//' \
+openssl rand -hex 64 | openssl passwd -5 -stdin | tr -cd '[[:print:]]' | cut -c 2-17 \
     > private/admin-enc.pwd
 ```
 
@@ -1405,10 +1387,7 @@ subjectKeyIdentifier    = hash
 Zufälliges, sicheres Passwort für das Zertifikat erzeugen und zur späteren (automatisierten) Verwendung in der .pwd speichern.
 
 ``` bash
-openssl rand -hex 16 | \
-    openssl passwd -1 -stdin | \
-    tr -cd '[[:alnum:]]' | \
-    sed -e 's/^1//' \
+openssl rand -hex 64 | openssl passwd -5 -stdin | tr -cd '[[:print:]]' | cut -c 2-17 \
     > private/workstation.pwd
 ```
 
@@ -1501,10 +1480,7 @@ subjectAltName          = $ENV::SAN
 Zufälliges, sicheres Passwort für das Zertifikat erzeugen und zur späteren (automatisierten) Verwendung in der .pwd speichern.
 
 ``` bash
-openssl rand -hex 16 | \
-    openssl passwd -1 -stdin | \
-    tr -cd '[[:alnum:]]' | \
-    sed -e 's/^1//' \
+openssl rand -hex 64 | openssl passwd -5 -stdin | tr -cd '[[:print:]]' | cut -c 2-17 \
     > private/devnull.example.com.pwd
 ```
 
@@ -1561,10 +1537,7 @@ openssl pkey \
 Zufälliges, sicheres Passwort für das Zertifikat erzeugen und zur späteren (automatisierten) Verwendung in der .pwd speichern.
 
 ``` bash
-openssl rand -hex 16 | \
-    openssl passwd -1 -stdin | \
-    tr -cd '[[:alnum:]]' | \
-    sed -e 's/^1//' \
+openssl rand -hex 64 | openssl passwd -5 -stdin | tr -cd '[[:print:]]' | cut -c 2-17 \
     > private/mail.example.com.pwd
 ```
 
@@ -1621,10 +1594,7 @@ openssl pkey \
 Zufälliges, sicheres Passwort für das Zertifikat erzeugen und zur späteren (automatisierten) Verwendung in der .pwd speichern.
 
 ``` bash
-openssl rand -hex 16 | \
-    openssl passwd -1 -stdin | \
-    tr -cd '[[:alnum:]]' | \
-    sed -e 's/^1//' \
+openssl rand -hex 64 | openssl passwd -5 -stdin | tr -cd '[[:print:]]' | cut -c 2-17 \
     > private/www.example.com.pwd
 ```
 
@@ -1718,10 +1688,7 @@ subjectKeyIdentifier    = hash
 Zufälliges, sicheres Passwort für das Zertifikat erzeugen und zur späteren (automatisierten) Verwendung in der .pwd speichern.
 
 ``` bash
-openssl rand -hex 16 | \
-    openssl passwd -1 -stdin | \
-    tr -cd '[[:alnum:]]' | \
-    sed -e 's/^1//' \
+openssl rand -hex 64 | openssl passwd -5 -stdin | tr -cd '[[:print:]]' | cut -c 2-17 \
     > private/timestamping.pwd
 ```
 
@@ -1804,10 +1771,7 @@ subjectKeyIdentifier    = hash
 Zufälliges, sicheres Passwort für das Zertifikat erzeugen und zur späteren (automatisierten) Verwendung in der .pwd speichern.
 
 ``` bash
-openssl rand -hex 16 | \
-    openssl passwd -1 -stdin | \
-    tr -cd '[[:alnum:]]' | \
-    sed -e 's/^1//' \
+openssl rand -hex 64 | openssl passwd -5 -stdin | tr -cd '[[:print:]]' | cut -c 2-17 \
     > private/ocspresponder.pwd
 ```
 

@@ -2,7 +2,7 @@
 title: 'Dovecot'
 description: 'In diesem HowTo wird step-by-step die Installation des Dovecot Mailservers für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2025-06-24'
+updated: '2025-06-28'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -86,6 +86,11 @@ cat <<'EOF' > /usr/local/etc/dovecot/dovecot-used-quota.conf
 --8<-- "configs/usr/local/etc/dovecot/dovecot-used-quota.conf"
 EOF
 
+
+awk '/^Password for PostgreSQL user postfix:/ {print $NF}' /root/_passwords | \
+    xargs -I % sed -e 's|__PASSWORD_POSTFIX__|%|g' -i '' /usr/local/etc/dovecot/*.conf
+
+
 cat <<'EOF' > /usr/local/bin/dovecot-quota-warning.sh
 --8<-- "configs/usr/local/bin/dovecot-quota-warning.sh"
 EOF
@@ -99,11 +104,18 @@ chmod 0755 /usr/local/bin/dovecot-quota-warning.sh
 Wir legen einen neuen Superuser an.
 
 ``` bash
-doveadm pw -s SSHA512 -p
-
 cat <<'EOF' > /usr/local/etc/dovecot/dovecot-master-users
 --8<-- "configs/usr/local/etc/dovecot/dovecot-master-users"
 EOF
+
+# Password erzeugen und in /root/_passwords speichern
+chmod 0600 /root/_passwords
+newpw="`openssl rand -hex 64 | openssl passwd -5 -stdin | tr -cd '[[:print:]]' | cut -c 2-17`"
+echo "Password for Dovecot user superuser: $newpw" >> /root/_passwords
+chmod 0400 /root/_passwords
+echo "$newpw" | xargs -I % doveadm pw -s SSHA512 -p % | xargs -I % echo "superuser:%" > /usr/local/etc/dovecot/dovecot-master-users
+echo "Password: $newpw"
+unset newpw
 ```
 
 Das Anlegen neuer Mailuser wird mittels Script automatisiert.

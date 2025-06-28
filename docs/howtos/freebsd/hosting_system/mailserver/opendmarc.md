@@ -2,7 +2,7 @@
 title: 'OpenDMARC'
 description: 'In diesem HowTo wird step-by-step die Installation von OpenDMARC für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2025-06-24'
+updated: '2025-06-28'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -67,8 +67,8 @@ cat <<'EOF' > /data/db/opendmarc/ignorehosts
 fe80::/10
 ff02::/16
 10.0.0.0/8
-__IPV4ADDR__
-__IPV6ADDR__
+__IPADDR4__
+__IPADDR6__
 localhost
 example.com
 *.example.com

@@ -558,7 +558,7 @@ sed -e 's/^\(hostname=\).*$/\1"devnull"/' -i /etc/conf.d/hostname
 cat >> /etc/conf.d/net << "EOF"
 #
 # Setup eth0
-config_eth0="IPADDR4 netmask NETMASK4"
+config_eth0="__IPADDR4__ netmask NETMASK4"
 routes_eth0="default via GATEWAY4"
 EOF
 
@@ -572,7 +572,7 @@ Es folgt ein wenig Voodoo, um die Netzwerkkonfiguration in der `/etc/conf.d/netw
 ``` bash
 # IPv4
 ifconfig `ip -f inet route show scope global | awk '/default/ {print $5}'` | \
-    awk '/inet/ {print $2}' | xargs -I % sed -e 's/IPADDR4/%/g' -i /etc/conf.d/net
+    awk '/inet/ {print $2}' | xargs -I % sed -e 's/__IPADDR4__/%/g' -i /etc/conf.d/net
 ifconfig `ip -f inet route show scope global | awk '/default/ {print $5}'` | \
     awk '/inet/ {print $4}' | xargs -I % sed -e 's/NETMASK4/%/g' -i /etc/conf.d/net
 ip -f inet route show scope global | awk '/default/ {print $3}' | \
@@ -586,10 +586,10 @@ Wir richten die `/etc/hosts` ein.
 sed -e 's/my.domain/example.com/g' -i /etc/hosts
 
 # IPv4
-echo 'IPADDR4   devnull.example.com' >> /etc/hosts
+echo '__IPADDR4__   devnull.example.com' >> /etc/hosts
 
 ifconfig `ip -f inet route show scope global | awk '/default/ {print $5}'` | \
-    awk '/inet/ {print $2}' | xargs -I % sed -e 's/IPADDR4/%/g' -i /etc/hosts
+    awk '/inet/ {print $2}' | xargs -I % sed -e 's/__IPADDR4__/%/g' -i /etc/hosts
 ```
 
 ## Kernelsourcen installieren

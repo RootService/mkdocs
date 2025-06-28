@@ -2,7 +2,7 @@
 title: 'BaseSystem'
 description: 'In diesem HowTo wird step-by-step die Remote Installation des FreeBSD 64Bit BaseSystem auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2025-06-24'
+updated: '2025-06-28'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -48,6 +48,15 @@ Ist der Bootvorgang abgeschlossen, wird als Erstes das root-Passwort für das Re
 
 ``` bash
 setkmap de
+
+# Password erzeugen und in /root/_passwords speichern
+chmod 0600 /root/_passwords
+newpw="`openssl rand -hex 64 | openssl passwd -5 -stdin | tr -cd '[[:print:]]' | cut -c 2-17`"
+echo "Password for systemuser root: $newpw" >> /root/_passwords
+chmod 0400 /root/_passwords
+echo "Password: $newpw"
+unset newpw
+
 
 passwd root
 
@@ -332,6 +341,15 @@ Das Home-Verzeichnis des Users root ist standardmässig leider nicht ausreichend
 ``` bash
 chmod 0700 /root
 
+# Password erzeugen und in /root/_passwords speichern
+chmod 0600 /root/_passwords
+newpw="`openssl rand -hex 64 | openssl passwd -5 -stdin | tr -cd '[[:print:]]' | cut -c 2-17`"
+echo "Password for systemuser root: $newpw" >> /root/_passwords
+chmod 0400 /root/_passwords
+echo "Password: $newpw"
+unset newpw
+
+
 passwd root
 ```
 
@@ -395,6 +413,16 @@ cap_mkdb /etc/login.conf
 Die neuen Einstellungen werden erst wirksam, wenn das Passwort eines Benutzers geändert wird. Deshalb müssen wir jetzt die Passwörter für `root` und alle anderen bisher von uns angelegten User ändern.
 
 ``` bash
+# Password erzeugen und in /root/_passwords speichern
+chmod 0600 /root/_passwords
+newpw="`openssl rand -hex 64 | openssl passwd -5 -stdin | tr -cd '[[:print:]]' | cut -c 2-17`"
+echo "Password for systemuser root: $newpw" >> /root/_passwords
+chmod 0400 /root/_passwords
+echo "$newpw" | xargs -I % sed -e 's|__PASSWORD__|%|g' -i '' /root/_passwords
+echo "Password: $newpw"
+unset newpw
+
+
 passwd root
 ```
 
@@ -495,17 +523,17 @@ route -n get -inet default | awk '/interface/ {print $2}' | \
 
 # IPv4
 route -n get -inet default | awk '/gateway/ {print $2}' | \
-    xargs -I % sed -e 's|GATEWAY4|%|g' -i '' /etc/rc.conf
-ifconfig -f cidr `route -n get -inet default | awk '/interface/ {print $2}'` inet | \
-    awk '/inet / {if(substr($2,1,3)!=127) print $2}' | head -n 1 | \
-    xargs -I % sed -e 's|IPADDR4|%|g' -i '' /etc/rc.conf
+    xargs -I % sed -e 's|__GATEWAY4__|%|g' -i '' /etc/rc.conf
+ifconfig -u -f cidr `route -n get -inet default | awk '/interface/ {print $2}'` inet | \
+    awk 'tolower($0) ~ /inet[\ \t]+((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))/ {if(substr($2,1,3)!=127) print $2}' | \
+    head -n 1 | xargs -I % sed -e 's|__IPADDR4__|%|g' -i '' /etc/rc.conf
 
 # IPv6
 route -n get -inet6 default | awk '/gateway/ {print $2}' | \
-    xargs -I % sed -e 's|GATEWAY6|%|g' -i '' /etc/rc.conf
-ifconfig -f cidr `route -n get -inet6 default | awk '/interface/ {print $2}'` inet6 | \
-    awk '/inet6 / {if(substr($2,1,1)!="f") print $2}' | head -n 1 | \
-    xargs -I % sed -e 's|IPADDR6|%|g' -i '' /etc/rc.conf
+    xargs -I % sed -e 's|__GATEWAY6__|%|g' -i '' /etc/rc.conf
+ifconfig -u -f cidr `route -n get -inet6 default | awk '/interface/ {print $2}'` inet6 | \
+    awk 'tolower($0) ~ /inet6[\ \t]+(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))/ {if(substr($2,1,1)!="f") print $2}' | \
+    head -n 1 | xargs -I % sed -e 's|__IPADDR6__|%|g' -i '' /etc/rc.conf
 ```
 
 Wir richten die `/etc/hosts` ein.
@@ -515,18 +543,16 @@ Wir richten die `/etc/hosts` ein.
 sed -e 's|my.domain/example.com/g' -i '' /etc/hosts
 
 # IPv4
-echo 'IPADDR4   devnull.example.com   devnull' >> /etc/hosts
-
-ifconfig `route -n get -inet default | awk '/interface/ {print $2}'` inet | \
-    awk '/inet / {if(substr($2,1,3)!=127) print $2}' | head -n 1 | \
-    xargs -I % sed -e 's|IPADDR4|%|g' -i '' /etc/hosts
+echo '__IPADDR4__   devnull.example.com   devnull' >> /etc/hosts
+ifconfig -u -f cidr `route -n get -inet default | awk '/interface/ {print $2}'` inet | \
+    awk 'tolower($0) ~ /inet[\ \t]+((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))/ {if(substr($2,1,3)!=127) print $2}' | \
+    head -n 1 | xargs -I % sed -e 's|__IPADDR4__|%|g' -i '' /etc/hosts
 
 # IPv6
-echo 'IPADDR6   devnull.example.com   devnull' >> /etc/hosts
-
-ifconfig `route -n get -inet6 default | awk '/interface/ {print $2}'` inet6 | \
-    awk '/inet6 / {if(substr($2,1,1)!="f") print $2}' | head -n 1 | \
-    xargs -I % sed -e 's|IPADDR6|%|g' -i '' /etc/hosts
+echo '__IPADDR6__   devnull.example.com   devnull' >> /etc/hosts
+ifconfig -u -f cidr `route -n get -inet6 default | awk '/interface/ {print $2}'` inet6 | \
+    awk 'tolower($0) ~ /inet6[\ \t]+(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))/ {if(substr($2,1,1)!="f") print $2}' | \
+    head -n 1 | xargs -I % sed -e 's|__IPADDR6__|%|g' -i '' /etc/hosts
 ```
 
 ### Systemgruppen anlegen
@@ -545,7 +571,16 @@ pw groupadd -n sftponly -g 4000
 Um nicht ständig mit dem root-User arbeiten zu müssen, legen wir uns einen Administrations-User an, den wir praktischerweise "admin" nennen. Diesem User verpassen wir die Standard-Systemgruppe "admin" und nehmen ihn zusätzlich in die Systemgruppe "wheel" auf, damit dieser User später per `su` zum root-User wechseln kann. Das Home-Verzeichnis des admin-Users lassen wir automatisch anlegen und setzen seine Standard-Shell auf `/bin/tcsh`. Ein sicheres Passwort bekommt er selbstverständlich auch noch.
 
 ``` bash
-pw useradd -n admin -u 1000 -g admin -G wheel -c 'Administrator' -m -w random
+pw useradd -n admin -u 1000 -g admin -G wheel -c 'Administrator' -m -w no
+
+# Password erzeugen und in /root/_passwords speichern
+chmod 0600 /root/_passwords
+newpw="`openssl rand -hex 64 | openssl passwd -5 -stdin | tr -cd '[[:print:]]' | cut -c 2-17`"
+echo "Password for systemuser admin: $newpw" >> /root/_passwords
+chmod 0400 /root/_passwords
+echo "Password: $newpw"
+unset newpw
+
 
 passwd admin
 ```
@@ -571,7 +606,16 @@ exit
 Einen normalen User mit SSH-Zugang legen wir ebenfalls an, ihn nennen wir "joeuser". Diesem User verpassen wir die Standard-Systemgruppe "users" und nehmen ihn zusätzlich in die Systemgruppe "sshusers" auf, damit sich dieser User später per `SSH` einloggen kann. Das Home-Verzeichnis des Users lassen wir automatisch anlegen und setzen seine Standard-Shell auf `/bin/tcsh`. Ein sicheres Passwort bekommt er selbstverständlich auch noch.
 
 ``` bash
-pw useradd -n joeuser -u 2000 -g users -G sshusers -c 'Joe User' -m -w random
+pw useradd -n joeuser -u 2000 -g users -G sshusers -c 'Joe User' -m -w no
+
+# Password erzeugen und in /root/_passwords speichern
+chmod 0600 /root/_passwords
+newpw="`openssl rand -hex 64 | openssl passwd -5 -stdin | tr -cd '[[:print:]]' | cut -c 2-17`"
+echo "Password for systemuser joeuser: $newpw" >> /root/_passwords
+chmod 0400 /root/_passwords
+echo "Password: $newpw"
+unset newpw
+
 
 passwd joeuser
 ```
@@ -634,14 +678,14 @@ route -n get -inet default | awk '/interface/ {print $2}' | \
     xargs -I % sed -e 's|DEFAULT|%|g' -i '' /etc/pf.conf
 
 # IPv4
-ifconfig -f cidr `route -n get -inet default | awk '/interface/ {print $2}'` inet | \
-    awk '/inet / {if(substr($2,1,3)!=127) print $2}' | head -n 1 | \
-    xargs -I % sed -e 's|#IPADDR4|%|g' -i '' /etc/pf.internal
+ifconfig -u -f cidr `route -n get -inet default | awk '/interface/ {print $2}'` inet | \
+    awk 'tolower($0) ~ /inet[\ \t]+((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))/ {if(substr($2,1,3)!=127) print $2}' | \
+    head -n 1 | xargs -I % sed -e 's|__IPADDR4__|%|g' -i '' /etc/pf.internal
 
 # IPv6
-ifconfig -f cidr `route -n get -inet6 default | awk '/interface/ {print $2}'` inet6 | \
-    awk '/inet6 / {if(substr($2,1,1)!="f") print $2}' | head -n 1 | \
-    xargs -I % sed -e 's|#IPADDR6|%|g' -i '' /etc/pf.internal
+ifconfig -u -f cidr `route -n get -inet6 default | awk '/interface/ {print $2}'` inet6 | \
+    awk 'tolower($0) ~ /inet6[\ \t]+(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))/ {if(substr($2,1,1)!="f") print $2}' | \
+    head -n 1 | xargs -I % sed -e 's|__IPADDR6__|%|g' -i '' /etc/pf.internal
 ```
 
 ## Abschluss der Installation

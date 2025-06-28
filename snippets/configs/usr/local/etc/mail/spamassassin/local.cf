@@ -8,12 +8,12 @@ lock_method         flock
 clear_internal_networks
 
 internal_networks    10.0.0.0/8 [fe80::]/10
-internal_networks    __IPV4ADDR__/32 [__IPV6ADDR__]/64
+internal_networks    __IPADDR4__/32 [__IPADDR6__]/64
 
 clear_trusted_networks
 
 trusted_networks    10.0.0.0/8 [fe80::]/10
-trusted_networks    __IPV4ADDR__/32 [__IPV6ADDR__]/64
+trusted_networks    __IPADDR4__/32 [__IPADDR6__]/64
 
 clear_headers
 
@@ -32,7 +32,7 @@ rewrite_header      subject [ SPAM ]
 bayes_store_module  Mail::SpamAssassin::BayesStore::PgSQL
 bayes_sql_dsn       DBI:Pg:database=spamass_bayes;host=127.0.0.1;port=5432
 bayes_sql_username  spamass
-bayes_sql_password  __PASSWORD__
+bayes_sql_password  __PASSWORD_SPAMASS__
 
 report_contact      postmaster@example.com
 report_hostname     mail.example.com

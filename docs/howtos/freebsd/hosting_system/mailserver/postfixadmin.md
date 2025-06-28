@@ -2,7 +2,7 @@
 title: 'PostfixAdmin'
 description: 'In diesem HowTo wird step-by-step die Installation von PostfixAdmin für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2025-06-24'
+updated: '2025-06-28'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -93,6 +93,15 @@ EOF
 
 su - postgres
 
+# Password erzeugen und in /root/_passwords speichern
+chmod 0600 /root/_passwords
+newpw="`openssl rand -hex 64 | openssl passwd -5 -stdin | tr -cd '[[:print:]]' | cut -c 2-17`"
+echo "Password for PostgreSQL user postfix: $newpw" >> /root/_passwords
+chmod 0400 /root/_passwords
+echo "Password: $newpw"
+unset newpw
+
+
 createuser -U postgres -S -D -R -P -e postfix
 
 createdb -U postgres -E unicode -O postfix postfixadmin
@@ -105,12 +114,25 @@ QUIT;
 exit
 
 
-php -r "echo password_hash('__PASSWORD__', PASSWORD_DEFAULT);"
-
 cat <<'EOF' > /data/www/apps/postfixadmin/config.local.php
 --8<-- "configs/data/www/apps/postfixadmin/config.local.php"
 EOF
 chown www:www /data/www/apps/postfixadmin/config.local.php
+
+
+# Password erzeugen und in /root/_passwords speichern
+chmod 0600 /root/_passwords
+newpw="`openssl rand -hex 64 | openssl passwd -5 -stdin | tr -cd '[[:print:]]' | cut -c 2-17`"
+echo "Password for PostfixAdmin setup_hash: $newpw" >> /root/_passwords
+chmod 0400 /root/_passwords
+echo "$newpw" | xargs -I % php -r "echo password_hash('%', PASSWORD_DEFAULT);" | \
+    xargs -I % sed -e 's|__SETUP_HASH__|%|g' -i '' /data/www/apps/postfixadmin/config.local.php
+echo "Password: $newpw"
+unset newpw
+
+
+awk '/^Password for PostgreSQL user postfix:/ {print $NF}' /root/_passwords | \
+    xargs -I % sed -e 's|__PASSWORD_POSTFIX__|%|g' -i '' /data/www/apps/postfixadmin/config.local.php
 
 
 sed -e 's|/usr/bin/perl|/usr/local/bin/perl|' \
@@ -119,6 +141,16 @@ sed -e 's|/usr/bin/perl|/usr/local/bin/perl|' \
 cat <<'EOF' > /data/db/postfixadmin/vacation.conf
 --8<-- "configs/data/db/postfixadmin/vacation.conf"
 EOF
+
+
+# Password erzeugen und in /root/_passwords speichern
+chmod 0600 /root/_passwords
+newpw="`openssl rand -hex 64 | openssl passwd -5 -stdin | tr -cd '[[:print:]]' | cut -c 2-17`"
+echo "Password for PostfixAdmin user vacation: $newpw" >> /root/_passwords
+chmod 0400 /root/_passwords
+echo "$newpw" | xargs -I % sed -e 's|__PASSWORD_VACATION__|%|g' -i '' /data/db/postfixadmin/vacation.conf
+echo "Password: $newpw"
+unset newpw
 
 
 chmod 0750 /data/db/postfixadmin

@@ -2,7 +2,7 @@
 title: 'MySQL'
 description: 'In diesem HowTo wird step-by-step die Installation des MySQL Datenbanksystem für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2025-06-24'
+updated: '2025-06-28'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -94,19 +94,13 @@ service mysql-server start
 Abschliessend wird das MySQL root-Passwort neu gesetzt und mittels `mysql_config_editor` verschlüsselt in `/root/.mylogin.cnf` gespeichert.
 
 ``` bash
-
-
-mysql -uroot
-
-ALTER USER 'root'@'localhost' IDENTIFIED WITH caching_sha2_password BY 'MtsdnVZx' PASSWORD EXPIRE NEVER;
-CREATE USER 'root'@'127.0.0.1' IDENTIFIED WITH caching_sha2_password BY 'MtsdnVZx' PASSWORD EXPIRE NEVER;
-CREATE USER 'root'@'::1' IDENTIFIED WITH caching_sha2_password BY 'MtsdnVZx' PASSWORD EXPIRE NEVER;
-GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' WITH GRANT OPTION;
-GRANT ALL PRIVILEGES ON *.* TO 'root'@'127.0.0.1' WITH GRANT OPTION;
-GRANT ALL PRIVILEGES ON *.* TO 'root'@'::1' WITH GRANT OPTION;
-
-FLUSH PRIVILEGES;
-QUIT;
+# Password erzeugen und in /root/_passwords speichern
+chmod 0600 /root/_passwords
+newpw="`openssl rand -hex 64 | openssl passwd -5 -stdin | tr -cd '[[:print:]]' | cut -c 2-17`"
+echo "Password for MySQL user root: $newpw" >> /root/_passwords
+chmod 0400 /root/_passwords
+echo "Password: $newpw"
+unset newpw
 
 
 # First set new MySQL-root password

@@ -1,1 +1,1 @@
-superuser{SSHA512}__SSHA512_HASH__
+superuser:__PASSWORD_SUPERUSER__

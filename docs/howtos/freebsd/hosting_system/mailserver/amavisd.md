@@ -2,7 +2,7 @@
 title: 'Amavisd'
 description: 'In diesem HowTo wird step-by-step die Installation von Amavisd für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
-updated: '2025-06-24'
+updated: '2025-06-28'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
@@ -311,6 +311,15 @@ EOF
 
 su - postgres
 
+# Password erzeugen und in /root/_passwords speichern
+chmod 0600 /root/_passwords
+newpw="`openssl rand -hex 64 | openssl passwd -5 -stdin | tr -cd '[[:print:]]' | cut -c 2-17`"
+echo "Password for PostgreSQL user vscan: $newpw" >> /root/_passwords
+chmod 0400 /root/_passwords
+echo "Password: $newpw"
+unset newpw
+
+
 createuser -U postgres -S -D -R -P -e vscan
 
 
@@ -345,6 +354,9 @@ exit
 cat <<'EOF' > /usr/local/etc/amavisd.conf
 --8<-- "configs/usr/local/etc/amavisd.conf"
 EOF
+
+awk '/^Password for PostgreSQL user vscan:/ {print $NF}' /root/_passwords | \
+    xargs -I % sed -e 's|__PASSWORD_VSCAN__|%|g' -i '' /usr/local/etc/amavisd.conf
 
 
 mkdir -p /var/amavis/db/keys
