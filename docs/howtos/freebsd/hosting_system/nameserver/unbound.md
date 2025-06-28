@@ -53,7 +53,7 @@ Wir konfigurieren Unbound:
 
 ``` bash
 cat <<'EOF' > /usr/local/etc/unbound/unbound.conf
---8<-- "/usr/local/etc/unbound/unbound.conf"
+--8<-- "configs/usr/local/etc/unbound/unbound.conf"
 EOF
 
 curl -o "/usr/local/etc/unbound/root.hints" -L "https://www.internic.net/domain/named.root"

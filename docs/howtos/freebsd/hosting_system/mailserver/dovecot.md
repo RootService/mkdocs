@@ -46,7 +46,7 @@ Wir installieren `mail/dovecot-pigeonhole` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/mail_dovecot-pigeonhole
 cat <<'EOF' > /var/db/ports/mail_dovecot-pigeonhole/options
---8<-- "ports/mail_dovecot-pigeonholw/options"
+--8<-- "ports/mail_dovecot-pigeonhole/options"
 EOF
 
 

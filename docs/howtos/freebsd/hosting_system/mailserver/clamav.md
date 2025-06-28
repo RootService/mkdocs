@@ -37,13 +37,6 @@ sysrc clamav_clamd_enable="YES"
 sysrc clamav_freshclam_enable="YES"
 ```
 
-## Konfigurieren
-
-`clamav.conf` einrichten.
-
-``` bash
-```
-
 ## Abschluss
 
 ClamAV kann nun gestartet werden.

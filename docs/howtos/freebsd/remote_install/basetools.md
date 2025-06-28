@@ -365,11 +365,6 @@ cat <<'EOF' > /var/db/ports/textproc_utf8proc/options
 --8<-- "ports/textproc_utf8proc/options"
 EOF
 
-mkdir -p /var/db/ports/www_serf
-cat <<'EOF' > /var/db/ports/www_serf/options
---8<-- "ports/www_serf/options"
-EOF
-
 mkdir -p /var/db/ports/devel_subversion
 cat <<'EOF' > /var/db/ports/devel_subversion/options
 --8<-- "ports/devel_subversion/options"

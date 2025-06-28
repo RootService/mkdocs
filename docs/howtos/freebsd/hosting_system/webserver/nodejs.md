@@ -52,7 +52,7 @@ Wir installieren `www/yarn` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/www_yarn-node22
 cat <<'EOF' > /var/db/ports/www_yarn-node22/options
---8<-- "www_yarn-node22/options"
+--8<-- "ports/www_yarn-node22/options"
 EOF
 
 

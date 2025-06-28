@@ -336,44 +336,44 @@ cat <<'EOF' > /usr/local/etc/mail/spamassassin/init.pre
 --8<-- "configs/usr/local/etc/mail/spamassassin/init.pre"
 EOF
 
-cat <<'EOF' > /usr/local/etc/mail/spamassassin/310.pre
---8<-- "configs/usr/local/etc/mail/spamassassin/310.pre"
+cat <<'EOF' > /usr/local/etc/mail/spamassassin/v310.pre
+--8<-- "configs/usr/local/etc/mail/spamassassin/v310.pre"
 EOF
 
-cat <<'EOF' > /usr/local/etc/mail/spamassassin/312.pre
---8<-- "configs/usr/local/etc/mail/spamassassin/312.pre"
+cat <<'EOF' > /usr/local/etc/mail/spamassassin/v312.pre
+--8<-- "configs/usr/local/etc/mail/spamassassin/v312.pre"
 EOF
 
-cat <<'EOF' > /usr/local/etc/mail/spamassassin/320.pre
---8<-- "configs/usr/local/etc/mail/spamassassin/320.pre"
+cat <<'EOF' > /usr/local/etc/mail/spamassassin/v320.pre
+--8<-- "configs/usr/local/etc/mail/spamassassin/v320.pre"
 EOF
 
-cat <<'EOF' > /usr/local/etc/mail/spamassassin/330.pre
---8<-- "configs/usr/local/etc/mail/spamassassin/330.pre"
+cat <<'EOF' > /usr/local/etc/mail/spamassassin/v330.pre
+--8<-- "configs/usr/local/etc/mail/spamassassin/v330.pre"
 EOF
 
-cat <<'EOF' > /usr/local/etc/mail/spamassassin/340.pre
---8<-- "configs/usr/local/etc/mail/spamassassin/340.pre"
+cat <<'EOF' > /usr/local/etc/mail/spamassassin/v340.pre
+--8<-- "configs/usr/local/etc/mail/spamassassin/v340.pre"
 EOF
 
-cat <<'EOF' > /usr/local/etc/mail/spamassassin/341.pre
---8<-- "configs/usr/local/etc/mail/spamassassin/341.pre"
+cat <<'EOF' > /usr/local/etc/mail/spamassassin/v341.pre
+--8<-- "configs/usr/local/etc/mail/spamassassin/v341.pre"
 EOF
 
-cat <<'EOF' > /usr/local/etc/mail/spamassassin/342.pre
---8<-- "configs/usr/local/etc/mail/spamassassin/342.pre"
+cat <<'EOF' > /usr/local/etc/mail/spamassassin/v342.pre
+--8<-- "configs/usr/local/etc/mail/spamassassin/v342.pre"
 EOF
 
-cat <<'EOF' > /usr/local/etc/mail/spamassassin/343.pre
---8<-- "configs/usr/local/etc/mail/spamassassin/343.pre"
+cat <<'EOF' > /usr/local/etc/mail/spamassassin/v343.pre
+--8<-- "configs/usr/local/etc/mail/spamassassin/v343.pre"
 EOF
 
-cat <<'EOF' > /usr/local/etc/mail/spamassassin/400.pre
---8<-- "configs/usr/local/etc/mail/spamassassin/400.pre"
+cat <<'EOF' > /usr/local/etc/mail/spamassassin/v400.pre
+--8<-- "configs/usr/local/etc/mail/spamassassin/v400.pre"
 EOF
 
-cat <<'EOF' > /usr/local/etc/mail/spamassassin/401.pre
---8<-- "configs/usr/local/etc/mail/spamassassin/401.pre"
+cat <<'EOF' > /usr/local/etc/mail/spamassassin/v401.pre
+--8<-- "configs/usr/local/etc/mail/spamassassin/v401.pre"
 EOF
 
 

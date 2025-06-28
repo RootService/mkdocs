@@ -114,7 +114,7 @@ EOF
 
 ``` bash
 cat <<'EOF' > /data/www/vhosts/www.example.com/data/default-endpoint.php
---8<-- "configs /data/www/vhosts/www.example.com/data/default-endpoint.php"
+--8<-- "configs/data/www/vhosts/www.example.com/data/default-endpoint.php"
 EOF
 ```
 
@@ -122,22 +122,22 @@ EOF
 
 ``` bash
 cat <<'EOF' > /data/www/vhosts/_default_/cron/fixperms.sh
---8<-- "configs /data/www/vhosts/_default_/cron/fixperms.sh"
+--8<-- "configs/data/www/vhosts/_default_/cron/fixperms.sh"
 EOF
 chmod 0750 /data/www/vhosts/_default_/cron/fixperms.sh
 
 cat <<'EOF' > /data/www/vhosts/_localhost_/cron/fixperms.sh
---8<-- "configs /data/www/vhosts/_localhost_/cron/fixperms.sh"
+--8<-- "configs/data/www/vhosts/_localhost_/cron/fixperms.sh"
 EOF
 chmod 0750 /data/www/vhosts/_localhost_/cron/fixperms.sh
 
 cat <<'EOF' > /data/www/vhosts/mail.example.com/cron/fixperms.sh
---8<-- "configs /data/www/vhosts/mail.example.com/cron/fixperms.sh"
+--8<-- "configs/data/www/vhosts/mail.example.com/cron/fixperms.sh"
 EOF
 chmod 0750 /data/www/vhosts/mail.example.com/cron/fixperms.sh
 
 cat <<'EOF' > /data/www/vhosts/www.example.com/cron/fixperms.sh
---8<-- "configs /data/www/vhosts/www.example.com/cron/fixperms.sh"
+--8<-- "configs/data/www/vhosts/www.example.com/cron/fixperms.sh"
 EOF
 chmod 0750 /data/www/vhosts/www.example.com/cron/fixperms.sh
 ```

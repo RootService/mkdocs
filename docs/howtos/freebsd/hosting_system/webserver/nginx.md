@@ -38,16 +38,6 @@ cat <<'EOF' > /var/db/ports/graphics_jpeg-turbo/options
 --8<-- "ports/graphics_jpeg-turbo/options"
 EOF
 
-mkdir -p /var/db/ports/devel_nasm
-cat <<'EOF' > /var/db/ports/devel_nasm/options
---8<-- "ports/devel_nasm/options"
-EOF
-
-mkdir -p /var/db/ports/www_llhttp
-cat <<'EOF' > /var/db/ports/www_llhttp/options
---8<-- "ports/www_llhttp/options"
-EOF
-
 mkdir -p /var/db/ports/graphics_png
 cat <<'EOF' > /var/db/ports/graphics_png/options
 --8<-- "ports/graphics_png/options"

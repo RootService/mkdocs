@@ -380,11 +380,6 @@ cat <<'EOF' > /var/db/ports/math_mpfr/options
 --8<-- "ports/math_mpfr/options"
 EOF
 
-mkdir -p /var/db/ports/devel_swig
-cat <<'EOF' > /var/db/ports/devel_swig/options
---8<-- "ports/devel_swig/options"
-EOF
-
 mkdir -p /var/db/ports/lang_lua53
 cat <<'EOF' > /var/db/ports/lang_lua53/options
 --8<-- "ports/lang_lua53/options"
