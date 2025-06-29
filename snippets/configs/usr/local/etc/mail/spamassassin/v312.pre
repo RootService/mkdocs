@@ -1,1 +1,2 @@
-loadplugin Mail::SpamAssassin::Plugin::DKIM
+
+oadplugin Mail::SpamAssassin::Plugin::DKIM

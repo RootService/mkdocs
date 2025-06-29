@@ -1,1 +1,2 @@
-/^Received:/             IGNORE
+
+^Received:/             IGNORE

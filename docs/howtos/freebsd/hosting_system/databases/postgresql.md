@@ -26,7 +26,7 @@ Wir installieren `databases/postgresql17-server` und dessen Abhängigkeiten.
 ``` bash
 mkdir -p /var/db/ports/databases_postgresql17-client
 cat <<'EOF' > /var/db/ports/databases_postgresql7-client/options
---8<-- "ports/databases_postgresql7-client/options"
+--8<-- "ports/databases_postgresql17-client/options"
 EOF
 
 mkdir -p /var/db/ports/databases_postgresql17-server
