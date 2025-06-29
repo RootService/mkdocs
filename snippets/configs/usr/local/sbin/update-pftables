@@ -1,5 +1,9 @@
 #!/bin/sh
 
+set -eu
+set -o pipefail
+
+
 pasthours="`/bin/date -u -v-6H`"
 lasthours="`/bin/date -j -f "%a %b %d %T %Z %Y" "${pasthours}" "+%H:%M"`"
 

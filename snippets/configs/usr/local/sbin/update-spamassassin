@@ -1,5 +1,9 @@
 #!/bin/sh
 
+set -eu
+set -o pipefail
+
+
 /usr/local/bin/sa-update --channel updates.spamassassin.org --refreshmirrors --verbose
 /usr/local/bin/sa-update --channel updates.spamassassin.org --verbose
 

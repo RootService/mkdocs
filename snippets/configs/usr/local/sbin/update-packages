@@ -1,12 +1,10 @@
 #!/bin/sh
 
-args="$@"
+set -eu
+set -o pipefail
 
-echo
-echo "Args: $args"
-echo
 
-git -C /usr/ports pull
+git -C /usr/ports pull --rebase
 make -C /usr/ports fetchindex
 
 /usr/local/sbin/pkg update -f

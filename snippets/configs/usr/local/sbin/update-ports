@@ -1,13 +1,13 @@
 #!/bin/sh
 
-args="$@"
+set -eu
+set -o pipefail
 
-echo
-echo "Args: $args"
-echo
 
 git -C /usr/ports pull --rebase
 make -C /usr/ports fetchindex
+
+/usr/local/sbin/pkg update -f
 
 printf "\v================================================================================\v\n"
 
@@ -24,7 +24,7 @@ fi
 
 pkg check -Ba -da -sa -ra
 
-portmaster --no-confirm --index-first -b -g -w -R -a $args -y
+portmaster --index-first -b -g -w -d -R -a -y
 
 portmaster --no-confirm --no-term-title --no-index-fetch --index-first --clean-distfiles -y
 
@@ -33,5 +33,7 @@ portmaster --no-confirm --no-term-title --no-index-fetch --index-first --clean-p
 portmaster --no-confirm --no-term-title --no-index-fetch --index-first --check-depends -y
 
 #portmaster --no-confirm --no-term-title --check-port-dbdir -y
+
+pkg check -Ba -da -sa -ra
 
 exit 0

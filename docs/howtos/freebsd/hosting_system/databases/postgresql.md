@@ -36,6 +36,7 @@ EOF
 
 
 portmaster -w -B -g --force-config databases/postgresql17-server  -n
+portmaster -w -B -g --force-config databases/postgresql17-contrib  -n
 
 
 cp -a /var/db/postgres* /data/db/
