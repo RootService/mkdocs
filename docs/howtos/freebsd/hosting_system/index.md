@@ -15,13 +15,13 @@ Unser Hosting System wird am Ende folgende Dienste umfassen.
 
 - CertBot 4.0.0 (LetsEncrypt ACME API 2.0)
 - OpenSSH 10.0p1 (Public-Key-Auth)
-- Unbound 1.22.0 (DNScrypt, DNS over TLS)
+- Unbound 1.23.0 (DNScrypt, DNS over TLS)
 - PostgreSQL 17.5
 - MySQL 8.0.42 (InnoDB, GTID)
 - Apache 2.4.63 (MPM-Event, HTTP/2, mod_brotli)
 - NGinx 1.28.0 (HTTP/2, HTTP/3, mod_brotli)
 - PHP 8.3.22 (PHP-FPM, Composer, PEAR)
-- NodeJS 22.16.0 (NPM, YARN)
+- NodeJS 22.17.0 (NPM, YARN)
 - Dovecot 2.3.21 (IMAP only, Pigeonhole)
 - PostfixAdmin 4.0.0 (PostgreSQL, Vacation)
 - Postfix 3.10.2 (Dovecot-SASL, postscreen)

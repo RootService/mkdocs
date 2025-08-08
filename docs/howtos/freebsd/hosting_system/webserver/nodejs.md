@@ -13,7 +13,7 @@ author_url: https://github.com/JoeUser78
 
 Unser Hosting System wird um folgende Dienste erweitert.
 
-- NodeJS 22.16.0 (NPM, YARN)
+- NodeJS 22.17.0 (NPM, YARN)
 
 ## Voraussetzungen
 

@@ -830,6 +830,8 @@ git -C /usr/src pull --rebase
 Das Kompilieren des Basissystems kann durchaus eine Stunde oder länger dauern.
 
 ``` bash
+etcupdate extract
+
 make -j4 buildworld
 ```
 

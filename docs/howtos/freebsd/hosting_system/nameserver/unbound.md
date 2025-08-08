@@ -13,7 +13,7 @@ author_url: https://github.com/JoeUser78
 
 Unser Hosting System wird folgende Dienste umfassen.
 
-- Unbound 1.22.0 (DNScrypt, DNS over TLS)
+- Unbound 1.23.0 (DNScrypt, DNS over TLS)
 
 ## Voraussetzungen
 
