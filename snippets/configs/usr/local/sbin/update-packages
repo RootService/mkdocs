@@ -54,7 +54,7 @@ LOG_FILE="/var/log/$(basename "$0").log"
 TMP_FILE="$(mktemp -q /tmp/$(basename "$0").XXXXXX || exit 1)"
 
 # Directories
-TMP_DIR="$(mktemp -q -t /tmp/$(basename "$0").XXXXXX || exit 1)"
+TMP_DIR="$(mktemp -d -q /tmp/$(basename "$0").XXXXXX || exit 1)"
 PORTS_DIR="/usr/ports"
 
 # Variables
@@ -107,8 +107,8 @@ require_cmd() {
     fi
   done
 }
-require_cmd echo printf cat date tr awk sed grep find xargs cut sort uniq head tail
-require_cmd cp mv rm chmod chown whoami mktemp service wc make pfctl whois
+require_cmd whoami cat date tr awk sed grep find xargs cut sort uniq head tail
+require_cmd cp mv rm chmod chown mktemp service wc make pfctl whois
 require_cmd "$PKG_CMD" "$GIT_CMD"
 
 ####################################################################################
@@ -156,7 +156,8 @@ print_separator() {
   printf "================================================================================\n"
 }
 
-trap 'show_error "Script interrupted. Exiting."; rm -rf $TMP_DIR $TMP_FILE; exit 1' INT TERM EXIT
+trap 'show_error "Script interrupted. Exiting."; exit 1' INT TERM
+trap 'rm -rf $TMP_DIR $TMP_FILE; exit 1' EXIT
 
 ####################################################################################
 #                                 Argument Parsing                                 #

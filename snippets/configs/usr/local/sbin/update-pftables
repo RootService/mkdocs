@@ -54,7 +54,7 @@ LOG_FILE="/var/log/$(basename "$0").log"
 TMP_FILE="$(mktemp -q /tmp/$(basename "$0").XXXXXX || exit 1)"
 
 # Directories
-TMP_DIR="$(mktemp -q -t /tmp/$(basename "$0").XXXXXX || exit 1)"
+TMP_DIR="$(mktemp -d -q /tmp/$(basename "$0").XXXXXX || exit 1)"
 
 # Variables
 USER_AGENT="Mozilla/5.0 (FreeBSD 14.3; x86_64; x64; rv:142.0) Gecko/20100101 Firefox/142.0"
@@ -107,8 +107,8 @@ require_cmd() {
     fi
   done
 }
-require_cmd echo printf cat date tr awk sed grep find xargs cut sort uniq head tail
-require_cmd cp mv rm chmod chown whoami mktemp service wc make pfctl whois
+require_cmd whoami cat date tr awk sed grep find xargs cut sort uniq head tail
+require_cmd cp mv rm chmod chown mktemp service wc make pfctl whois
 require_cmd "$CURL_CMD" "$EXPIRETABLE_CMD"
 
 ####################################################################################
@@ -156,7 +156,8 @@ print_separator() {
   printf "================================================================================\n"
 }
 
-trap 'show_error "Script interrupted. Exiting."; rm -rf $TMP_DIR $TMP_FILE; exit 1' INT TERM EXIT
+trap 'show_error "Script interrupted. Exiting."; exit 1' INT TERM
+trap 'rm -rf $TMP_DIR $TMP_FILE; exit 1' EXIT
 
 ####################################################################################
 #                                 Argument Parsing                                 #
@@ -244,21 +245,14 @@ show_info "Started updating the PF bad hosts tables."
 
 print_separator
 
-# Extract valid global IPv4 and IPv6 addresses, exclude local and private ranges
-extract_ips() {
-  grep -Eo '([0-9]{1,3}\.){3}[0-9]{1,3}|([A-Fa-f0-9:]+:+)+[A-Fa-f0-9]+' \
-    | grep -Ev '(^127\.|^10\.|^192\.168\.|^172\.(1[6-9]|2[0-9]|3[01]))' \
-    | grep -Ev '(^::1$|^fc00:|^fd00:|^fe80:)'
-}
-
 fetch_data() {
   local url="$1"
   local output="$2"
-  "$CURL_CMD" --silent --fail --ignore-content-length --header "User-Agent: ${USER_AGENT}" \
+  "$CURL_CMD" -# --compressed --ignore-content-length --header "User-Agent: ${USER_AGENT}" \
     --header "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" \
     --header "Accept-Encoding: gzip, deflate, br" --header "Accept-Language: en,de;q=0.5" \
     --header "DNT: 1" --header "Cache-Control: max-age=0" --header "Connection: keep-alive" \
-    --header "Referer: https://localhost/" --location "$url" --output "$output"
+    --header "Referer: https://localhost/" --tlsv1.2 --location "$url" --output "$output"
 }
 
 replace_table() {
@@ -269,11 +263,11 @@ replace_table() {
   print_separator
   show_info "Table $table"
   print_separator
-  if [ -z "$external" ]; then
+  if [ -f "$external" ]; then
     cat "$external" > "$TMP_DIR/$table.txt"
   fi
   pfctl -t "$table" -T show >> "$TMP_DIR/$table.txt"
-  pfctl -t "$table" -T replace $(sort -buV "$TMP_DIR/$table.txt" | extract_ips)
+  pfctl -t "$table" -T replace $(sort -buV "$TMP_DIR/$table.txt")
   show_info "Updated table $table with $(wc -l < "$TMP_DIR/$table.txt") entries."
   "$EXPIRETABLE_CMD" -v -t "$expire" "$table"
   # pfctl -t "$table" -T expire "$expire"
@@ -288,13 +282,13 @@ show_text ""
 show_info "${lasthours}"
 show_text ""
 
-replace_table "badhosts_priv" "90d"
+replace_table "badhosts_priv" "90d" ""
 
-replace_table "badhosts_http" "7d"
+replace_table "badhosts_http" "7d"  ""
 
-replace_table "badhosts_mail" "1d"
+replace_table "badhosts_mail" "1d"  ""
 
-replace_table "badhosts_sshd" "6h"
+replace_table "badhosts_sshd" "6h"  ""
 
 fetch_data "https://www.spamhaus.org/drop/drop_v4.json" "$TMP_DIR/drop_v4.json"
 fetch_data "https://www.spamhaus.org/drop/drop_v6.json" "$TMP_DIR/drop_v6.json"
@@ -302,9 +296,12 @@ fetch_data "https://www.spamhaus.org/drop/asndrop.json" "$TMP_DIR/asndrop.json"
 awk -F'"' '/cidr/ { print $4 }' "$TMP_DIR/drop_v4.json" > "$TMP_DIR/drop_v4.txt"
 awk -F'"' '/cidr/ { print $4 }' "$TMP_DIR/drop_v6.json" > "$TMP_DIR/drop_v6.txt"
 awk -F'"' '/asn/ { print $3 }' "$TMP_DIR/asndrop.json" | sed -e 's|^:\([0-9]*\),$|AS\1|g' > "$TMP_DIR/asndrop.txt"
+#n=0
 for asn in `awk '!/^;/ { print $1 }' "$TMP_DIR/asndrop.txt"`
 do
-  whois -h whois.radb.net -- "-i origin $asn" | awk '/^route/ { print "   " $2 }' >> "$TMP_DIR/asntoip.txt"
+#  n="$(( $n + 1 ))"
+#  echo -e "$n\t$asn"
+  whois -h whois.radb.net -- "-i origin $asn" | awk '/^route/ { print $2 }' >> "$TMP_DIR/asntoip.txt"
 done
 awk '!/^;/ { print "   " $1 }' "$TMP_DIR/drop_v4.txt" "$TMP_DIR/drop_v6.txt" "$TMP_DIR/asntoip.txt" > "$TMP_DIR/badhosts_drop.tmp"
 replace_table "badhosts_drop" "90d" "$TMP_DIR/badhosts_drop.tmp"
@@ -329,151 +326,5 @@ print_separator
 show_info "Finished updating the PF bad hosts tables."
 
 print_separator
-
-exit 0
-
-#!/bin/sh
-
-set -eu
-set -o pipefail
-
-
-pasthours="`/bin/date -u -v-6H`"
-lasthours="`/bin/date -j -f "%a %b %d %T %Z %Y" "${pasthours}" "+%H:%M"`"
-
-echo ""
-echo "${lasthours}"
-echo ""
-
-echo ""
-echo "================================================================================"
-echo "Table badhosts_priv"
-echo "================================================================================"
-  /sbin/pfctl -t badhosts_priv -T show > /etc/pf.badhosts_priv
-  /sbin/pfctl -t badhosts_priv -T replace `/usr/bin/sort -buV /etc/pf.badhosts_priv`
-  /usr/local/sbin/expiretable -v -t 90d badhosts_priv
-#  /sbin/pfctl -t badhosts_priv -T expire 7776000
-echo ""
-/sbin/pfctl -t badhosts_priv -v -T show
-
-echo ""
-echo "================================================================================"
-echo "Table badhosts_http"
-echo "================================================================================"
-  /sbin/pfctl -t badhosts_http -T show > /etc/pf.badhosts_http
-  /sbin/pfctl -t badhosts_http -T replace `/usr/bin/sort -buV /etc/pf.badhosts_http`
-  /usr/local/sbin/expiretable -v -t 7d badhosts_http
-#  /sbin/pfctl -t badhosts_http -T expire 604800
-echo ""
-/sbin/pfctl -t badhosts_http -v -T show
-
-echo ""
-echo "================================================================================"
-echo "Table badhosts_mail"
-echo "================================================================================"
-  /sbin/pfctl -t badhosts_mail -T show > /etc/pf.badhosts_mail
-  /sbin/pfctl -t badhosts_mail -T replace `/usr/bin/sort -buV /etc/pf.badhosts_mail`
-  /usr/local/sbin/expiretable -v -t 1d badhosts_mail
-#  /sbin/pfctl -t badhosts_mail -T expire 86400
-echo ""
-/sbin/pfctl -t badhosts_mail -v -T show
-
-echo ""
-echo "================================================================================"
-echo "Table badhosts_sshd"
-echo "================================================================================"
-  /sbin/pfctl -t badhosts_sshd -T show > /etc/pf.badhosts_sshd
-  /sbin/pfctl -t badhosts_sshd -T replace `/usr/bin/sort -buV /etc/pf.badhosts_sshd`
-  /usr/local/sbin/expiretable -v -t 6h badhosts_sshd
-#  /sbin/pfctl -t badhosts_sshd -T expire 21600
-echo ""
-/sbin/pfctl -t badhosts_sshd -v -T show
-
-echo ""
-echo "================================================================================"
-echo "Table badhosts_drop"
-echo "================================================================================"
-  /usr/local/bin/curl --ignore-content-length --compressed \
-    --header "User-Agent: Mozilla/5.0 (FreeBSD 14.2; x86_64; x64; rv:136.0) Gecko/20100101 Firefox/136.0" \
-    --header "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" \
-    --header "Accept-Encoding: gzip, deflate, br" --header "Accept-Language: en,de;q=0.5" --header "DNT: 1" \
-    --header "Cache-Control: max-age=0" --header "Connection: keep-alive" --header "Referer: https://localhost/" \
-    --output "/tmp/drop_v4.json" \
-    --location "https://www.spamhaus.org/drop/drop_v4.json"
-  /usr/bin/awk -F'"' '/cidr/ { print $4 }' /tmp/drop_v4.json > /tmp/drop_v4.txt
-  /usr/local/bin/curl --ignore-content-length --compressed \
-    --header "User-Agent: Mozilla/5.0 (FreeBSD 14.2; x86_64; x64; rv:136.0) Gecko/20100101 Firefox/136.0" \
-    --header "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" \
-    --header "Accept-Encoding: gzip, deflate, br" --header "Accept-Language: en,de;q=0.5" --header "DNT: 1" \
-    --header "Cache-Control: max-age=0" --header "Connection: keep-alive" --header "Referer: https://localhost/" \
-    --output "/tmp/drop_v6.json" \
-    --location "https://www.spamhaus.org/drop/drop_v6.json"
-  /usr/bin/awk -F'"' '/cidr/ { print $4 }' /tmp/drop_v6.json > /tmp/drop_v6.txt
-  /usr/local/bin/curl --ignore-content-length --compressed \
-    --header "User-Agent: Mozilla/5.0 (FreeBSD 14.2; x86_64; x64; rv:136.0) Gecko/20100101 Firefox/136.0" \
-    --header "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" \
-    --header "Accept-Encoding: gzip, deflate, br" --header "Accept-Language: en,de;q=0.5" --header "DNT: 1" \
-    --header "Cache-Control: max-age=0" --header "Connection: keep-alive" --header "Referer: https://localhost/" \
-    --output "/tmp/asndrop.json" \
-    --location "https://www.spamhaus.org/drop/asndrop.json"
-  /usr/bin/awk -F'"' '/asn/ { print $3 }' /tmp/asndrop.json | sed -e 's|^:\([0-9]*\),$|AS\1|g' > /tmp/asndrop.txt
-: > /tmp/asntoip.txt
-for asn in `/usr/bin/awk '!/^;/ { print $1 }' /tmp/asndrop.txt`
-do
-  /usr/bin/whois -h whois.radb.net -- "-i origin $asn" | /usr/bin/awk '/^route/ { print "   " $2 }' >> /tmp/asntoip.txt
-done
-  /usr/bin/awk '!/^;/ { print "   " $1 }' /tmp/drop_v4.txt /tmp/drop_v6.txt /tmp/asntoip.txt > /etc/pf.badhosts_drop
-  /sbin/pfctl -t badhosts_drop -T replace `/usr/bin/sort -buV /etc/pf.badhosts_drop`
-  /usr/local/sbin/expiretable -v -t 90d badhosts_priv
-#  /sbin/pfctl -t badhosts_priv -T expire 7776000
-echo ""
-# /sbin/pfctl -t badhosts_drop -v -T show
-
-echo ""
-echo "================================================================================"
-echo "Table badhosts_torp"
-echo "================================================================================"
-  /usr/local/bin/curl --ignore-content-length --compressed \
-    --header "User-Agent: Mozilla/5.0 (FreeBSD 14.2; x86_64; x64; rv:136.0) Gecko/20100101 Firefox/136.0" \
-    --header "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" \
-    --header "Accept-Encoding: gzip, deflate, br" --header "Accept-Language: en,de;q=0.5" --header "DNT: 1" \
-    --header "Cache-Control: max-age=0" --header "Connection: keep-alive" --header "Referer: https://localhost/" \
-    --output "/tmp/torlist.txt" \
-    --location "https://www.dan.me.uk/torlist/?full"
-  /usr/bin/awk '!/^;/ { print "   " $1 }' /tmp/torlist.txt > /etc/pf.badhosts_torp
-  /sbin/pfctl -t badhosts_torp -T replace `/usr/bin/sort -buV /etc/pf.badhosts_torp`
-  /usr/local/sbin/expiretable -v -t 48h badhosts_torp
-#  /sbin/pfctl -t badhosts_torp -T expire 172800
-echo ""
-# /sbin/pfctl -t badhosts_torp -v -T show
-
-echo ""
-echo "================================================================================"
-echo "Table badhosts_misc"
-echo "================================================================================"
-  /usr/local/bin/curl --ignore-content-length --compressed \
-    --header "User-Agent: Mozilla/5.0 (FreeBSD 14.2; x86_64; x64; rv:136.0) Gecko/20100101 Firefox/136.0" \
-    --header "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" \
-    --header "Accept-Encoding: gzip, deflate, br" --header "Accept-Language: en,de;q=0.5" --header "DNT: 1" \
-    --header "Cache-Control: max-age=0" --header "Connection: keep-alive" --header "Referer: https://localhost/" \
-    --output "/tmp/blocklist.txt" \
-    --location "https://lists.blocklist.de/lists/all.txt"
-  /usr/bin/awk '!/^;/ { print "   " $1 }' /tmp/blocklist.txt > /etc/pf.badhosts_misc
-  /sbin/pfctl -t badhosts_misc -T replace `/usr/bin/sort -buV /etc/pf.badhosts_misc`
-  /usr/local/sbin/expiretable -v -t 48h badhosts_misc
-#  /sbin/pfctl -t badhosts_misc -T expire 172800
-echo ""
-# /sbin/pfctl -t badhosts_misc -v -T show
-
-echo ""
-echo "================================================================================"
-echo "PF Statistics"
-echo "================================================================================"
-/sbin/pfctl -v -v -s all
-echo ""
-
-echo ""
-echo "================================================================================"
-echo ""
 
 exit 0
