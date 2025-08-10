@@ -9,7 +9,7 @@
 #  * Copyright © 2016-2025 Markus Kohlmeyer <rootservice@gmail.com>                 *
 #  **********************************************************************************
 #
-#   FreeBSD PF table updater script (efficiency-optimized)
+#   FreeBSD PF table updater script (POSIX /bin/sh compatible)
 #   Requires: pfctl, curl, expiretable, whois, awk, sed, mktemp, xargs, etc.
 #
 #   Usage: update-pftables [--help] [--version]
@@ -19,6 +19,7 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+# Use safe PATH
 PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 export PATH TZ=UTC LC_ALL=C
 
@@ -39,9 +40,9 @@ TMP_FILE="$(mktemp -q /tmp/$(basename "$0").XXXXXXXX)" || { echo "Failed to crea
 # User agent
 USER_AGENT="Mozilla/5.0 (FreeBSD 14.3; x86_64; x64; rv:142.0) Gecko/20100101 Firefox/142.0"
 
-# Commands
-CURL_CMD="/usr/local/bin/curl"
-EXPIRETABLE_CMD="/usr/local/sbin/expiretable"
+# Commands: detect using command -v
+CURL_CMD="$(command -v curl 2>/dev/null || echo /usr/local/bin/curl)"
+EXPIRETABLE_CMD="$(command -v expiretable 2>/dev/null || echo /usr/local/sbin/expiretable)"
 
 ####################################################################################
 #                               Dependency Checks                                  #
@@ -69,15 +70,24 @@ BLUE='\033[0;34m'
 WHITE='\033[0;37m'
 NC='\033[0m'
 
-cecho() { color="$1"; shift; eval printf \"%b%s%b\\n\" \"\$$color\" \"\$*\" \"\$NC\"; }
-cechon() { color="$1"; shift; eval printf \"%b%s%b\" \"\$$color\" \"\$*\" \"\$NC\"; }
+cecho() {
+  color="$1"
+  shift
+  printf "%b%s%b\\n" "$(eval echo "\${$color}")" "$*" "$NC"
+}
+cechon() {
+  color="$1"
+  shift
+  printf "%b%s%b" "$(eval echo "\${$color}")" "$*" "$NC"
+}
 
 ####################################################################################
 #                                    Logging                                       #
 ####################################################################################
 log() {
-  local level="$1"; shift
-  local message="$*"
+  level="$1"
+  shift
+  message="$*"
   printf "%s [%s] %s\n" "$(date '+%Y-%m-%d %H:%M:%S')" "${level}" "${message}" >> "$LOG_FILE"
 }
 
@@ -87,7 +97,7 @@ show_warn()  { cecho YELLOW "$*"; log WARN "$*"; }
 show_error() { cecho RED "$*"; log ERROR "$*"; }
 
 # Log rotation (compress old logs for efficiency)
-if [ -f "$LOG_FILE" ] && [ $(stat -f%z "$LOG_FILE") -gt 1048576 ]; then
+if [ -f "$LOG_FILE" ] && [ "$(stat -f%z "$LOG_FILE")" -gt 1048576 ]; then
   mv "$LOG_FILE" "$LOG_FILE.old"
   gzip -f "$LOG_FILE.old" 2>/dev/null || true
   : > "$LOG_FILE"
@@ -100,11 +110,13 @@ tolower() { [ -n "${1:-}" ] && echo "$*" | tr '[:upper:]' '[:lower:]'; }
 toupper() { [ -n "${1:-}" ] && echo "$*" | tr '[:lower:]' '[:upper:]'; }
 
 read_prompt() {
-  local prompt="${1}"
-  local var="${2:-REPLY}"
-  local input=""
+  prompt="${1}"
+  var="${2:-REPLY}"
+  input=""
   while :; do
-    read -r -p "$(cechon WHITE "$prompt ")" input
+    cechon WHITE "$prompt "
+    IFS= read -r input
+    # Only printable ASCII
     if [ -z "$(printf '%s' "$input" | tr -d '\040-\176')" ]; then
       eval "$var=\"\$input\""
       break
@@ -115,11 +127,14 @@ read_prompt() {
 }
 
 read_passwd() {
-  local prompt="${1}"
-  local var="${2:-REPLY}"
-  local input=""
+  prompt="${1}"
+  var="${2:-REPLY}"
+  input=""
   while :; do
-    read -s -p "$(cechon WHITE "$prompt ")" input
+    cechon WHITE "$prompt "
+    stty -echo
+    IFS= read -r input
+    stty echo
     echo
     if [ -z "$(printf '%s' "$input" | tr -d '\040-\176')" ]; then
       eval "$var=\"\$input\""
@@ -174,21 +189,18 @@ EOF
   exit 0
 }
 
-# Use getopts for options parsing
-while getopts ":hv-:" opt; do
-  case "$opt" in
-    h) show_usage ;;
-    v) show_version ;;
-    -)
-      case "${OPTARG}" in
-        help) show_usage ;;
-        version) show_version ;;
-        dry-run) dryrun=1 ;;
-        *) show_usage ;;
-      esac
-      ;;
-    *) show_usage ;;
+# Basic getopts (no long options in POSIX getopts)
+dryrun=0
+while [ $# -gt 0 ]; do
+  case "$1" in
+    -h|--help) show_usage ;;
+    -v|--version) show_version ;;
+    --dry-run) dryrun=1 ;;
+    --) shift; break ;;
+    -*) show_usage ;;
+    *) break ;;
   esac
+  shift
 done
 
 ####################################################################################
@@ -199,26 +211,25 @@ rootonly
 print_separator
 show_info "Started updating the PF bad hosts tables."
 print_separator
-pasthours="`date -u -v-6H`"
-lasthours="`date -j -f "%a %b %d %T %Z %Y" "${pasthours}" "+%H:%M"`"
+pasthours="$(date -u -v-6H)"
+lasthours="$(date -j -f "%a %b %d %T %Z %Y" "${pasthours}" "+%H:%M")"
 show_text ""
 show_info "${lasthours}"
 show_text ""
 print_separator
 
-# Efficiently fetch all required lists in parallel
-declare -A SOURCES
-SOURCES=(
-  [drop_v4.json]="https://www.spamhaus.org/drop/drop_v4.json"
-  [drop_v6.json]="https://www.spamhaus.org/drop/drop_v6.json"
-  [asndrop.json]="https://www.spamhaus.org/drop/asndrop.json"
-  [torlist.txt]="https://www.dan.me.uk/torlist/?full"
-  [blocklist.txt]="https://lists.blocklist.de/lists/all.txt"
-)
+# URL sources: plain list for POSIX shell
+SOURCES="
+drop_v4.json https://www.spamhaus.org/drop/drop_v4.json
+drop_v6.json https://www.spamhaus.org/drop/drop_v6.json
+asndrop.json https://www.spamhaus.org/drop/asndrop.json
+torlist.txt https://www.dan.me.uk/torlist/?full
+blocklist.txt https://lists.blocklist.de/lists/all.txt
+"
 
 fetch_data() {
-  local url="$1"
-  local output="$2"
+  url="$1"
+  output="$2"
   if ! "$CURL_CMD" --fail --silent --show-error --compressed --ignore-content-length \
     --header "User-Agent: $USER_AGENT" \
     --header "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" \
@@ -231,37 +242,33 @@ fetch_data() {
   fi
 }
 
-for key in "${!SOURCES[@]}"; do
-  fetch_data "${SOURCES[$key]}" "$TMP_DIR/$key" &
+# Download sources in parallel (using background jobs)
+for entry in $SOURCES; do
+  set -- $entry
+  name="$1"
+  url="$2"
+  fetch_data "$url" "$TMP_DIR/$name" &
 done
 wait
 
-# Preprocess blocklists in parallel pipelines where possible
+# Preprocess blocklists
 awk -F'"' '/cidr/ { print $4 }' "$TMP_DIR/drop_v4.json" > "$TMP_DIR/drop_v4.txt" &
 awk -F'"' '/cidr/ { print $4 }' "$TMP_DIR/drop_v6.json" > "$TMP_DIR/drop_v6.txt" &
 wait
 
-# ASN DROP: extract ASN list
 awk -F'"' '/asn/ { print $3 }' "$TMP_DIR/asndrop.json" | sed -e 's|^:\([0-9]*\),$|AS\1|g' > "$TMP_DIR/asndrop.txt"
 
-# Efficient parallel ASN-to-IP whois using xargs
+# Efficient parallel ASN-to-IP whois using xargs (POSIX: no function export, so inline)
 : > "$TMP_DIR/asntoip.txt"
 if [ -s "$TMP_DIR/asndrop.txt" ]; then
-  # Define worker for xargs
-  asn_to_ip_worker() {
-    asn="$1"
+  grep -E '^AS[0-9]+$' "$TMP_DIR/asndrop.txt" | xargs -n 1 -P 8 sh -c '
+    asn="$0"
     [ -z "$asn" ] && exit 0
-    # Limit each whois to 8 seconds to avoid hanging
-    whois -h whois.radb.net -- "-i origin $asn" 2>/dev/null | awk '/^route/ { print $2 }'
-  }
-  export -f asn_to_ip_worker
-  cat "$TMP_DIR/asndrop.txt" | xargs -n 1 -P 8 sh -c 'asn_to_ip_worker "$0"' >> "$TMP_DIR/asntoip.txt"
+    whois -h whois.radb.net -- "-i origin $asn" 2>/dev/null | awk "/^route/ { print \$2 }"
+  ' > "$TMP_DIR/asntoip.txt"
 fi
 
-# Merge all DROP sources efficiently in a pipeline
 awk '!/^;/ { print "   " $1 }' "$TMP_DIR/drop_v4.txt" "$TMP_DIR/drop_v6.txt" "$TMP_DIR/asntoip.txt" | sort -u > "$TMP_DIR/badhosts_drop.tmp"
-
-# Process TOR and blocklist sources
 awk '!/^;/ { print "   " $1 }' "$TMP_DIR/torlist.txt" | sort -u > "$TMP_DIR/badhosts_torp.tmp"
 awk '!/^;/ { print "   " $1 }' "$TMP_DIR/blocklist.txt" | sort -u > "$TMP_DIR/badhosts_misc.tmp"
 
@@ -269,9 +276,9 @@ awk '!/^;/ { print "   " $1 }' "$TMP_DIR/blocklist.txt" | sort -u > "$TMP_DIR/ba
 #                                 Table Handling                                   #
 ####################################################################################
 replace_table() {
-  local table="$1"
-  local expire="$2"
-  local external="${3:-}"
+  table="$1"
+  expire="$2"
+  external="${3:-}"
   show_text ""
   print_separator
   show_info "Table $table"
@@ -284,14 +291,18 @@ replace_table() {
   fi
   pfctl -t "$table" -T show >> "$TMP_DIR/$table.txt"
   sort -bu "$TMP_DIR/$table.txt" > "$TMP_DIR/$table.sorted"
-  if ! pfctl -t "$table" -T replace -f "$TMP_DIR/$table.sorted"; then
-    show_error "Failed to replace PF table $table"
-    exit 1
+  if [ "$dryrun" -eq 0 ]; then
+    if ! pfctl -t "$table" -T replace -f "$TMP_DIR/$table.sorted"; then
+      show_error "Failed to replace PF table $table"
+      exit 1
+    fi
+    show_info "Updated table $table with $(wc -l < "$TMP_DIR/$table.sorted") entries."
+    "$EXPIRETABLE_CMD" -v -t "$expire" "$table"
+    show_text ""
+    pfctl -t "$table" -v -T show
+  else
+    show_info "(Dry-run) Would update table $table with $(wc -l < "$TMP_DIR/$table.sorted") entries."
   fi
-  show_info "Updated table $table with $(wc -l < "$TMP_DIR/$table.sorted") entries."
-  "$EXPIRETABLE_CMD" -v -t "$expire" "$table"
-  show_text ""
-  pfctl -t "$table" -v -T show
 }
 
 # Table definitions: "table_name:expire:optional_external_file"
@@ -305,11 +316,12 @@ badhosts_torp:2d:$TMP_DIR/badhosts_torp.tmp
 badhosts_misc:2d:$TMP_DIR/badhosts_misc.tmp
 "
 
-for entry in $TABLES; do
-  table="${entry%%:*}"
-  rest="${entry#*:}"
-  expire="${rest%%:*}"
-  external="${rest#*:}"
+# Loop over tables, POSIX compatible parsing
+echo "$TABLES" | while IFS= read -r entry; do
+  [ -z "$entry" ] && continue
+  table=$(echo "$entry" | cut -d: -f1)
+  expire=$(echo "$entry" | cut -d: -f2)
+  external=$(echo "$entry" | cut -d: -f3)
   replace_table "$table" "$expire" "$external"
 done
 
@@ -317,7 +329,11 @@ show_text ""
 print_separator
 show_info "PF Statistics"
 print_separator
-pfctl -v -v -s all
+if [ "$dryrun" -eq 0 ]; then
+  pfctl -v -v -s all
+else
+  show_info "(Dry-run) Would show PF stats"
+fi
 show_text ""
 print_separator
 show_info "Finished updating the PF bad hosts tables."
