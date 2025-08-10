@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -eu
 #
 #  **********************************************************************************
 #  *                              update-packages.sh                                *
@@ -32,9 +32,9 @@
 #
 
 # Environment
-export TZ=UTC0
+export TZ=UTC
 export LC_ALL=C
-set -eu
+set -o nounset
 set -o pipefail
 
 ####################################################################################
@@ -51,10 +51,10 @@ USAGEOPTIONS=""
 
 # Files
 LOG_FILE="/var/log/$(basename "$0").log"
-TMP_FILE="$(mktemp -q /tmp/$(basename "$0").XXXXXX || exit 1)"
+TMP_FILE="$(mktemp -q /tmp/$(basename "$0").XXXXXX)" || { show_error "Failed to create temp file"; exit 1; }
 
 # Directories
-TMP_DIR="$(mktemp -d -q /tmp/$(basename "$0").XXXXXX || exit 1)"
+TMP_DIR="$(mktemp -d -q /tmp/$(basename "$0").XXXXXX)" || { show_error "Failed to create temp dir"; exit 1; }
 PORTS_DIR="/usr/ports"
 
 # Variables
@@ -157,7 +157,7 @@ print_separator() {
 }
 
 trap 'show_error "Script interrupted. Exiting."; exit 1' INT TERM
-trap 'rm -rf $TMP_DIR $TMP_FILE; exit 1' EXIT
+trap 'rm -rf "$TMP_DIR" "$TMP_FILE"' EXIT
 
 ####################################################################################
 #                                 Argument Parsing                                 #
