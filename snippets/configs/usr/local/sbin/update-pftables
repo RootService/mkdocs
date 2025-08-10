@@ -16,10 +16,12 @@
 #
 
 # Strict execution and locale
-export TZ=UTC
-export LC_ALL=C
+set -o errexit
 set -o nounset
 set -o pipefail
+
+PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+export PATH TZ=UTC LC_ALL=C
 
 ####################################################################################
 #                               Configurable Variables                             #
@@ -32,8 +34,8 @@ REPORTS="https://github.com/RootService/mkdocs"
 
 # Files & Directories
 LOG_FILE="/var/log/$(basename "$0").log"
-TMP_DIR="$(mktemp -d -q /tmp/$(basename "$0").XXXXXX)" || { echo "Failed to create TMP_DIR"; exit 1; }
-TMP_FILE="$(mktemp -q /tmp/$(basename "$0").XXXXXX)" || { echo "Failed to create TMP_FILE"; exit 1; }
+TMP_DIR="$(mktemp -d -q /tmp/$(basename "$0").XXXXXXXX)" || { echo "Failed to create TMP_DIR"; exit 1; }
+TMP_FILE="$(mktemp -q /tmp/$(basename "$0").XXXXXXXX)" || { echo "Failed to create TMP_FILE"; exit 1; }
 
 # User agent
 USER_AGENT="Mozilla/5.0 (FreeBSD 14.3; x86_64; x64; rv:142.0) Gecko/20100101 Firefox/142.0"
@@ -74,6 +76,12 @@ show_text()  { cecho WHITE "$*"; log TEXT "$*"; }
 show_info()  { cecho GREEN "$*"; log INFO "$*"; }
 show_warn()  { cecho YELLOW "$*"; log WARN "$*"; }
 show_error() { cecho RED "$*"; log ERROR "$*"; }
+
+# Log rotation
+if [ -f "$LOG_FILE" ] && [ $(stat -f%z "$LOG_FILE") -gt 1048576 ]; then
+  mv "$LOG_FILE" "$LOG_FILE.old"
+  : > "$LOG_FILE"
+fi
 
 ####################################################################################
 #                               Dependency Checks                                  #
@@ -150,8 +158,8 @@ show_usage() {
 Usage: $(basename "$0") [OPTIONS]
 
 OPTIONS:
-  --help            Display this help and exit
-  --version         Output version information and exit
+  -h         Display this help and exit
+  -v         Output version information and exit
 
 ${COPYRIGHT} ${CONTACT}
 Written by ${AUTHORS}
@@ -171,22 +179,19 @@ EOF
   exit 0
 }
 
-parse_args() {
-  while [ $# -gt 0 ]; do
-    case "$1" in
-      --version|-V) show_version ;;
-      --help|-h) show_usage ;;
-      *) show_usage ;;
-    esac
-    shift
-  done
-}
+# Use getopts for options parsing
+while getopts ":hv" opt; do
+  case $opt in
+    h) show_usage ;;
+    v) show_version ;;
+    *) show_usage ;;
+  esac
+done
 
 ####################################################################################
 #                                   Main Logic                                     #
 ####################################################################################
 rootonly
-parse_args "$@"
 
 print_separator
 show_info "Started updating the PF bad hosts tables."
@@ -243,9 +248,10 @@ replace_table() {
 }
 
 # Fetch and update badhosts_drop
-fetch_data "https://www.spamhaus.org/drop/drop_v4.json" "$TMP_DIR/drop_v4.json"
-fetch_data "https://www.spamhaus.org/drop/drop_v6.json" "$TMP_DIR/drop_v6.json"
-fetch_data "https://www.spamhaus.org/drop/asndrop.json" "$TMP_DIR/asndrop.json"
+fetch_data "https://www.spamhaus.org/drop/drop_v4.json" "$TMP_DIR/drop_v4.json" &
+fetch_data "https://www.spamhaus.org/drop/drop_v6.json" "$TMP_DIR/drop_v6.json" &
+fetch_data "https://www.spamhaus.org/drop/asndrop.json" "$TMP_DIR/asndrop.json" &
+wait
 awk -F'"' '/cidr/ { print $4 }' "$TMP_DIR/drop_v4.json" > "$TMP_DIR/drop_v4.txt"
 awk -F'"' '/cidr/ { print $4 }' "$TMP_DIR/drop_v6.json" > "$TMP_DIR/drop_v6.txt"
 awk -F'"' '/asn/ { print $3 }' "$TMP_DIR/asndrop.json" | sed -e 's|^:\([0-9]*\),$|AS\1|g' > "$TMP_DIR/asndrop.txt"
@@ -257,11 +263,13 @@ done < "$TMP_DIR/asndrop.txt"
 awk '!/^;/ { print "   " $1 }' "$TMP_DIR/drop_v4.txt" "$TMP_DIR/drop_v6.txt" "$TMP_DIR/asntoip.txt" > "$TMP_DIR/badhosts_drop.tmp"
 
 # Fetch and update badhosts_torp
-fetch_data "https://www.dan.me.uk/torlist/?full" "$TMP_DIR/torlist.txt"
+fetch_data "https://www.dan.me.uk/torlist/?full" "$TMP_DIR/torlist.txt" &
+wait
 awk '!/^;/ { print "   " $1 }' "$TMP_DIR/torlist.txt" > "$TMP_DIR/badhosts_torp.tmp"
 
 # Fetch and update badhosts_misc
-fetch_data "https://lists.blocklist.de/lists/all.txt" "$TMP_DIR/blocklist.txt"
+fetch_data "https://lists.blocklist.de/lists/all.txt" "$TMP_DIR/blocklist.txt" &
+wait
 awk '!/^;/ { print "   " $1 }' "$TMP_DIR/blocklist.txt" > "$TMP_DIR/badhosts_misc.tmp"
 
 # Table definitions: "table_name:expire:optional_external_file"
