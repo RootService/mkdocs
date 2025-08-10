@@ -9,13 +9,12 @@
 #  * Copyright © 2016-2025 Markus Kohlmeyer <rootservice@gmail.com>                 *
 #  **********************************************************************************
 #
-#   FreeBSD PF table updater script
-#   Requires: pfctl, curl, expiretable, whois, awk, sed, mktemp, etc.
+#   FreeBSD PF table updater script (efficiency-optimized)
+#   Requires: pfctl, curl, expiretable, whois, awk, sed, mktemp, xargs, etc.
 #
 #   Usage: update-pftables [--help] [--version]
 #
 
-# Strict execution and locale
 set -o errexit
 set -o nounset
 set -o pipefail
@@ -26,7 +25,7 @@ export PATH TZ=UTC LC_ALL=C
 ####################################################################################
 #                               Configurable Variables                             #
 ####################################################################################
-VERSION="1.1.0"
+VERSION="1.1.1"
 AUTHORS="Markus Kohlmeyer"
 CONTACT="<rootservice@gmail.com>"
 COPYRIGHT="Copyright (C) 2016-2025 Markus Kohlmeyer"
@@ -45,6 +44,22 @@ CURL_CMD="/usr/local/bin/curl"
 EXPIRETABLE_CMD="/usr/local/sbin/expiretable"
 
 ####################################################################################
+#                               Dependency Checks                                  #
+####################################################################################
+missing=""
+for cmd in whoami cat date tr awk sed grep find xargs cut sort uniq head tail \
+           cp mv rm chmod chown mktemp service wc gzip make pfctl whois \
+           "$CURL_CMD" "$EXPIRETABLE_CMD"; do
+  if ! command -v "$cmd" >/dev/null 2>&1; then
+    missing="$missing $cmd"
+  fi
+done
+if [ -n "$missing" ]; then
+  echo "Missing required commands:$missing"
+  exit 1
+fi
+
+####################################################################################
 #                                   Color Output                                   #
 ####################################################################################
 RED='\033[0;31m'
@@ -54,14 +69,8 @@ BLUE='\033[0;34m'
 WHITE='\033[0;37m'
 NC='\033[0m'
 
-cecho() { # color, message
-  color="$1"; shift
-  eval printf \"%b%s%b\\n\" \"\$$color\" \"\$*\" \"\$NC\"
-}
-cechon() { # color, message (no newline)
-  color="$1"; shift
-  eval printf \"%b%s%b\" \"\$$color\" \"\$*\" \"\$NC\"
-}
+cecho() { color="$1"; shift; eval printf \"%b%s%b\\n\" \"\$$color\" \"\$*\" \"\$NC\"; }
+cechon() { color="$1"; shift; eval printf \"%b%s%b\" \"\$$color\" \"\$*\" \"\$NC\"; }
 
 ####################################################################################
 #                                    Logging                                       #
@@ -77,26 +86,12 @@ show_info()  { cecho GREEN "$*"; log INFO "$*"; }
 show_warn()  { cecho YELLOW "$*"; log WARN "$*"; }
 show_error() { cecho RED "$*"; log ERROR "$*"; }
 
-# Log rotation
+# Log rotation (compress old logs for efficiency)
 if [ -f "$LOG_FILE" ] && [ $(stat -f%z "$LOG_FILE") -gt 1048576 ]; then
   mv "$LOG_FILE" "$LOG_FILE.old"
+  gzip -f "$LOG_FILE.old" 2>/dev/null || true
   : > "$LOG_FILE"
 fi
-
-####################################################################################
-#                               Dependency Checks                                  #
-####################################################################################
-require_cmd() {
-  for cmd; do
-    if ! command -v "$cmd" >/dev/null 2>&1; then
-      show_error "Missing dependency: $cmd"
-      exit 1
-    fi
-  done
-}
-require_cmd whoami cat date tr awk sed grep find xargs cut sort uniq head tail
-require_cmd cp mv rm chmod chown mktemp service wc make pfctl whois
-require_cmd "$CURL_CMD" "$EXPIRETABLE_CMD"
 
 ####################################################################################
 #                                 Utility Functions                                #
@@ -158,8 +153,8 @@ show_usage() {
 Usage: $(basename "$0") [OPTIONS]
 
 OPTIONS:
-  -h         Display this help and exit
-  -v         Output version information and exit
+  -h|--help         Display this help and exit
+  -v|--version      Output version information and exit
 
 ${COPYRIGHT} ${CONTACT}
 Written by ${AUTHORS}
@@ -180,10 +175,18 @@ EOF
 }
 
 # Use getopts for options parsing
-while getopts ":hv" opt; do
-  case $opt in
+while getopts ":hv-:" opt; do
+  case "$opt" in
     h) show_usage ;;
     v) show_version ;;
+    -)
+      case "${OPTARG}" in
+        help) show_usage ;;
+        version) show_version ;;
+        dry-run) dryrun=1 ;;
+        *) show_usage ;;
+      esac
+      ;;
     *) show_usage ;;
   esac
 done
@@ -196,21 +199,28 @@ rootonly
 print_separator
 show_info "Started updating the PF bad hosts tables."
 print_separator
-
 pasthours="`date -u -v-6H`"
 lasthours="`date -j -f "%a %b %d %T %Z %Y" "${pasthours}" "+%H:%M"`"
-
 show_text ""
 show_info "${lasthours}"
 show_text ""
-
 print_separator
+
+# Efficiently fetch all required lists in parallel
+declare -A SOURCES
+SOURCES=(
+  [drop_v4.json]="https://www.spamhaus.org/drop/drop_v4.json"
+  [drop_v6.json]="https://www.spamhaus.org/drop/drop_v6.json"
+  [asndrop.json]="https://www.spamhaus.org/drop/asndrop.json"
+  [torlist.txt]="https://www.dan.me.uk/torlist/?full"
+  [blocklist.txt]="https://lists.blocklist.de/lists/all.txt"
+)
 
 fetch_data() {
   local url="$1"
   local output="$2"
-  if ! "$CURL_CMD" --fail --silent --show-error --progress-bar --compressed --ignore-content-length \
-    --header "User-Agent: Mozilla/5.0 (FreeBSD 14.3; x86_64; x64; rv:142.0) Gecko/20100101 Firefox/142.0" \
+  if ! "$CURL_CMD" --fail --silent --show-error --compressed --ignore-content-length \
+    --header "User-Agent: $USER_AGENT" \
     --header "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" \
     --header "Accept-Encoding: gzip, deflate, br" --header "Accept-Language: en,de;q=0.5" \
     --header "DNT: 1" --header "Cache-Control: max-age=0" --header "Connection: keep-alive" \
@@ -221,6 +231,43 @@ fetch_data() {
   fi
 }
 
+for key in "${!SOURCES[@]}"; do
+  fetch_data "${SOURCES[$key]}" "$TMP_DIR/$key" &
+done
+wait
+
+# Preprocess blocklists in parallel pipelines where possible
+awk -F'"' '/cidr/ { print $4 }' "$TMP_DIR/drop_v4.json" > "$TMP_DIR/drop_v4.txt" &
+awk -F'"' '/cidr/ { print $4 }' "$TMP_DIR/drop_v6.json" > "$TMP_DIR/drop_v6.txt" &
+wait
+
+# ASN DROP: extract ASN list
+awk -F'"' '/asn/ { print $3 }' "$TMP_DIR/asndrop.json" | sed -e 's|^:\([0-9]*\),$|AS\1|g' > "$TMP_DIR/asndrop.txt"
+
+# Efficient parallel ASN-to-IP whois using xargs
+: > "$TMP_DIR/asntoip.txt"
+if [ -s "$TMP_DIR/asndrop.txt" ]; then
+  # Define worker for xargs
+  asn_to_ip_worker() {
+    asn="$1"
+    [ -z "$asn" ] && exit 0
+    # Limit each whois to 8 seconds to avoid hanging
+    whois -h whois.radb.net -- "-i origin $asn" 2>/dev/null | awk '/^route/ { print $2 }'
+  }
+  export -f asn_to_ip_worker
+  cat "$TMP_DIR/asndrop.txt" | xargs -n 1 -P 8 sh -c 'asn_to_ip_worker "$0"' >> "$TMP_DIR/asntoip.txt"
+fi
+
+# Merge all DROP sources efficiently in a pipeline
+awk '!/^;/ { print "   " $1 }' "$TMP_DIR/drop_v4.txt" "$TMP_DIR/drop_v6.txt" "$TMP_DIR/asntoip.txt" | sort -u > "$TMP_DIR/badhosts_drop.tmp"
+
+# Process TOR and blocklist sources
+awk '!/^;/ { print "   " $1 }' "$TMP_DIR/torlist.txt" | sort -u > "$TMP_DIR/badhosts_torp.tmp"
+awk '!/^;/ { print "   " $1 }' "$TMP_DIR/blocklist.txt" | sort -u > "$TMP_DIR/badhosts_misc.tmp"
+
+####################################################################################
+#                                 Table Handling                                   #
+####################################################################################
 replace_table() {
   local table="$1"
   local expire="$2"
@@ -229,14 +276,14 @@ replace_table() {
   print_separator
   show_info "Table $table"
   print_separator
-  # Merge input (if provided) and current table
+  # Merge external input (if provided) and current table entries
   if [ -n "$external" ] && [ -f "$external" ]; then
     cat -- "$external" > "$TMP_DIR/$table.txt"
   else
     : > "$TMP_DIR/$table.txt"
   fi
   pfctl -t "$table" -T show >> "$TMP_DIR/$table.txt"
-  sort -buV "$TMP_DIR/$table.txt" > "$TMP_DIR/$table.sorted"
+  sort -bu "$TMP_DIR/$table.txt" > "$TMP_DIR/$table.sorted"
   if ! pfctl -t "$table" -T replace -f "$TMP_DIR/$table.sorted"; then
     show_error "Failed to replace PF table $table"
     exit 1
@@ -246,31 +293,6 @@ replace_table() {
   show_text ""
   pfctl -t "$table" -v -T show
 }
-
-# Fetch and update badhosts_drop
-fetch_data "https://www.spamhaus.org/drop/drop_v4.json" "$TMP_DIR/drop_v4.json" &
-fetch_data "https://www.spamhaus.org/drop/drop_v6.json" "$TMP_DIR/drop_v6.json" &
-fetch_data "https://www.spamhaus.org/drop/asndrop.json" "$TMP_DIR/asndrop.json" &
-wait
-awk -F'"' '/cidr/ { print $4 }' "$TMP_DIR/drop_v4.json" > "$TMP_DIR/drop_v4.txt"
-awk -F'"' '/cidr/ { print $4 }' "$TMP_DIR/drop_v6.json" > "$TMP_DIR/drop_v6.txt"
-awk -F'"' '/asn/ { print $3 }' "$TMP_DIR/asndrop.json" | sed -e 's|^:\([0-9]*\),$|AS\1|g' > "$TMP_DIR/asndrop.txt"
-: > "$TMP_DIR/asntoip.txt"
-while read -r asn; do
-  [ -z "$asn" ] && continue
-  whois -h whois.radb.net -- "-i origin $asn" | awk '/^route/ { print $2 }' >> "$TMP_DIR/asntoip.txt"
-done < "$TMP_DIR/asndrop.txt"
-awk '!/^;/ { print "   " $1 }' "$TMP_DIR/drop_v4.txt" "$TMP_DIR/drop_v6.txt" "$TMP_DIR/asntoip.txt" > "$TMP_DIR/badhosts_drop.tmp"
-
-# Fetch and update badhosts_torp
-fetch_data "https://www.dan.me.uk/torlist/?full" "$TMP_DIR/torlist.txt" &
-wait
-awk '!/^;/ { print "   " $1 }' "$TMP_DIR/torlist.txt" > "$TMP_DIR/badhosts_torp.tmp"
-
-# Fetch and update badhosts_misc
-fetch_data "https://lists.blocklist.de/lists/all.txt" "$TMP_DIR/blocklist.txt" &
-wait
-awk '!/^;/ { print "   " $1 }' "$TMP_DIR/blocklist.txt" > "$TMP_DIR/badhosts_misc.tmp"
 
 # Table definitions: "table_name:expire:optional_external_file"
 TABLES="
