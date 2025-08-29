@@ -9,11 +9,18 @@ author_url: https://github.com/JoeUser78
 
 # PostfixAdmin
 
+In diesem HowTo wird Schritt für Schritt die Installation von PostfixAdmin für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.
+
 ## Einleitung
 
 Unser Hosting System wird um folgende Dienste erweitert.
 
 - PostfixAdmin 4.0.0 (PostgreSQL, Vacation)
+
+## Inhaltsverzeichnis
+- [Voraussetzungen](#voraussetzungen)
+- [Installation](#installation)
+- [Abschluss](#abschluss)
 
 ## Voraussetzungen
 

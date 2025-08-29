@@ -1,66 +1,101 @@
 ---
-title: 'Vorgehensweise bei gehacktem Server'
-description: 'In diesem HowTo werden ein paar grundlegende Vorgehensweisen bei gehackten Servern gegeben.'
+title: 'Vorgehensweise bei gehacktem Server – Moderne Incident-Response-Checkliste'
+description: 'In diesem HowTo findest Du eine praxisnahe, aktualisierte Schritt-für-Schritt-Anleitung, wie Du nach einem Servereinbruch professionell und sicher vorgehst. Ziel ist es, Schäden zu minimieren, Beweise zu sichern und das System fachgerecht wiederherzustellen.'
 date: '2003-02-18'
-updated: '2020-02-18'
+updated: '2023-10-18'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
 
-# Vorgehensweise bei gehacktem Server
+# Vorgehensweise bei gehacktem Server – Moderne Incident-Response-Checkliste
+
+In diesem HowTo findest Du eine praxisnahe, aktualisierte Schritt-für-Schritt-Anleitung, wie Du nach einem Servereinbruch professionell und sicher vorgehst. Ziel ist es, Schäden zu minimieren, Beweise zu sichern und das System fachgerecht wiederherzustellen.
 
 ## Einleitung
 
-In diesem HowTo werden ein paar grundlegende Vorgehensweisen bei gehackten Servern gegeben.
+Ein Servereinbruch ist ein Notfall – aber kein Grund zur Panik. Mit einem strukturierten Vorgehen, modernen Tools und klaren Prozessen kannst Du den Schaden begrenzen und die Kontrolle zurückgewinnen. Die folgenden Schritte orientieren sich an aktuellen Best Practices aus IT-Security und Incident Response.
 
-Dein Server wurde gehackt und Du weisst nicht so recht wie Du nun weiter vorgehen sollst? Wir haben Dir nachfolgend ein paar Punkte zusammengestellt, die Dir unserer Erfahrung nach in diesem Fall am Besten weiterhelfen sollten.
+## Inhaltsverzeichnis
+- [Ruhe bewahren](#ruhe-bewahren)
+- [Beweise sichern (Forensik)](#beweise-sichern-forensik)
+- [Nutzdaten sichern](#nutzdaten-sichern)
+- [Server neu aufsetzen](#server-neu-aufsetzen)
+- [Nutzdaten und Beweise analysieren](#nutzdaten-und-beweise-analysieren)
+- [Sicherheitskonzept anpassen](#sicherheitskonzept-anpassen)
+- [Software minimal installieren](#software-minimal-installieren)
+- [Nutzdaten einspielen](#nutzdaten-einspielen)
+- [Server wieder online nehmen](#server-wieder-online-nehmen)
+- [Abschließende Hinweise](#abschließende-hinweise)
 
 ## Ruhe bewahren
 
-Bitte bewahre erstmal Ruhe, denn ein hektischer Admin und ein gehackter Server sind eine gefährliche hochexplosive Mischung. Das Kind ist ohnehin schon in den Brunnen gefallen, also bringt Dir ein überhastetes Handeln jetzt nur noch weiteren vermeidbaren Ärger ein. Besorge Dir erstmal eine Kanne Kaffee oder Tee und lies Dir zunächst die folgenden Punkte mindestens einmal durch, bevor Du anfängst diese nach und nach umzusetzen.
+Handele besonnen und strukturiert. Überstürztes Vorgehen kann Beweise vernichten und den Schaden vergrößern. Lies diese Anleitung einmal komplett durch, bevor Du startest. Dokumentiere alle Schritte (z. B. in einem Incident-Log).
 
-## Beweise sichern
+## Beweise sichern (Forensik)
 
-Dieser sehr wichtige Punkt wird gerne vergessen, daher führen wir ihn gleich als Erstes durch. Hierzu bootest Du den Server mit einem Rescuesystem und legst ein vollständiges Festplatten-Image des Systems an. Dieses lässt sich später in einer virtuellen Maschine gefahrlos analysieren und so sowohl das Einfallstor als auch die vorgenommenen Manipulationen aufspüren. Schliesslich nützt es Dir ja Nichts, wenn Du nicht weisst wie der Angreifer in Dein System eingedrungen ist und was er dort getrieben hat.
-
-Alternativ zum Festplatten-Image kannst Du auch vom Rescuesystem aus ein Vollbackup des Systems mittels `tar` anlegen, dieses eignet sich zwar ebenfalls zur Analyse, aber nicht mehr für eine rechtliche Verfolgung des Täters. Daher empfehlen wir grundsätzlich das Festplatten-Image zu bevorzugen.
+- Trenne den Server sofort vom Netz (Netzwerkkabel ziehen, Firewall-Regel setzen, Cloud-Interface nutzen).
+- Starte den Server nicht neu! Jeder Reboot kann Spuren vernichten.
+- Erstelle ein vollständiges Festplatten-Image (z. B. mit `dd`, `dc3dd`, `Clonezilla`, `FTK Imager`).
+- Sichere RAM-Inhalte, falls möglich (`LiME`, `volatility`).
+- Notiere Zeitpunkte, IP-Adressen, auffällige Prozesse und offene Verbindungen (`lsof`, `netstat`, `ps`, `ss`).
+- Bewahre das Image für spätere Analyse oder rechtliche Schritte auf. Für forensische Beweissicherung: Hashwerte (SHA256) dokumentieren.
 
 ## Nutzdaten sichern
 
-Als Nächstes sicherst Du die Nutzdaten, also Alles was man nicht installieren kann. Dies sind zum Beispiel statische Webseiten, Bilder, Videos, Datenbankinhalte, E-Mails und Zugangsdaten. In keinem Fall sicherst Du in diesem Schritt irgendwelche Software, also Programme und Scripte, denn diese sind nach einem erfolgreichen Einbruch nicht mehr vertrauenswürdig.
+- Sichere alle Nutzdaten (Webdaten, Datenbanken, E-Mails, Konfigurationen), aber keine ausführbaren Programme/Skripte.
+- Nutze Tools wie `rsync`, `tar`, `borgbackup` oder Snapshots.
+- Prüfe, ob Backups kompromittiert wurden.
 
-## Server reinstallieren
+## Server neu aufsetzen
 
-Nachdem Du die obigen Sicherungen angelegt hast, setzt Du den Server komplett neu auf. Dieser Schritt ist wichtig, da Du nicht wissen kannst ob und welche Software vom Angreifer manipuliert wurde. Selbst wenn Du glaubst dies zu wissen, kannst Du Dir nie zu 100% sicher sein, daher gilt es wieder eine vertrauenswürdige Basis, sprich ein sauberes Grundsystem zu schaffen. Lösche zunächst die Festplatte(n) vom Rescuesystem aus mittels `dd if=/dev/zero of=/dev/sda` (Linux) beziehungsweise `dd if=/dev/zero of=/dev/ad1` (FreeBSD), wobei /dev/sda beziehungsweise /dev/ad1 durch die jeweilige Festplattenbezeichnung zu ersetzen ist. Dies führst Du bitte für alle vorhandenen Festplatten mindestens einmal besser zweimal durch. Danach kannst Du das Betriebssystem in seiner Minimal-Version neu installieren und konfigurieren. Es sollte nun also maximal das Basissystem installiert und der SSH-Daemon gestartet sein, mehr nicht. Der Rest folgt später.
+- Setze das System komplett neu auf (kein Restore von Systemdateien!).
+- Lösche alle Festplatten sicher (z. B. `shred`, `blkdiscard`, Cloud-API).
+- Installiere das Betriebssystem minimal und aktualisiere es sofort.
+- Aktiviere SSH nur mit Key-Auth, keine unnötigen Dienste starten.
 
-## Nutzdaten analysieren
+## Nutzdaten und Beweise analysieren
 
-Nun beginnt die eigentliche Arbeit, das Analysieren der gesicherten Daten. Bei den Nutzdaten ist es noch relativ leicht, denn diese brauchst Du nur mit einem 100% sauberen Backup zu vergleichen und die seitdem Backup hinzugekommenen Nutzdaten manuell zu sichten. Wenn Du Dir zu 100% sicher bist, das die Nutzdaten sauber sind, kannst Du mit dem Analysieren der Beweise weitermachen.
-
-## Beweise analysieren
-
-Jetzt kommt der schwierigste und zeitaufwendigste Teil der Arbeit, das Analysieren der Beweissicherung. Dazu legst Du Dir zunächst ein weiteres Backup des Festplatten-Images an, das benötigen nämlich unter Umständen die Strafverfolgungsbehörden für eigene Analysen. Du legst Dir nun mittels VirtualBox oder VMWare Workstation eine neue virtuelle Maschine an und weist dieser das Festplatten-Image zu (Wie das im Einzelnen geht, steht in der jeweiligen Dokumentation). Achte darauf, das Du der virtuellen Maschine kein Netzwerkinterface zuweist, denn Du weisst ja noch nicht, was der Angreifer mit Deinem System gemacht hat. Etwaige Bootprobleme musst Du mit Hilfe der Dokumentation zu Deinem Betriebssystem selbst lösen, das ist im Rahmen dieses Leitfadens nicht möglich. Häufige Stolpersteine sind hier die Hardwarekonfiguration (z. B. udev unter Linux), der Kernel und seine Module oder das fehlende Netzwerkinterface. Zum Beheben dieser Probleme empfiehlt sich der Einsatz einer RescueCD wie der [SystemRescueCD](https://www.system-rescue.org/){: target="_blank" rel="noopener"}. Nachdem Du diese Hürde gemeistert hast, fängst Du zunächst damit an, das Einfallstor zu finden, damit Dein neues System darüber nicht gleich wieder kompromittiert wird. Häufig werden Webapplikationen, also PHP, Perl, Rails und andere Scripts als Einfallstor genutzt, daher solltest Du dort als Erstes nachsehen. Darüberhinaus werden gerne bekannte Sicherheitslücken in Systemsoftware ausgenutzt, das wäre also die nächste zu überprüfende Baustelle.
-
-All dies ist eine sehr komplexe und schwere Aufgabe und es ist kein Grund sich zu schämen wenn man sie nicht allein gelöst bekommt. Selbst viele langjährige professionelle System-Administratoren haben hierbei ihre kleinen und grosse Probleme. In diesem Fall muss man sich dann aber konsequenterweise auch eingestehen, dass man es selbst nicht schafft und etwas Geld in die Hand nehmen und ein darauf spezialisiertes Unternehmen mit der Aufgabe betreuen. Das ist letztendlich immer günstiger als wenn das System in kurzer Zeit erneut kompromittiert wird und darüber illegale Aktivitäten wie (D)DoS, Brute-Force und andere Angriffe durchgeführt oder Spam, Warez, Musik, Filme oder gar Kinder-Pornos verbreitet werden. Denn für all dies wirst zunächst Du als Besitzer des Servers haftbar gemacht und das wird sehr schnell sehr teuer!
+- Analysiere die gesicherten Nutzdaten auf Manipulationen (Vergleich mit Backups, Hash-Prüfung).
+- Untersuche das Festplatten-Image in einer isolierten VM (kein Netzwerk!).
+- Nutze Forensik-Tools wie `Autopsy`, `The Sleuth Kit`, `plaso`, `volatility`.
+- Suche nach Einfallstoren (z. B. ungepatchte Webanwendungen, schwache Passwörter, Exploits).
+- Ziehe bei Unsicherheit professionelle Hilfe (IT-Forensiker, CERT, BSI) hinzu.
+- Prüfe Meldepflichten (z. B. DSGVO, KRITIS, BSI) und informiere ggf. Behörden.
 
 ## Sicherheitskonzept anpassen
 
-Jeder gute Administrator hat ein eigenes auf den jeweiligen Server angepasstes Sicherheitskonzept. Dieses Sicherheitskonzept erweitert er ständig, um mit den täglichen Fortschritten der bösen Buben (BlackHats) Schritt zu halten und so die meisten älteren und aktuellen bekannten Bedrohungen im Vorfeld von seinem Server abwenden zu können. Auf Basis der Erkenntnisse aus der vorherigen Analyse wirst Du nun also auch Dein Sicherheitskonzept erweitern und darauf achten, das dieses Sicherheitsproblem künftig auf Deinem Server nicht mehr auftritt.
+- Überarbeite Dein Security-Konzept auf Basis der Analyse.
+- Schließe gefundene Schwachstellen (z. B. Updates, Härtung, Firewall, 2FA).
+- Setze auf Defense-in-Depth: Monitoring (z. B. Wazuh, OSSEC, Fail2ban), regelmäßige Backups, automatisierte Updates.
+- Dokumentiere alle Änderungen und Lessons Learned.
 
-## Software installieren
+## Software minimal installieren
 
-Nun kannst Du die von Dir benötigte Software installieren und konfigurieren. Achte aber bitte darauf, wirlich nur die zwingend benötigte Software zu installieren, denn jede einzelne Software birgt das Risiko einer unbekannten Sicherheitslücke. Anders ausgedrückt: Jede Datei, die nicht auf Deinem Server existiert, kann auch nicht für einen neuen Einbruch genutzt werden. Auch bei der Konfiguration lasse bitte Vorsicht walten und informiere Dich vorher was jede einzelne Konfigurationsoption bewirkt. Auch die Wechselwirkungen zwischen den Anwendungen und Konfigurationen solltest Du berücksichtigen, denn manche unglückliche Kombinationen machen einen Angriff erst möglich. Vergesse bitte auch die Softwareupdates nicht, spiele diese immer sofort und regelmässig ein!
+- Installiere nur unbedingt benötigte Software (Minimalprinzip).
+- Nutze aktuelle, gepflegte Pakete und sichere Konfigurationen (z. B. CIS Benchmarks).
+- Automatisiere Updates und Monitoring.
 
 ## Nutzdaten einspielen
 
-Es ist nun an der Zeit die Nutzdaten wiederherzustellen. Auch hier gilt wieder: Weniger ist mehr. Nutzdaten sind zwar im Regelfall eher unkritisch, aber bei dieser Gelegenheit kann man sich auch gleich von veralteten, unnötigen Daten trennen. Das trägt nicht nur zum Datenschutz bei sondern verkürzt auch die Analyse bei einem etwaigen zukünftigen Einbruch.
+- Spiele nur geprüfte, saubere Nutzdaten zurück.
+- Verzichte auf veraltete, unnötige Daten (Datensparsamkeit, DSGVO).
+- Prüfe die Integrität der Daten (Hashwerte, Checksummen).
 
-## Server online nehmen
+## Server wieder online nehmen
 
-Du hast es geschafft und kannst den Server wieder für den Normalbetrieb online nehmen.
+- Teste das System in einer isolierten Umgebung.
+- Überwache Logfiles und Netzwerkverkehr nach dem Go-Live besonders intensiv.
+- Informiere Nutzer/Stakeholder über den Vorfall und die ergriffenen Maßnahmen.
 
-## Abschliesssende Worte
+## Abschließende Hinweise
 
-Wir hoffen, das wir Dir etwas weiterhelfen konnten.
+- Dokumentiere den gesamten Vorfall und die Wiederherstellung für spätere Audits.
+- Nutze die Gelegenheit, Prozesse und Monitoring zu verbessern.
+- Ziehe bei Unsicherheit professionelle Hilfe hinzu.
+- Melde sicherheitsrelevante Vorfälle an Betreiber, Kunden und ggf. Behörden.
+
+**Fazit:**
+
+Ein kompromittierter Server ist immer ein Risiko. Nur ein vollständiges Neuaufsetzen und ein modernes, kontinuierlich gepflegtes Sicherheitskonzept bieten nachhaltigen Schutz. Prävention, Monitoring und regelmäßige Schulung sind die beste Verteidigung.
 
 **Dein RootService Team**

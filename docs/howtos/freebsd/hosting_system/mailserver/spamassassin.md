@@ -9,11 +9,19 @@ author_url: https://github.com/JoeUser78
 
 # SpamAssassin
 
+In diesem HowTo wird Schritt für Schritt die Installation von SpamAssassin für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.
+
 ## Einleitung
 
 Unser Hosting System wird um folgende Dienste erweitert.
 
 - SpamAssassin 4.0.1 (SpamAss-Milter)
+
+## Inhaltsverzeichnis
+- [Voraussetzungen](#voraussetzungen)
+- [Installation](#installation)
+- [Konfigurieren](#konfigurieren)
+- [Abschluss](#abschluss)
 
 ## Voraussetzungen
 

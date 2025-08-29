@@ -7,13 +7,21 @@ author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
 
-# Postfix
+# Postfix Mailserver für FreeBSD Hosting System
+
+In diesem HowTo wird Schritt für Schritt die Installation des Postfix Mailservers für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.
 
 ## Einleitung
 
 Unser Hosting System wird um folgende Dienste erweitert.
 
 - Postfix 3.10.2 (Dovecot-SASL, postscreen)
+
+## Inhaltsverzeichnis
+- [Voraussetzungen](#voraussetzungen)
+- [Installation](#installation)
+- [Konfiguration](#konfiguration)
+- [Abschluss](#abschluss)
 
 ## Voraussetzungen
 

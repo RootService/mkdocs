@@ -7,13 +7,21 @@ author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
 
-# Dovecot
+# Dovecot Mailserver für FreeBSD Hosting System
+
+In diesem HowTo wird Schritt für Schritt die Installation des Dovecot Mailservers für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.
 
 ## Einleitung
 
 Unser Hosting System wird um folgende Dienste erweitert.
 
 - Dovecot 2.3.21 (IMAP only, Pigeonhole)
+
+## Inhaltsverzeichnis
+- [Voraussetzungen](#voraussetzungen)
+- [Installation](#installation)
+- [Konfiguration](#konfiguration)
+- [Abschluss](#abschluss)
 
 ## Voraussetzungen
 

@@ -1,19 +1,27 @@
 ---
 title: 'OpenDKIM'
-description: 'In diesem HowTo wird step-by-step die Installation von OpenDKIM für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
+description: 'In diesem HowTo wird step-by Schritt die Installation von OpenDKIM für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
 updated: '2025-06-28'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
 
-# OpenDKIM
+# OpenDKIM für FreeBSD Hosting System
+
+In diesem HowTo wird Schritt für Schritt die Installation von OpenDKIM für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.
 
 ## Einleitung
 
 Unser Hosting System wird um folgende Dienste erweitert.
 
 - OpenDKIM 2.10.3 (VBR, 2048 Bit RSA)
+
+## Inhaltsverzeichnis
+- [Voraussetzungen](#voraussetzungen)
+- [Installation](#installation)
+- [Konfiguration](#konfiguration)
+- [Abschluss](#abschluss)
 
 ## Voraussetzungen
 

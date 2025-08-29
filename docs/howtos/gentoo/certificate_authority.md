@@ -1,6 +1,6 @@
 ---
 title: 'Certificate Authority'
-description: 'In diesem HowTo wird step-by-step die Installation einer Certificate Authority mit OpenSSL (PKI) auf Basis von Gentoo Linusx 64Bit beschrieben.'
+description: 'In diesem HowTo wird step-by Schritt die Installation einer Certificate Authority mit OpenSSL (PKI) auf Basis von Gentoo Linusx 64Bit beschrieben.'
 date: '2013-11-15'
 updated: '2014-09-01'
 author: 'Markus Kohlmeyer'
@@ -9,7 +9,9 @@ contributors:
     - 'Stefan H. Holek'
 ---
 
-# Certificate Authority
+# Certificate Authority mit OpenSSL auf Gentoo Linux
+
+In diesem HowTo wird Schritt für Schritt die Installation einer Certificate Authority (PKI) mit OpenSSL auf Basis von Gentoo Linux 64Bit beschrieben.
 
 ## Einleitung
 
@@ -21,12 +23,23 @@ contributors:
 
 Dieses HowTo setzt ein wie in [Remote Installation](/howtos/gentoo/remote_install/) beschriebenes, installiertes und konfiguriertes Gentoo Linux Basissystem und OpenSSL >= 1.0.1 voraus.
 
-Folgende Punkte sind in diesem HowTo zu beachten.
-
-- Alle Konfigurationen sind selbstständig auf notwendige individuelle Anpassungen zu kontrollieren.
-- Die Domain des Servers lautet `example.com` und ist selbstständig durch die eigene Domain zu ersetzen.
-- Der Hostname des Servers lautet `devnull` und ist selbstständig durch den eigenen Hostnamen zu ersetzen (FQDN=devnull.example.com).
-- Es werden die FQDNs `devnull.example.com`, `mail.example.com`, `pki.example.com` und `www.example.com` verwendet und sind selbstständig im DNS zu registrieren.
+## Inhaltsverzeichnis
+- [Vorbereitungen](#vorbereitungen)
+- [OpenSSL](#openssl)
+  - [OpenSSL konfigurieren](#openssl-konfigurieren)
+  - [OpenSSL CA](#openssl-ca)
+    - [Root CA erstellen](#root-ca-erstellen)
+    - [Network / Intermediate CA erstellen](#network--intermediate-ca-erstellen)
+    - [Identity Signing CA erstellen](#identity-signing-ca-erstellen)
+    - [Component Signing CA erstellen](#component-signing-ca-erstellen)
+    - [CRLs und Chains erneuern](#crls-und-chains-erneuern)
+  - [OpenSSL Zertifikate](#openssl-zertifikate)
+    - [Identity Certificate erstellen](#identity-certificate-erstellen)
+    - [TLS Client Certificate erstellen](#tls-client-certificate-erstellen)
+    - [TLS Server Certificate erstellen](#tls-server-certificate-erstellen)
+    - [Time-stamping Certificate erstellen](#time-stamping-certificate-erstellen)
+    - [OCSP-Signing Certificate erstellen](#ocsp-signing-certificate-erstellen)
+- [Wie geht es weiter?](#wie-geht-es-weiter)
 
 ## Vorbereitungen
 

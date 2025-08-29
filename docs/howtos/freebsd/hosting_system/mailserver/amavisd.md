@@ -7,13 +7,21 @@ author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
 
-# Amavisd
+# Amavisd für FreeBSD Hosting System
+
+In diesem HowTo wird Schritt für Schritt die Installation von Amavisd für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.
 
 ## Einleitung
 
 Unser Hosting System wird um folgende Dienste erweitert.
 
 - Amavisd
+
+## Inhaltsverzeichnis
+- [Voraussetzungen](#voraussetzungen)
+- [Installation](#installation)
+- [Konfigurieren](#konfigurieren)
+- [Abschluss](#abschluss)
 
 ## Voraussetzungen
 

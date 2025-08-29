@@ -7,13 +7,21 @@ author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
 
-# OpenDMARC
+# OpenDMARC für FreeBSD Hosting System
+
+In diesem HowTo wird Schritt für Schritt die Installation von OpenDMARC für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.
 
 ## Einleitung
 
 Unser Hosting System wird um folgende Dienste erweitert.
 
 - OpenDMARC 1.4.2 (SPF2, FailureReports)
+
+## Inhaltsverzeichnis
+- [Voraussetzungen](#voraussetzungen)
+- [Installation](#installation)
+- [Konfigurieren](#konfigurieren)
+- [Abschluss](#abschluss)
 
 ## Voraussetzungen
 

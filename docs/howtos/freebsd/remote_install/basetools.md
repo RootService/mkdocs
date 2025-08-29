@@ -1,13 +1,15 @@
 ---
 title: 'BaseTools'
-description: 'In diesem HowTo wird step-by-step die Installation einiger BaseTools für ein FreeBSD 64Bit BaseSystem auf einem dedizierten Server beschrieben.'
+description: 'In diesem HowTo wird step-by Schritt die Installation einiger BaseTools für ein FreeBSD 64Bit BaseSystem auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
 updated: '2025-06-28'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
 
-# BaseTools
+# BaseTools für FreeBSD BaseSystem
+
+In diesem HowTo wird Schritt für Schritt die Installation einiger BaseTools für ein FreeBSD 64Bit BaseSystem auf einem dedizierten Server beschrieben.
 
 ## Einleitung
 
@@ -26,6 +28,13 @@ Unsere BaseTools werden am Ende folgende Dienste umfassen.
 - SQLite 3.46.1
 - Subversion 1.14.5
 - Nano 8.4
+
+## Inhaltsverzeichnis
+- [Voraussetzungen](#voraussetzungen)
+- [Einloggen und zu root werden](#einloggen-und-zu-root-werden)
+- [Software installieren](#software-installieren)
+- [Software updaten](#software-updaten)
+- [Wie geht es weiter?](#wie-geht-es-weiter)
 
 ## Voraussetzungen
 

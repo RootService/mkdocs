@@ -7,13 +7,21 @@ author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
 
-# NGinx
+# NGinx Webserver für FreeBSD Hosting System
+
+In diesem HowTo wird Schritt für Schritt die Installation des NGinx Webservers für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.
 
 ## Einleitung
 
 Unser Hosting System wird um folgende Dienste erweitert.
 
 - NGinx 1.28.0 (HTTP/2, mod_brotli)
+
+## Inhaltsverzeichnis
+- [Voraussetzungen](#voraussetzungen)
+- [Installation](#installation)
+- [Konfiguration](#konfiguration)
+- [Abschluss](#abschluss)
 
 ## Voraussetzungen
 

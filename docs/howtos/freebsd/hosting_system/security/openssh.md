@@ -7,13 +7,21 @@ author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
 
-# OpenSSH
+# OpenSSH für FreeBSD Hosting System
+
+In diesem HowTo wird Schritt für Schritt die Installation von OpenSSH für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.
 
 ## Einleitung
 
 Unser Hosting System wird folgende Dienste umfassen.
 
 - OpenSSH 10.0p1 (Public-Key-Auth)
+
+## Inhaltsverzeichnis
+- [Voraussetzungen](#voraussetzungen)
+- [Installation](#installation)
+- [Konfiguration](#konfiguration)
+- [Abschluss](#abschluss)
 
 ## Voraussetzungen
 

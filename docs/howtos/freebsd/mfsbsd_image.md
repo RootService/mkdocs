@@ -7,11 +7,21 @@ author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
 
-# mfsBSD Image
+# mfsBSD Image für FreeBSD Remote Installation
+
+In diesem HowTo wird Schritt für Schritt die Erstellung eines mfsBSD Images zur Remote-Installation von FreeBSD 64Bit auf einem dedizierten Server beschrieben.
 
 ## Einleitung
 
 In diesem HowTo beschreibe ich step-by-step das Erstellen eines [mfsBSD](https://mfsbsd.vx.sk/){: target="_blank" rel="noopener"} Images mit dem die [Remote Installation](/howtos/freebsd/remote_install/) von [FreeBSD](https://www.freebsd.org/){: target="_blank" rel="noopener"} 64Bit auf einem dedizierten Server durchgeführt werden kann.
+
+## Inhaltsverzeichnis
+- [Das Referenzsystem](#das-referenzsystem)
+- [Die Virtuelle Maschine](#die-virtuelle-maschine)
+- [Minimalsystem installieren](#minimalsystem-installieren)
+- [Einloggen ins virtuelle System](#einloggen-ins-virtuelle-system)
+- [ports-mgmt/pkg installieren](#ports-mgmtpkg-installieren)
+- [mfsBSD erzeugen](#mfsbsd-erzeugen)
 
 ## Das Referenzsystem
 

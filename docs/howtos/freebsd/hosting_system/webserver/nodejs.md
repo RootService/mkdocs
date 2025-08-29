@@ -7,13 +7,19 @@ author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
 
-# NodeJS
+# NodeJS für FreeBSD Hosting System
+
+In diesem HowTo wird Schritt für Schritt die Installation des NodeJS Servers für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.
 
 ## Einleitung
 
 Unser Hosting System wird um folgende Dienste erweitert.
 
 - NodeJS 22.17.0 (NPM, YARN)
+
+## Inhaltsverzeichnis
+- [Voraussetzungen](#voraussetzungen)
+- [Installation](#installation)
 
 ## Voraussetzungen
 

@@ -7,7 +7,9 @@ author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
 
-# BaseSystem
+# BaseSystem Remote Installation für FreeBSD
+
+In diesem HowTo wird Schritt für Schritt die Remote-Installation des FreeBSD 64Bit BaseSystem auf einem dedizierten Server beschrieben.
 
 ## Einleitung
 
@@ -19,6 +21,33 @@ Unser BaseSystem wird folgende Dienste umfassen.
 - OpenSSL 3.0.16
 - OpenSSH 9.9p2
 - Unbound 1.22.0
+
+## Inhaltsverzeichnis
+- [Voraussetzungen](#voraussetzungen)
+- [RescueSystem booten](#rescuesystem-booten)
+- [mfsBSD installieren](#mfsbsd-installieren)
+- [FreeBSD installieren](#freebsd-installieren)
+- [Partitionieren der Festplatte](#partitionieren-der-festplatte)
+- [Formatieren der Partitionen](#formatieren-der-partitionen)
+- [Mounten der Partitionen](#mounten-der-partitionen)
+- [Installation der Chroot-Umgebung](#installation-der-chroot-umgebung)
+- [Vorbereiten der Chroot-Umgebung](#vorbereiten-der-chroot-umgebung)
+- [Betreten der Chroot-Umgebung](#betreten-der-chroot-umgebung)
+- [Zeitzone einrichten](#zeitzone-einrichten)
+- [Shell einrichten](#shell-einrichten)
+- [Systemsicherheit verstärken](#systemsicherheit-verstärken)
+  - [OpenSSH konfigurieren](#openssh-konfigurieren)
+  - [/etc/sysctl.conf anpassen](#etc-sysctlconf-anpassen)
+  - [Stärkere Passwort-Hashes verwenden](#stärkere-passwort-hashes-verwenden)
+  - [Terminals absichern](#terminals-absichern)
+- [System konfigurieren](#system-konfigurieren)
+- [Systemgruppen anlegen](#systemgruppen-anlegen)
+- [Systembenutzer anlegen](#systembenutzer-anlegen)
+- [Buildsystem konfigurieren](#buildsystem-konfigurieren)
+- [Kernel konfigurieren](#kernel-konfigurieren)
+- [Packet Filter (PF) einrichten](#packet-filter-pf-einrichten)
+- [Abschluss der Installation](#abschluss-der-installation)
+- [System aktualisieren](#system-aktualisieren)
 
 ## Voraussetzungen
 

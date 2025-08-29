@@ -7,13 +7,20 @@ author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
 
-# ClamAV
+# ClamAV für FreeBSD Hosting System
+
+In diesem HowTo wird Schritt für Schritt die Installation von ClamAV für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.
 
 ## Einleitung
 
 Unser Hosting System wird um folgende Dienste erweitert.
 
 - ClamAV
+
+## Inhaltsverzeichnis
+- [Voraussetzungen](#voraussetzungen)
+- [Installation](#installation)
+- [Abschluss](#abschluss)
 
 ## Voraussetzungen
 

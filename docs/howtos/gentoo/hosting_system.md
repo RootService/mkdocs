@@ -3,6 +3,7 @@ title: 'Hosting System'
 description: 'In diesem HowTo wird step-by-step die Installation eines Hosting Systems auf Basis von Gentoo Linux 64Bit auf einem dedizierten Server beschrieben.'
 date: '2006-03-02'
 updated: '2014-09-01'
+last_updated: '2024-07-04'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 contributors:
@@ -10,11 +11,15 @@ contributors:
     - 'Matthias Weiss'
 ---
 
-# Hosting System
+# Hosting System auf Gentoo Linux
+
+In diesem HowTo wird Schritt für Schritt die Installation eines Hosting-Systems auf Basis von Gentoo Linux 64Bit auf einem dedizierten Server beschrieben.
 
 ## Einleitung
 
-???+ warning
+!!! warning "Achtung"
+
+    Dieses HowTo ist veraltet! Die hier beschriebenen Schritte sind nicht mehr aktuell und sollten nicht ohne Anpassung verwendet werden.
 
     Dieses HowTo wird seit **2014-09-01** nicht mehr aktiv gepflegt und entspricht daher nicht mehr dem aktuellen Stand.
 
@@ -22,31 +27,42 @@ contributors:
 
 Dieses HowTo setzt ein wie in [Remote Installation](/howtos/gentoo/remote_install/) beschriebenes, installiertes und konfiguriertes Gentoo Linux Basissystem voraus.
 
-Folgende Punkte sind in diesem HowTo zu beachten:
-
-- Alle Dienste werden mit einem möglichst minimalen und bewährten Funktionsumfang installiert.
-- Alle Dienste werden mit einer möglichst sicheren und dennoch flexiblen Konfiguration versehen.
-- Alle Konfigurationen sind selbstständig auf notwendige individuelle Anpassungen zu kontrollieren.
-- Alle Passworte werden als `__PASSWORD__` dargestellt und sind selbstständig durch sichere Passworte zu ersetzen.
-- Alle Domainangaben werden als `example.com` dargestellt und sind selbstständig durch die eigene Domain zu ersetzen.
-- Die IP-Adresse des Servers wird als `10.0.2.15` dargestellt und ist selbstständig durch die eigene IP-Adresse zu ersetzen.
-- Postfix und Dovecot teilen sich sowohl den Hostnamen `mail.example.com` als auch das SSL-Zertifikat.
-
-Unser Hosting System wird folgende Dienste umfassen:
-
-- MySQL
-- Postfix
-- Dovecot
-- Apache
-- mod_php
-
-Desweiteren werden wir folgende Applikationen installieren:
-
-- phpMyAdmin
-- PostfixAdmin
-- RoundCube
+## Inhaltsverzeichnis
+- [OpenSSL](#openssl)
+  - [OpenSSL konfigurieren](#openssl-konfigurieren)
+  - [OpenSSL CA](#openssl-ca)
+  - [OpenSSL Zertifikate](#openssl-zertifikate)
+- [MySQL](#mysql)
+  - [MySQL installieren und vorbereiten](#mysql-installieren)
+  - [MySQL Konfiguration anpassen](#mysql-konfigurieren)
+  - [MySQL absichern](#mysql-absichern)
+- [Dovecot](#dovecot)
+  - [Dovecot installieren](#dovecot-installieren)
+  - [Dovecot Konfiguration](#dovecot-konfigurieren)
+- [Postfix](#postfix)
+  - [Postfix installieren](#postfix-installieren)
+  - [policyd-weight installieren](#policyd-weight-installieren)
+  - [Postfix Konfiguration](#postfix-konfigurieren)
+- [Apache](#apache)
+  - [Apache installieren](#apache-installieren)
+  - [Apache konfigurieren](#apache-konfigurieren)
+- [PHP](#php)
+  - [PHP installieren](#php-installieren)
+  - [PHP konfigurieren](#php-konfigurieren)
+  - [PHP-PEAR installieren](#php-pear-installieren)
+- [phpMyAdmin](#phpmyadmin)
+  - [phpMyAdmin installieren](#phpmyadmin-installieren)
+  - [phpMyAdmin konfigurieren](#phpmyadmin-konfigurieren)
+- [PostfixAdmin](#postfixadmin)
+  - [PostfixAdmin installieren](#postfixadmin-installieren)
+  - [PostfixAdmin konfigurieren](#postfixadmin-konfigurieren)
+- [RoundCube](#roundcube)
+  - [RoundCube installieren](#roundcube-installieren)
+  - [RoundCube konfigurieren](#roundcube-konfigurieren)
 
 ## OpenSSL
+
+OpenSSL ist eine grundlegende Bibliothek für sichere Kommunikation. Wir konfigurieren sie, erstellen eine eigene Zertifizierungsstelle (CA) und generieren Zertifikate für unsere Dienste.
 
 ### OpenSSL konfigurieren
 
@@ -77,6 +93,7 @@ mkdir -p demoCA/private
 touch demoCA/index.txt
 
 openssl req -new -keyout demoCA/private/cakey.pem -out demoCA/careq.pem
+#Das CA Zertifikat erstellen und selbst signieren
 openssl ca -create_serial -out demoCA/cacert.pem -batch -keyfile demoCA/private/cakey.pem -selfsign -extensions v3_ca -infiles demoCA/careq.pem
 cd
 ```
@@ -286,7 +303,6 @@ innodb_file_per_table           = 1
 [mysqlhotcopy]
 interactive_timeout
 EOF
-```
 
 ### MySQL absichern
 
@@ -352,18 +368,18 @@ protocol imap {
   imap_client_workarounds = delay-newmail netscape-eoh tb-extra-mailbox-sep
 }
 protocol pop3 {
-  pop3_uidl_format = %08Xu%08Xv
+  pop3_uidl_format = %08Xu%08Xv #%08Xu%08Xv
   mail_plugins = quota
   pop3_client_workarounds = outlook-no-nuls oe-ns-eoh
 }
 protocol lda {
   postmaster_address = postmaster@example.com
   hostname = mail.example.com
-  quota_full_tempfail = no
+  quota_full_tempfail = yes
   sendmail_path = /usr/sbin/sendmail
 }
 auth_username_format = %Lu
-auth default {
+auth_default {
   mechanisms = plain login
   passdb sql {
     args = /etc/dovecot/dovecot-sql.conf
@@ -388,8 +404,8 @@ auth default {
 dict {
 }
 plugin {
-  quota = maildir
-  quota_rule = *:storage=1048576
+   quota = maildir:User quota
+   quota_rule = *:storage=1024M
 }
 EOF
 ```
@@ -731,6 +747,7 @@ scache    unix  -       -       n       -       1       scache
 EOF
 ```
 
+
 `mysql_*_maps.cf` einrichten:
 
 ???+ note
@@ -869,6 +886,7 @@ Die folgende Konfiguration verwendet für den Default-Host den Pfad `/var/www/vh
 ### Apache installieren
 
 ``` bash
+!!! danger
 cat >> /etc/portage/package.use << "EOF"
 dev-libs/apr-util  -mysql
 www-servers/apache  -threads suexec
@@ -1005,6 +1023,7 @@ LoadModule unique_id_module modules/mod_unique_id.so
 #LoadModule vhost_alias_module modules/mod_vhost_alias.so
 User apache
 Group apache
+ServerAdmin webmaster@example.com
 ServerTokens OS
 ServerSignature On
 UseCanonicalName On
@@ -1013,6 +1032,7 @@ TraceEnable off
     Options -All +FollowSymLinks
     AllowOverride None
     Order Deny,Allow
+###
     Deny from all
 </Directory>
 ServerName www.example.com
@@ -1080,6 +1100,7 @@ AddIcon /icons/uuencoded.gif .uu
 AddIcon /icons/script.gif .conf .sh .shar .csh .ksh .tcl
 AddIcon /icons/tex.gif .tex
 AddIcon /icons/bomb.gif core
+###
 AddIcon /icons/back.gif ..
 AddIcon /icons/hand.right.gif README
 AddIcon /icons/folder.gif ^^DIRECTORY^^
@@ -1193,8 +1214,8 @@ ExpiresByType text/cache-manifest A0
     <VirtualHost 10.0.2.15:443>
         ServerName ssl.example.com
         ServerAdmin webmaster@example.com
-        CustomLog "/var/www/vhosts/ssl.example.com/logs/ssl_request_log" "%t %h %{SSL_PROTOCOL}x %{SSL_CIPHER}x \"%r\" %b"
         TransferLog "/var/www/vhosts/ssl.example.com/logs/access_log"
+###
         ErrorLog "/var/www/vhosts/ssl.example.com/logs/error_log"
         DocumentRoot "/var/www/vhosts/ssl.example.com/data"
         <Directory "/var/www/vhosts/ssl.example.com/data">
@@ -1230,8 +1251,10 @@ NameVirtualHost 10.0.2.15:80
     AcceptPathInfo On
 </VirtualHost>
 <VirtualHost 10.0.2.15:80>
+###
     ServerName example.com
     Redirect 301 / https://www.example.com/
+###
 </VirtualHost>
 EOF
 ```

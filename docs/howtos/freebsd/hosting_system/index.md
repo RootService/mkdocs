@@ -1,13 +1,15 @@
 ---
 title: 'Hosting System'
-description: 'In diesem HowTo werden step-by-step die Voraussetzungen für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
+description: 'In diesem HowTo werden step-by Schritt die Voraussetzungen für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.'
 date: '2010-08-25'
 updated: '2025-06-28'
 author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
 
-# Hosting System
+# Hosting System auf FreeBSD
+
+In diesem HowTo werden Schritt für Schritt die Voraussetzungen für ein Hosting System auf Basis von FreeBSD 64Bit auf einem dedizierten Server beschrieben.
 
 ## Einleitung
 
@@ -44,6 +46,15 @@ Folgende Punkte sind in allen folgenden HowTos zu beachten.
 - Die primäre IPv4 Adresse des Systems wird als `__IPADDR4__` dargestellt und ist selbsttändig zu ersetzen.
 - Die primäre IPv6 Adresse des Systems wird als `__IPADDR6__` dargestellt und ist selbsttändig zu ersetzen.
 - Postfix und Dovecot teilen sich sowohl den FQDN `mail.example.com` als auch das SSL-Zertifikat.
+
+## Inhaltsverzeichnis
+- [Voraussetzungen](#voraussetzungen)
+- [DNS Records](#dns-records)
+- [Voraussetzungen für den Abschnitt Security](#voraussetzungen-für-den-abschnitt-security)
+- [Voraussetzungen für den Abschnitt Datenbanken](#voraussetzungen-für-den-abschnitt-datenbanken)
+- [Voraussetzungen für den Abschnitt Webserver](#voraussetzungen-für-den-abschnitt-webserver)
+- [Voraussetzungen für den Abschnitt Mailserver](#voraussetzungen-für-den-abschnitt-mailserver)
+- [Los geht es](#los-geht-es)
 
 ## Voraussetzungen
 

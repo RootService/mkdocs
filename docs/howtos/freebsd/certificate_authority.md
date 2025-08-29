@@ -1,6 +1,6 @@
 ---
 title: 'Certificate Authority'
-description: 'In diesem HowTo wird step-by-step die Installation einer Certificate Authority mit OpenSSL (PKI) auf Basis von FreeBSD 64Bit beschrieben.'
+description: 'In diesem HowTo wird step-by Schritt die Installation einer Certificate Authority (PKI) mit OpenSSL auf Basis von FreeBSD 64Bit beschrieben.'
 date: '2013-11-15'
 updated: '2020-04-28'
 author: 'Markus Kohlmeyer'
@@ -8,6 +8,35 @@ author_url: https://github.com/JoeUser78
 contributors:
     - 'Stefan H. Holek'
 ---
+
+# Certificate Authority mit OpenSSL auf FreeBSD
+
+In diesem HowTo wird Schritt für Schritt die Installation einer Certificate Authority (PKI) mit OpenSSL auf Basis von FreeBSD 64Bit beschrieben.
+
+## Einleitung
+
+???+ warning
+
+    Dieses HowTo wird seit **2020-04-28** nicht mehr aktiv gepflegt und entspricht daher nicht mehr dem aktuellen Stand.
+
+    Die Verwendung dieses HowTo geschieht somit auf eigene Gefahr!
+
+Dieses HowTo setzt ein wie in [Remote Installation](/howtos/freebsd/remote_install/) beschriebenes, installiertes und konfiguriertes FreeBSD Basissystem und OpenSSL 1.0.2 (oder neuer) aus den FreeBSD Ports voraus.
+
+## Inhaltsverzeichnis
+- [Vorbereitungen](#vorbereitungen)
+- [OpenSSL](#openssl)
+  - [OpenSSL konfigurieren](#openssl-konfigurieren)
+  - [OpenSSL CA](#openssl-ca)
+    - [Root CA erstellen](#root-ca-erstellen)
+    - [Network / Intermediate CA erstellen](#network--intermediate-ca-erstellen)
+    - [Identity Signing CA erstellen](#identity-signing-ca-erstellen)
+    - [Component Signing CA erstellen](#component-signing-ca-erstellen)
+    - [CRLs und Chains erneuern](#crls-und-chains-erneuern)
+  - [OpenSSL Zertifikate](#openssl-zertifikate)
+    - [Identity Certificate erstellen](#identity-certificate-erstellen)
+    - [TLS Client Certificate erstellen](#tls-client-certificate-erstellen)
+    - [TLS Server Certificate erstellen](#tls-server-certificate-erstellen)
 
 # Certificate Authority
 

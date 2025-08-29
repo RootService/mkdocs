@@ -7,7 +7,9 @@ author: 'Markus Kohlmeyer'
 author_url: https://github.com/JoeUser78
 ---
 
-# Remote Installation
+# Remote Installation des FreeBSD BaseSystem
+
+In diesem HowTo werden Schritt für Schritt die Voraussetzungen für die Remote-Installation des FreeBSD 64Bit BaseSystem auf einem dedizierten Server beschrieben.
 
 ## Einleitung
 
@@ -59,6 +61,13 @@ Folgende Punkte sind in allen folgenden HowTos zu beachten.
 - Es wird der FQDN `devnull.example.com` verwendet und ist selbstständig im DNS zu registrieren.
 - Die primäre IPv4 Adresse des Systems wird als `__IPADDR4__` dargestellt und ist selbsttändig zu ersetzen.
 - Die primäre IPv6 Adresse des Systems wird als `__IPADDR6__` dargestellt und ist selbsttändig zu ersetzen.
+
+## Inhaltsverzeichnis
+- [Voraussetzungen](#voraussetzungen)
+- [DNS Records](#dns-records)
+- [Das Referenzsystem](#das-referenzsystem)
+- [Die Virtuelle Maschine](#die-virtuelle-maschine)
+- [Los geht es](#los-geht-es)
 
 ## Voraussetzungen
 
